@@ -1,0 +1,26 @@
+# Core Python DS/ML stack
+pandas
+numpy
+scikit-learn
+
+# Visualization
+matplotlib
+seaborn
+plotly
+
+# Jupyter/Colab utils
+jupyter
+notebook
+ipykernel
+
+# Data handling
+sqlalchemy     # To connect with MySQL if needed
+pymysql        # MySQL connector
+
+# ML/Deep Learning (future prep)
+torch
+transformers
+xgboost        # Optional, for strong baselines
+
+# Reporting
+jupyterlab

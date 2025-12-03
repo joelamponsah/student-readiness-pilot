@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from utils import compute_difficulty_df
+from utils.metrics import compute_difficulty_df
 
 st.title("⚙️ Difficulty, DCI & Test Stability")
 

@@ -1,44 +1,32 @@
+# app.py
 import streamlit as st
 import pandas as pd
+from utils.metrics import load_data_from_disk_or_session, save_uploaded_df
 
-st.set_page_config(page_title="Student Readiness Dashboard",
-                   layout="wide",
-                   page_icon="📚")
+st.set_page_config(page_title="Student Readiness Dashboard", layout="wide")
+st.sidebar.title("Student Readiness")
 
-st.title("📚 Student Readiness Analytics Dashboard")
+st.sidebar.markdown("## Data")
+uploaded = st.sidebar.file_uploader("Upload processed verify_df_fixed.csv (optional)", type=["csv"])
 
-st.write("""
-Welcome to the Student Readiness Dashboard.
+if uploaded is not None:
+    # Save upload to session_state and to disk so all pages can use it
+    df = pd.read_csv(uploaded)
+    save_uploaded_df(df, path="data/verify_df_fixed.csv")
+    st.session_state['df'] = df
+    st.sidebar.success("Uploaded and saved to data/verify_df_fixed.csv")
+else:
+    # try to load existing file or session
+    df = load_data_from_disk_or_session(default_path="data/verify_df_fixed.csv")
+    if df is not None:
+        st.session_state['df'] = df
 
-Use the sidebar to navigate through:
-- Basic accuracy & speed metrics  
-- Test & topic performance trends  
-- Difficulty, DCI & test stability  
-- SAB index & leaderboard  
-- Exam readiness predictive model  
-""")
+st.title("Student Readiness Dashboard")
+st.write("Use the sidebar to upload data (optional) and the top-left pages menu to navigate.")
 
-# Data loader
-@st.cache_data
-def load_data():
-    try:
-        df = pd.read_csv("data/verify_df_fixed.csv")
-        return df
-    except:
-        st.warning("Upload your dataset in the sidebar to proceed.")
-        return None
-
-with st.sidebar:
-    st.header("📥 Data Upload")
-    uploaded = st.file_uploader("Upload processed dataset", type=["csv"])
-
-    if uploaded:
-        df = pd.read_csv(uploaded)
-        st.success("Data loaded successfully!")
-        df.to_csv("data/verify_df_fixed.csv", index=False)
-    else:
-        df = load_data()
-
-if df is not None:
-    st.subheader("Preview Data")
-    st.dataframe(df.head())
+if 'df' in st.session_state and st.session_state['df'] is not None:
+    st.success(f"Dataset loaded with {len(st.session_state['df']):,} rows and {len(st.session_state['df'].columns):,} columns.")
+    # quick preview + link to pages
+    st.dataframe(st.session_state['df'].head(5))
+else:
+    st.info("No dataset loaded. Upload a processed verify_df_fixed.csv in the sidebar or place it at data/verify_df_fixed.csv in the repo.")

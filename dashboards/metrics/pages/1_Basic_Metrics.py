@@ -10,9 +10,9 @@ df = load_data_from_disk_or_session()
 if df is None:
     st.warning("No dataset loaded. Upload in sidebar or add data/verify_df_fixed.csv.")
 else:
-    df = compute_basic_metrics(df)
+    df = compute_basic_metrics2(df)
     st.subheader("Preview (first 10 rows)")
-    st.dataframe(df[['accuracy_total', 'speed_raw', 'speed_acc_raw', 'time_consumed']].head(10))
+    st.dataframe(df[['accuracy_total', 'accuracy_attempt', 'speed_raw', 'speed_acc_raw', 'time_consumed']].head(10))
 
     st.subheader("KPIs")
     col1, col2, col3 = st.columns(3)

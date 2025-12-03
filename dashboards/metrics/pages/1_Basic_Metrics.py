@@ -17,7 +17,7 @@ else:
     st.subheader("KPIs")
     col1, col2, col3 = st.columns(3)
     col1.metric("Mean accuracy", f"{df['accuracy_total'].mean():.3f}")
-    col2.metric("Mean adj speed (correct/min)", f"{df['speed_acc_raw'].mean():.3f}")
+    col2.metric("Mean adj speed (correct/min)", f"{df['adj_speed'].mean():.3f}")
     col3.metric("Mean time consumed", f"{df['time_consumed'].mean():.3f}")
 
     st.subheader("Distributions")

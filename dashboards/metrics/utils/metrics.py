@@ -25,6 +25,28 @@ def load_data_from_disk_or_session(default_path="data/verify_df_fixed.csv"):
             return None
     return None
 
+# utils/metrics.py
+#import pandas as pd
+#import numpy as np
+#from sklearn.preprocessing import MinMaxScaler
+#import streamlit as st
+
+#@st.cache_data
+#def load_data_default(path):
+  #  df = pd.read_csv(path, parse_dates=True, low_memory=False)
+ #   return df
+
+#def load_data_with_upload(default_path="data/verify_df_fixed.csv"):
+    #uploaded = st.sidebar.file_uploader("Upload verify_df_fixed.csv (optional)", type=["csv"])
+   # if uploaded is not None:
+  #      df = pd.read_csv(uploaded, low_memory=False)
+  #      return df
+    # fallback to repo file if exists
+   # try:
+      #  df = load_data_default(default_path)
+       # return df
+   # except Exception:
+       # return None
 # basic metrics ------------------------------------------------
 def compute_basic_metrics1(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
@@ -50,28 +72,7 @@ def compute_basic_metrics1(df: pd.DataFrame) -> pd.DataFrame:
     df.replace([np.inf, -np.inf], np.nan, inplace=True)
     return df
 
-# utils/metrics.py
-#import pandas as pd
-#import numpy as np
-#from sklearn.preprocessing import MinMaxScaler
-#import streamlit as st
 
-#@st.cache_data
-#def load_data_default(path):
-#    df = pd.read_csv(path, parse_dates=True, low_memory=False)
-#    return df
-
-#def load_data_with_upload(default_path="data/verify_df_fixed.csv"):
-#    uploaded = st.sidebar.file_uploader("Upload verify_df_fixed.csv (optional)", type=["csv"])
- #   if uploaded is not None:
-        df = pd.read_csv(uploaded, low_memory=False)
-  #      return df
-    # fallback to repo file if exists
-   # try:
-      #  df = load_data_default(default_path)
-       # return df
-   # except Exception:
-       # return None
 
 # --- Speed & accuracy base features (idempotent) ---
 def compute_basic_metrics2(df):

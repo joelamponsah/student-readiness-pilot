@@ -11,7 +11,7 @@ uploaded = st.sidebar.file_uploader("Upload processed verify_df_fixed.csv (optio
 
 if uploaded is not None:
     # Save upload to session_state and to disk so all pages can use it
-    df = pd.read_csv(uploaded)
+    df = pd.read_csv(uploaded, low_memory=False)
     save_uploaded_df(df, path="data/verify_df_fixed.csv")
     st.session_state['df'] = df
     st.sidebar.success("Uploaded and saved to data/verify_df_fixed.csv")

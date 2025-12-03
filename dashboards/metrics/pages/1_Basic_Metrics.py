@@ -27,5 +27,5 @@ else:
         fig = px.histogram(df, x='accuracy_total', nbins=30, title='Accuracy distribution')
         st.plotly_chart(fig, use_container_width=True)
     with c2:
-        fig2 = px.histogram(df, x='speed_acc_raw', nbins=30, title='Adjusted speed (correct/min)')
+        fig2 = px.histogram(df, x='adj_speed', nbins=30, title='Adjusted speed (correct/min)')
         st.plotly_chart(fig2, use_container_width=True)

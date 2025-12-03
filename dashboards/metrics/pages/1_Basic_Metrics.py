@@ -1,7 +1,7 @@
 # pages/1_Basic_Metrics.py
 import streamlit as st
 import pandas as pd
-from utils.metrics import load_data_from_disk_or_session, compute_basic_metrics
+from utils.metrics import load_data_from_disk_or_session, compute_basic_metrics2
 
 st.title("1 — Basic Metrics")
 

@@ -1,7 +1,7 @@
 # app.py
 import streamlit as st
 import pandas as pd
-#from utils.metrics import load_data_from_disk_or_session, save_uploaded_df
+from utils.metrics import load_data_from_disk_or_session, save_uploaded_df
 
 st.set_page_config(page_title="Student Readiness Dashboard", layout="wide")
 st.sidebar.title("Student Readiness")
@@ -11,7 +11,7 @@ uploaded = st.sidebar.file_uploader("Upload processed verify_df_fixed.csv (optio
 
 if uploaded is not None:
     # Save upload to session_state and to disk so all pages can use it
-    df = pd.read_csv(uploaded, low_memory=False)
+    df = pd.read_csv(uploaded)
     save_uploaded_df(df, path="data/verify_df_fixed.csv")
     st.session_state['df'] = df
     st.sidebar.success("Uploaded and saved to data/verify_df_fixed.csv")

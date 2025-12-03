@@ -44,7 +44,7 @@ if df is None:
 # compute row-level metrics
 df = compute_basic_metrics2(df)
 
-required_cols = ["user_id", "name"]
+required_cols = ["user_id", "l_name"]
 missing = [c for c in required_cols if c not in df.columns]
 
 if missing:
@@ -52,7 +52,7 @@ if missing:
     st.stop()
 
 # Aggregate metrics by user
-agg_df = df.groupby(["user_id", "name"]).agg({
+agg_df = df.groupby(["user_id", "l_name"]).agg({
     "accuracy_total": "mean",
     "adj_speed": "mean",
     "speed_raw": "mean",
@@ -77,7 +77,7 @@ st.subheader("Global KPIs")
 
 col1, col2, col3 = st.columns(3)
 col1.metric("Avg. Accuracy", f"{agg_df['accuracy_total'].mean():.3f}")
-col2.metric("Avg. Adjusted Speed", f"{agg_df['speed_acc_raw'].mean():.3f}")
+col2.metric("Avg. Adjusted Speed", f"{agg_df['adj_speed'].mean():.3f}")
 col3.metric("Avg. Efficiency", f"{agg_df['efficiency_ratio'].mean():.3f}")
 
 st.info("This table aggregates all basic behavioral metrics at the user level.")

@@ -26,7 +26,7 @@ def load_data_from_disk_or_session(default_path="data/verify_df_fixed.csv"):
     return None
 
 # basic metrics ------------------------------------------------
-def compute_basic_metrics(df: pd.DataFrame) -> pd.DataFrame:
+def compute_basic_metrics1(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
     # ensure numeric columns exist
     for c in ['attempted_questions','correct_answers','marks','time_taken','duration','no_of_questions','pass_mark']:
@@ -74,7 +74,7 @@ def compute_basic_metrics(df: pd.DataFrame) -> pd.DataFrame:
        # return None
 
 # --- Speed & accuracy base features (idempotent) ---
-def compute_basic_metrics(df):
+def compute_basic_metrics2(df):
     df = df.copy()
     # ensure numeric
     for c in ['attempted_questions','correct_answers','marks','time_taken','duration']:

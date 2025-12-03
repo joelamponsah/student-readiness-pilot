@@ -12,7 +12,7 @@ if df is None:
 else:
     df = compute_basic_metrics2(df)
     st.subheader("Preview (first 10 rows)")
-    st.dataframe(df[['accuracy_total', 'accuracy_attempt', 'speed_raw', 'speed_acc_raw', 'time_consumed']].head(10))
+    st.dataframe(df.head(10))
 
     st.subheader("KPIs")
     col1, col2, col3 = st.columns(3)

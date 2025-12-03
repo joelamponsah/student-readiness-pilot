@@ -1,18 +1,55 @@
+# utils/metrics.py
 import pandas as pd
 import numpy as np
+import os
 
-def compute_basic_metrics(df):
+def save_uploaded_df(df: pd.DataFrame, path="data/verify_df_fixed.csv"):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    df.to_csv(path, index=False)
 
+def load_data_from_disk_or_session(default_path="data/verify_df_fixed.csv"):
+    # prefer session state if available (pages will read from it via streamlit)
+    try:
+        import streamlit as st
+        if 'df' in st.session_state and st.session_state['df'] is not None:
+            return st.session_state['df']
+    except Exception:
+        pass
+
+    # else load from disk if present
+    if os.path.exists(default_path):
+        try:
+            df = pd.read_csv(default_path, low_memory=False)
+            return df
+        except Exception:
+            return None
+    return None
+
+# basic metrics ------------------------------------------------
+def compute_basic_metrics(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
-    df = df[df["time_taken"] > 0]
-
-    df["speed_raw"] = df["attempted_questions"] / df["time_taken"]
-    df["speed_acc_raw"] = df["correct_answers"] / df["time_taken"]
-    df["accuracy"] = df["correct_answers"] / df["attempted_questions"]
-
-    df["efficiency_ratio"] = df["speed_acc_raw"] / df["speed_raw"]
-
+    # ensure numeric columns exist
+    for c in ['attempted_questions','correct_answers','marks','time_taken','duration','no_of_questions','pass_mark']:
+        if c not in df.columns:
+            df[c] = np.nan
+    # guard time
+    df['time_taken'] = pd.to_numeric(df['time_taken'], errors='coerce')
+    df['time_taken'] = df['time_taken'].replace(0, np.nan)
+    # speeds
+    df['speed_raw'] = df['attempted_questions'] / df['time_taken']
+    df['speed_acc_raw'] = df['correct_answers'] / df['time_taken']
+    df['speed_marks'] = df['marks'] / df['time_taken']
+    # accuracy
+    df['accuracy_total'] = (df['correct_answers'] / df['attempted_questions']).fillna(0)
+    # relative time
+    df['time_consumed'] = (df['time_taken'] / df['duration']).clip(0,1)
+    df['speed_rel_time'] = ((df['duration'] - df['time_taken']) / df['duration']).clip(lower=0)
+    # efficiency (guard divide-by-zero)
+    df['efficiency_ratio'] = df['accuracy_total'] / df['time_consumed'].replace(0, np.nan)
+    # basic cleaning
+    df.replace([np.inf, -np.inf], np.nan, inplace=True)
     return df
+
 
 
 def compute_SAB(df):

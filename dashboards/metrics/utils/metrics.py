@@ -1,6 +1,7 @@
 # utils/metrics.py
 import pandas as pd
 import numpy as np
+from sklearn.preprocessing import MinMaxScaler
 import os
 
 def save_uploaded_df(df: pd.DataFrame, path="data/verify_df_fixed.csv"):

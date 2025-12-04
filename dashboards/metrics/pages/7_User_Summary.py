@@ -43,8 +43,8 @@ st.subheader(f"📌 Profile Summary for User {user_id}")
 # ---------------------------
 if not user_basic.empty:
     col1, col2, col3 = st.columns(3)
-    col1.metric("Accuracy", f"{user_basic['accuracy'].mean():.2f}")
-    col2.metric("Speed (SA Raw)", f"{user_basic['speed_acc_raw'].mean():.2f}")
+    col1.metric("Accuracy", f"{user_basic['accuracy_total'].mean():.2f}")
+    col2.metric("Speed (SA Raw)", f"{user_basic['adj_speed'].mean():.2f}")
     col3.metric("Efficiency Ratio", f"{user_basic['efficiency_ratio'].mean():.2f}")
 else:
     st.info("No basic metric data for this user.")

@@ -22,7 +22,7 @@ if test_filter:
 
 st.subheader('Test Difficulty')
 "We factor in how difficult a test is to see whether it affects accuracy and speed"
-"Therefore, every test is rated based on its diffiuclty".
+"Therefore, every test is rated based on its diffiuclty."
 
 st.subheader("Test Consistency")
 "We looked at the consistency of a test by checking how far test takers were from the average marks." 

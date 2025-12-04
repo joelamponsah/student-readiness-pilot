@@ -1,7 +1,7 @@
 import streamlit as st
 from utils.metrics import load_data_from_disk_or_session, compute_difficulty_df
 
-st.title("Difficulty, Pass-Rate, Stability & DCI")
+st.title("Test Difficulty & Stability & The Difficulty Consistency Index (DCI)")
 
 df = load_data_from_disk_or_session()
 
@@ -19,6 +19,28 @@ test_filter = st.sidebar.multiselect(
 
 if test_filter:
     df = df[df["name"].isin(test_filter)]
+
+st.subheader('Test Difficulty')
+"We factor in how difficult a test is to see whether it affects accuracy and speed"
+"Therefore, every test is rated based on its diffiuclty".
+
+st.subheader("Test Consistency")
+"We looked at the consistency of a test by checking how far test takers were from the average marks." 
+"That is the standard deviation of accuracy of the tests." 
+"If a test has high standard deviation (test consistency) it means the test has a low consistency rating and vice versa."
+
+st.subheader("Difficulty Consistency Index (DCI)")
+"A good test isn’t just about being hard or easy — it’s about consistency. "
+"If two tests have the same pass ratio (say both “hard”), 
+"but one produces a wide spread of scores while the other produces tightly clustered ones, the second is more reliable."
+"So we want a single metric that reflects: How hard and consistent a test is in evaluating skill."
+"Using a combination of the average accuracy per test and the test consistency we label the each test"
+
+st.subheader("DCI = average accuracy X test Consistency")
+
+st.subheader('Stability')
+"Based on the DCI we can categorize tests based on stability"
+
 
 difficulty_df = compute_difficulty_df(df)
 

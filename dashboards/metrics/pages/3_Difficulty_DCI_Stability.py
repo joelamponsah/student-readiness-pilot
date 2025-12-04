@@ -24,6 +24,8 @@ st.subheader('Test Difficulty')
 "We factor in how difficult a test is to see whether it affects accuracy and speed"
 "Therefore, every test is rated based on its diffiuclty."
 
+st.dataframe(df.groupby('difficulty_label')['difficulty'].agg(['min', 'max', 'mean', 'count']))
+
 st.subheader("Test Consistency")
 "We looked at the consistency of a test by checking how far test takers were from the average marks." 
 "That is the standard deviation of accuracy of the tests." 

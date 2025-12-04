@@ -144,7 +144,7 @@ def compute_topic_analytics(df, topic_col='topic'):
 
 # --- Difficulty & DCI ---
 def compute_difficulty_df(df):
-    df = df.copy()
+    df = compute_basic_metrics2(df)
     # pass_flag per row
     if 'pass_mark' in df.columns:
         df['passed'] = (df['marks'] >= df['pass_mark']).astype(int)

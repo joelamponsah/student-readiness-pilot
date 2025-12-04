@@ -1,19 +1,29 @@
 import streamlit as st
-import pandas as pd
-from utils.metrics import compute_difficulty_df
+from utils.metrics import load_data_with_upload, compute_difficulty_df
 
-st.title("⚙️ Difficulty, DCI & Test Stability")
+st.title("Difficulty, Pass-Rate, Stability & DCI")
 
-df = pd.read_csv("data/verify_df_fixed.csv")
+df = load_data_with_upload()
 
-difficulty = compute_difficulty_df(df)
+if df is None or df.empty:
+    st.warning("Upload data to continue.")
+    st.stop()
 
-difficulty = df.groupby("test_id").agg(
-    pass_rate=("correct_answers", lambda x: (x > 0).mean()),
-    avg_accuracy=("accuracy", "mean")
-).reset_index()
+# ------------------------------------------------
+# 🔍 Filters
+# ------------------------------------------------
+test_filter = st.sidebar.multiselect(
+    "Filter by Test",
+    options=sorted(df["name"].unique())
+)
 
-difficulty["difficulty_score"] = 1 - difficulty["pass_rate"]
+if test_filter:
+    df = df[df["name"].isin(test_filter)]
 
-st.subheader("Difficulty Table")
-st.dataframe(difficulty)
+difficulty_df = compute_difficulty_df(df)
+
+st.subheader("Per-Test Difficulty & DCI Metrics")
+st.dataframe(difficulty_df, use_container_width=True)
+
+csv = difficulty_df.to_csv(index=False)
+st.download_button("Download Difficulty & DCI CSV", csv, "difficulty_dci.csv")

@@ -27,7 +27,10 @@ difficulty_df = compute_difficulty_df(df)
 
 st.dataframe(difficulty_df.groupby('difficulty_label')['difficulty'].agg(['min', 'max', 'mean', 'count']))
 
+col1, col2, col3 = st.columns()
 col1.metric("Total Tests", f"{df['test_id'].count():.3f}")
+col2.metric("Mean Difficulty", f"{difficulty_df['difficulty'].mean():.3f}")
+col3.metric("Total Tests", f"{difficulty_df['test_id'].count():.3f}")
 
 st.subheader("Test Consistency")
 "We looked at the consistency of a test by checking how far test takers were from the average marks." 

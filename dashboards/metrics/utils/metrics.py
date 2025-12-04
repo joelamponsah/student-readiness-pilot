@@ -156,15 +156,7 @@ def compute_difficulty_df(df):
     df.loc[df['inactive'] == 1, ['marks', 'accuracy_total', 'accuracy_attempt', 'accuracy_norm']] = 0
     df['passed'] = np.where(df['marks'] >= df['pass_mark'], 1, 0)
     
-    # --- Fix difficulty scoring ---
-    df['difficulty_score'] = df['pass_mark'] / df['no_of_questions']
-    df['difficulty_label'] = pd.cut(
-    df['difficulty_score'],
-    bins=[0, 0.59, 0.89, 1.0],
-    labels=['easy', 'moderate', 'hard'],
-    include_lowest=True
-    )
-    
+        
     test_pass = df.groupby('test_id').agg(
         pass_rate=('passed','mean'),
         mean_accuracy=('accuracy_total','mean'),
@@ -175,7 +167,15 @@ def compute_difficulty_df(df):
     # DCI: closeness between mean_accuracy and (1 - difficulty), difficulty ~ 1-pass_rate
     test_pass['difficulty'] = 1 - test_pass['pass_rate']
     test_pass['DCI'] = 1 - (abs(test_pass['mean_accuracy'] - (1 - test_pass['difficulty'])) )
-    
+
+    # --- Fix difficulty scoring ---
+    #df['difficulty_score'] = df['pass_mark'] / df['no_of_questions']
+    test_pass['difficulty_label'] = pd.cut(
+    test_pass['difficulty'],
+    bins=[0, 0.59, 0.89, 1.0],
+    labels=['easy', 'moderate', 'hard'],
+    include_lowest=True
+    )
     # test stability
     test_pass['stability'] = 1 / (1 + test_pass['test_consistency'].fillna(0))
 
@@ -187,9 +187,10 @@ def compute_difficulty_df(df):
         include_lowest=True
     )
 
-    test_pass = test_pass.merge(df[['passed', 'difficulty_score','difficulty_label']], on='test_id', how='left')
+    test_pass
+    #test_pass = test_pass.merge(df[['passed', 'difficulty_score','difficulty_label']], on='test_id', how='left')
 
-    test_pass.fillna({'pass_rate': 0, 'test_consistency': 0, 'difficulty_score': 0}, inplace=True)
+    #test_pass.fillna({'pass_rate': 0, 'test_consistency': 0, 'difficulty_score': 0}, inplace=True)
 
     # Normalize test consistency (variability)
     #scaler = MinMaxScaler()

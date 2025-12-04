@@ -33,12 +33,19 @@ st.subheader("(Speed - Accuracy Behavior (SAB)")
 "For exampls, getting answers right are more import than finishing fast"
 "Therefore, we assume that a user's speed consistency over time is also of great importance"
 
+st.subheader("SAB Index")
+"The SAB Index is a weighted trade off of accuracy consistency and speed consitency and other variables like number of tests taken etc"
+"A combination of these will give us a readiness score which we can use to determine wether a student is ready to take an exam or not," 
+"based on how consistent a user is over time"
+
 st.subheader("Speed & Time Consistency") 
 
 "Speed consistency describes how uniformly students complete a test in terms of time."
 
 "It measures behavioral variability — do most test-takers take roughly the same amount of time, or are there big differences?"
 
+st.subheader("Accuracy Consistency")
+"How accurate a user is over time"
 
 
 df = load_data_from_disk_or_session()

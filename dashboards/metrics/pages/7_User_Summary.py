@@ -2,7 +2,7 @@ import streamlit as st
 import plotly.express as px
 
 from utils.metrics import (
-    load_data_from,
+    load_data_from_disk_or_session,
     compute_basic_metrics2,
     compute_sab_behavioral,
     compute_test_analytics
@@ -16,7 +16,7 @@ st.title("🧑‍🎓 User Performance Profile")
 # ---------------------------
 # Load Data
 # ---------------------------
-df = load_data_with_upload()
+df = load_data_from_disk_or_session()
 if df is None or df.empty:
     st.warning("Upload data to continue.")
     st.stop()

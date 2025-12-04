@@ -75,7 +75,7 @@ st.subheader("📈 Test Performance Trends")
 if not user_tests.empty:
     fig_test = px.line(
         user_tests,
-        x="test_date",
+        x="created_at",
         y="accuracy_total",
         title="Accuracy Over Time",
         markers=True
@@ -84,8 +84,8 @@ if not user_tests.empty:
 
     fig_speed = px.line(
         user_tests,
-        x="test_date",
-        y="speed_acc_raw",
+        x="created_at",
+        y="time_consumed",
         title="Speed Over Time",
         markers=True
     )
@@ -93,7 +93,7 @@ if not user_tests.empty:
 
     fig_eff = px.line(
         user_tests,
-        x="test_date",
+        x="created_at",
         y="efficiency_ratio",
         title="Efficiency Over Time",
         markers=True
@@ -113,7 +113,7 @@ if not user_tests.empty:
     fig_diff = px.bar(
         user_tests,
         x="test_id",
-        y="difficulty_score",
+        y="difficulty",
         title="Difficulty Score per Test",
         text_auto=True
     )
@@ -122,7 +122,7 @@ if not user_tests.empty:
     fig_stable = px.bar(
         user_tests,
         x="test_id",
-        y="stability_score",
+        y="stability",
         title="Stability Score per Test",
         text_auto=True
     )

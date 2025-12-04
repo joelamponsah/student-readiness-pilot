@@ -22,8 +22,8 @@ else:
         st.session_state['df'] = df
 
 st.title("Student Readiness Dashboard")
-st.write("To improve interpretability and ensure relevance to the actual student landscape, we refined the key behavioral performance indicators — accuracy, speed, and the derived accuracy–speed ratio (ASR). We will explore more nuanced definitions of accuracy and speed, test their relationships empirically, and evaluate how they influence exam readiness predictions and feature importance outcomes.")
-st.write("Use the sidebar to upload data (optional) and the top-left pages menu to navigate.")
+st.write("To improve interpretability and ensure relevance to the actual student landscape, we refined the key behavioral performance indicators — accuracy, speed, and the derived accuracy–speed ratio (ASR). We will explore more nuanced definitions of accuracy, speed and more advanced metrics like DCI, SAB Index, test their relationships empirically, and evaluate how they influence exam readiness predictions and feature importance outcomes.")
+st.write("Navigate through pages with the menu on the top-left. Use the sidebar to upload data (optional).")
 
 if 'df' in st.session_state and st.session_state['df'] is not None:
     st.success(f"Dataset loaded with {len(st.session_state['df']):,} rows and {len(st.session_state['df'].columns):,} columns.")

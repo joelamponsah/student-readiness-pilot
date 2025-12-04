@@ -76,6 +76,8 @@ else:
     "Now that we know the averages we can calculate the relative avergae of a user"
     "This shows us how a user is performing individually amongst the group/population"
     "Rel Avg = test accuracy - test average"
+    df["accuracy_avg"] = df["accuracy_toatal"].mean()
+    df["rel_acc"] = df["accuracy_total"] - df["accuracy_avg"]
 
     st.subheader("Distributions of Relative Accuracy & Relative Speed")
     import plotly.express as px

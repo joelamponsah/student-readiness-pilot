@@ -40,6 +40,16 @@ else:
     
     st.dataframe(df[["user_id", "test_id", "time_consumed", "speed_raw", "adj_speed", "speed_norm", "speed_rel_time" ]].head())
 
+    st.subheader("Distributions")
+    import plotly.express as px
+    c1, c2 = st.columns(2)
+    with c1:
+        fig = px.histogram(df, x='accuracy_total', nbins=30, title='Accuracy distribution')
+        st.plotly_chart(fig, use_container_width=True)
+    with c2:
+        fig2 = px.histogram(df, x='adj_speed', nbins=30, title='Adjusted speed (correct/min)')
+        st.plotly_chart(fig2, use_container_width=True)
+
     st.subheader("Accuracy to Speed Ratio")
 
     "From deriving and calculating a user's accuracy ans speed we can that define the a relationship between both in a ratio"
@@ -52,72 +62,34 @@ else:
     df['accurate_speed'] = df['adj_speed']
     st.dataframe(df[["user_id", "test_id", "accurate_speed", "efficiency_ratio"]].head())
 
-    st.subheader("KPIs")
-    col1, col2, col3 = st.columns(3)
+    st.subheader("Mean / Averages ")
+    "We can now take the averages (mean) of our prime metrics and further derive more advanced metrics"
+    "This shows us how the population is performing as a whole"
+    col1, col2, col3, col4, col5 = st.columns(5)
     col1.metric("Mean accuracy", f"{df['accuracy_total'].mean():.3f}")
-    col2.metric("Mean adj speed (correct/min)", f"{df['adj_speed'].mean():.3f}")
+    col2.metric("Mean accurate speed (correct/min)", f"{df['adj_speed'].mean():.3f}")
     col3.metric("Mean time consumed", f"{df['time_consumed'].mean():.3f}")
+    col4.metric("Mean time taken", f"{df['time_taken'].mean():.3f}")
+    col5.metric("Mean efficiency", f"{df['efficiency_ratio'].mean():.3f}")
+
+    st.subheader("Relative Average")
+    "Now that we now the averages we can calculate ther relative avergae of a user"
+    "This shows us how a user is performing individuallu amongst the group/population"
+    "Rel Avg = test accuracy - test average"
     
-    st.subheader("Distributions")
-    import plotly.express as px
-    c1, c2 = st.columns(2)
-    with c1:
-        fig = px.histogram(df, x='accuracy_total', nbins=30, title='Accuracy distribution')
-        st.plotly_chart(fig, use_container_width=True)
-    with c2:
-        fig2 = px.histogram(df, x='adj_speed', nbins=30, title='Adjusted speed (correct/min)')
-        st.plotly_chart(fig2, use_container_width=True)
+    st.subheader("Standard Deviations / Variablilty")
+    "We find out how different users/tests are by calculating the standard deviations"
+    " This guves us the variability in the results and can be related to consistency."
+    col1, col2, col3, col4, col5 = st.columns(5)
+    col1.metric("Std accuracy", f"{df['accuracy_total'].std():.3f}")
+    col2.metric("Std accurate speed (correct/min)", f"{df['adj_speed'].std():.3f}")
+    col3.metric("Std time consumed", f"{df['time_consumed'].std():.3f}")
+    col4.metric("Std time taken", f"{df['time_taken'].std():.3f}")
+    col5.metric("Std efficiency", f"{df['efficiency_ratio'].std():.3f}")
+   
 
-#import streamlit as st
-#import pandas as pd
-#from utils.metrics import load_data_from_disk_or_session, compute_basic_metrics
 
-st.title("Basic Metrics (User-Level Summary)")
 
-df = load_data_from_disk_or_session()
-if df is None:
-    st.warning("No dataset loaded. Upload in sidebar or ensure data/verify_df_fixed.csv exists.")
-    st.stop()
 
-# compute row-level metrics
-df = compute_basic_metrics2(df)
-
-required_cols = ["user_id", "l_name"]
-missing = [c for c in required_cols if c not in df.columns]
-
-if missing:
-    st.error(f"Missing required columns: {missing}")
-    st.stop()
-
-# Aggregate metrics by user
-agg_df = df.groupby(["user_id", "l_name"]).agg({
-    "accuracy_total": "mean",
-    "adj_speed": "mean",
-    "speed_raw": "mean",
-    "speed_marks": "mean",
-    "time_consumed": "mean",
-    "efficiency_ratio": "mean",
-    "attempted_questions": "sum",
-    "correct_answers": "sum",
-    "marks": "sum",
-    "test_id": "nunique"
-}).reset_index()
-
-agg_df.rename(columns={
-    "test_id": "tests_taken"
-}, inplace=True)
-
-st.subheader("User-Level Basic Metrics")
-st.dataframe(agg_df)
-
-# Optional: KPIs summary
-st.subheader("Global KPIs")
-
-col1, col2, col3 = st.columns(3)
-col1.metric("Avg. Accuracy", f"{agg_df['accuracy_total'].mean():.3f}")
-col2.metric("Avg. Adjusted Speed", f"{agg_df['adj_speed'].mean():.3f}")
-col3.metric("Avg. Efficiency", f"{agg_df['efficiency_ratio'].mean():.3f}")
-
-st.info("This table aggregates all basic behavioral metrics at the user level.")
 
    

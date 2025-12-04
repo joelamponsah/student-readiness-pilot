@@ -19,14 +19,14 @@
 import streamlit as st
 
 from utils.metrics import (
-    load_data_with_upload,
+    load_data_from_disk_or_session,
     compute_sab_behavioral,
     compute_test_analytics
 )
 
 st.title("Advanced Behavioral Metrics (SAB, Consistency, Robust Index)")
 
-df = load_data_with_upload()
+df = load_data_from_disk_or_session()
 if df is None or df.empty:
     st.warning("Upload file to begin.")
     st.stop()
@@ -42,15 +42,15 @@ user_ids = st.sidebar.multiselect(
 )
 
 test_ids = st.sidebar.multiselect(
-    "Filter by Test ID",
-    options=sorted(df["test_id"].unique())
+    "Filter by Test",
+    options=sorted(df["name"].unique())
 )
 
 if user_ids:
     df = df[df["user_id"].isin(user_ids)]
 
 if test_ids:
-    df = df[df["test_id"].isin(test_ids)]
+    df = df[df["name"].isin(test_ids)]
 
 # ------------------------------------------------
 # SAB PER USER

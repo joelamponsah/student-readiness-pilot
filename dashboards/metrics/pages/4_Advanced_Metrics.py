@@ -24,7 +24,22 @@ from utils.metrics import (
     compute_test_analytics
 )
 
-st.title("Advanced Behavioral Metrics (SAB, Consistency, Robust Index)")
+st.title("Advanced Metrics ")
+
+st.subheader("(Speed - Accuracy Behavior (SAB)")
+
+"This is a more advanced form of our Accuracy to Speed ratio (ASR)."
+"However, this takes into accoun that Accuracy and Speed might carry different weights or importance"
+"For exampls, getting answers right are more import than finishing fast"
+"Therefore, we assume that a user's speed consistency over time is also of great importance"
+
+st.subheader("Speed & Time Consistency") 
+
+"Speed consistency describes how uniformly students complete a test in terms of time."
+
+"It measures behavioral variability — do most test-takers take roughly the same amount of time, or are there big differences?"
+
+
 
 df = load_data_from_disk_or_session()
 if df is None or df.empty:

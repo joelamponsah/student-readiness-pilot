@@ -14,8 +14,8 @@ else:
     
     st.subheader("Accuracy")
     " From a user's test scores (marks) and number of questions, we can measure a users;"
-            1. Personal Accuracy
-            2. Test Accuracy
+    "1. Personal Accuracy"
+    "2. Test Accuracy"
     "We can measure a users personal accuracy by:"
     "Attempted Accuracy = correct answers / attempted questions"
     "We can also measure test accuracy (total accuracy)"

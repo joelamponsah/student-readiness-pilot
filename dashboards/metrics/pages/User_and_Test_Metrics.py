@@ -2,14 +2,14 @@ import streamlit as st
 import pandas as pd
 
 from utils.metrics import (
-    load_data_with_upload,
+    load_data_from_disk_or_session,
     compute_basic_metrics2,
 )
 
 st.title("Basic Speed & Accuracy Metrics")
 
 # ---- Load data ----
-df = load_data_with_upload()
+df = load_data_from_disk_or_session()
 
 if df is None or df.empty:
     st.warning("No data loaded. Upload verify_df_fixed.csv.")

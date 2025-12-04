@@ -28,8 +28,8 @@ difficulty_df = compute_difficulty_df(df)
 st.dataframe(difficulty_df.groupby('difficulty_label')['difficulty'].agg(['min', 'max', 'mean', 'count']))
 
 col1, col2, col3 = st.columns(3)
-col1.metric("All Tests", f"{df['test_id'].nunique():.3f}")
-col2.metric("Unique Tests", f"{difficulty_df['test_id'].nunique():.3f}")
+col1.metric("All Tests", f"{df['test_id'].count():.3f}")
+col2.metric("Unique Tests", f"{difficulty_df['test_id'].count():.3f}")
 col3.metric("Mean Difficulty", f"{difficulty_df['difficulty'].mean():.3f}")
 
 st.subheader("Test Consistency")

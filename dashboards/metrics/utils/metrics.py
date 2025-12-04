@@ -187,7 +187,7 @@ def compute_difficulty_df(df):
         include_lowest=True
     )
 
-    test_pass = test_pass.merge(df[['passed', 'difficultyScore','difficulty_label']], on='test_id', how='left')
+    test_pass = test_pass.merge(df[['passed', 'difficulty_score','difficulty_label']], on='test_id', how='left')
 
     test_pass.fillna({'pass_rate': 0, 'test_consistency': 0, 'difficulty_score': 0}, inplace=True)
 

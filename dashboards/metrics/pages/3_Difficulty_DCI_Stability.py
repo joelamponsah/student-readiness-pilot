@@ -31,7 +31,7 @@ st.subheader("Test Consistency")
 
 st.subheader("Difficulty Consistency Index (DCI)")
 "A good test isn’t just about being hard or easy — it’s about consistency. "
-"If two tests have the same pass ratio (say both “hard”), 
+"If two tests have the same pass ratio (say both “hard”)," 
 "but one produces a wide spread of scores while the other produces tightly clustered ones, the second is more reliable."
 "So we want a single metric that reflects: How hard and consistent a test is in evaluating skill."
 "Using a combination of the average accuracy per test and the test consistency we label the each test"

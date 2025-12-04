@@ -102,7 +102,7 @@ def compute_basic_metrics2(df):
 
 # --- Per-test analytics ---
 def compute_test_analytics(df):
-    df = compute_basic_metrics2.copy()
+    df = compute_basic_metrics2()
     df = df[df['time_taken'] > 0]
     df['speed_marks'] = df['marks'] / df['time_taken']
     df['accuracy_total'] = (df['marks'] / df['no_of_questions']).fillna(0)

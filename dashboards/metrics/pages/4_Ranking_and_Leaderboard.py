@@ -28,6 +28,8 @@ else:
 # Optional percent score
 df["percent_score"] = df["accuracy_total"] * 100
 
+df.rename(columns={'name', 'Test'}, inplace=True)
+
 # ===============================================
 # 4. LEADERBOARD SCORE
 # ===============================================

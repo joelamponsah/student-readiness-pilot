@@ -11,15 +11,46 @@ if df is None:
     st.warning("No dataset loaded. Upload in sidebar or add data/verify_df_fixed.csv.")
 else:
     df = compute_basic_metrics2(df)
+    
     st.subheader("Accuracy")
+    " From a user's test scores (marks) and number of questions, we can measure a users;"
+            "1. Personal Accuracy"
+            "2. Test Accuracy"
     "We can measure a users personal accuracy by:"
     "Attempted Accuracy = correct answers / attempted questions"
     "We can also measure test accuracy (total accuracy)"
     "Total Accuracy = correct answers / total questions"
+
     st.dataframe(df[["user_id", "test_id", "accuracy_attempt", "accuracy_total"]].head())
 
     st.subheader("Speed")
-    st.dataframe(df[["user_id", "test_id", "speed_raw", "adj_speed", "speed_norm" ]].head())
+    "In physics: 	Speed = Distance / Time​"
+    
+    "In our context:"
+    
+    "“Distance” ≈ number of questions attempted (or correctly answered, depending on the variant)"
+    "“Time” ≈ time taken"
+    "Thus, we can define several relevant speed metrics."
+
+    "1. Raw Speed = attempted_questions / time taken"
+    "2. Accurate Speed (adjusted speed) = correct_answers / time taken"
+    "3. speed_marks = marks / time taken"
+    "4. Relative Speed = time remaining / test duration"
+    "5. Time Consumed = time taken / test duration"
+    
+    st.dataframe(df[["user_id", "test_id", "time_consumed", "speed_raw", "adj_speed", "speed_norm" ]].head())
+
+    st.subheader("Accuracy to Speed Ratio")
+
+    "From deriving and calculating a user's accuracy ans speed we can that define the a relationship between both in a ratio"
+    " our Accurate speed definition is already a form of accuracy-speed ratio since we are taking correct answers over the time taken"
+    " Accurate Speed = correct answers / time taken"
+
+    "We can also look at the effeciency ratio which measure accuracy over time consumed"
+    "Effeciency Ratio = test accuracy / time consumed"
+
+    df['accurate_speed] = df[adj_speed]
+    st.dataframe(df[["user_id", "test_id", "accurate_speed", "efficiency_ratio"]].head())
 
     st.subheader("KPIs")
     col1, col2, col3 = st.columns(3)

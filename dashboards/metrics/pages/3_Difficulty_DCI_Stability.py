@@ -23,8 +23,9 @@ if test_filter:
 st.subheader('Test Difficulty')
 "We factor in how difficult a test is to see whether it affects accuracy and speed"
 "Therefore, every test is rated based on its diffiuclty."
+difficulty_df = compute_difficulty_df(df)
 
-df.groupby('difficulty_label')['difficulty'].agg(['min', 'max', 'mean', 'count'])
+difficulty_df.groupby('difficulty_label')['difficulty'].agg(['min', 'max', 'mean', 'count'])
 
 st.subheader("Test Consistency")
 "We looked at the consistency of a test by checking how far test takers were from the average marks." 
@@ -43,8 +44,6 @@ st.subheader("DCI = average accuracy X test Consistency")
 st.subheader('Stability')
 "Based on the DCI we can categorize tests based on stability"
 
-
-difficulty_df = compute_difficulty_df(df)
 
 st.subheader("Per-Test Difficulty & DCI Metrics")
 st.dataframe(difficulty_df, use_container_width=True)

@@ -76,7 +76,7 @@ if not user_tests.empty:
     fig_test = px.line(
         user_tests,
         x="test_date",
-        y="accuracy",
+        y="accuracy_total",
         title="Accuracy Over Time",
         markers=True
     )

@@ -114,10 +114,10 @@ else:
 # ---------------------------
 st.subheader("📊 Test Difficulty & Stability")
 
-if not user_tests.empty:
+if not user_diff.empty:
 
     fig_diff = px.bar(
-        user_tests,
+        user_diff,
         x="test_id",
         y="difficulty",
         title="Difficulty Score per Test",
@@ -126,7 +126,7 @@ if not user_tests.empty:
     st.plotly_chart(fig_diff, use_container_width=True)
 
     fig_stable = px.bar(
-        user_tests,
+        user_diff,
         x="test_id",
         y="stability",
         title="Stability Score per Test",

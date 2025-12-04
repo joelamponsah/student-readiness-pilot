@@ -14,8 +14,8 @@ else:
     
     st.subheader("Accuracy")
     " From a user's test scores (marks) and number of questions, we can measure a users;"
-            "1. Personal Accuracy"
-            "2. Test Accuracy"
+            1. Personal Accuracy
+            2. Test Accuracy
     "We can measure a users personal accuracy by:"
     "Attempted Accuracy = correct answers / attempted questions"
     "We can also measure test accuracy (total accuracy)"
@@ -38,7 +38,7 @@ else:
     "4. Relative Speed = time remaining / test duration"
     "5. Time Consumed = time taken / test duration"
     
-    st.dataframe(df[["user_id", "test_id", "time_consumed", "speed_raw", "adj_speed", "speed_norm" ]].head())
+    st.dataframe(df[["user_id", "test_id", "time_consumed", "speed_raw", "adj_speed", "speed_norm", "speed_rel_time" ]].head())
 
     st.subheader("Accuracy to Speed Ratio")
 

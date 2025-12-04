@@ -28,22 +28,22 @@ user_filter = st.sidebar.multiselect(
 )
 
 test_filter = st.sidebar.multiselect(
-    "Filter by Test ID",
-    options=sorted(df["test_id"].unique()),
+    "Filter by Test ",
+    options=sorted(df["name"].unique()),
 )
 
 if user_filter:
     df = df[df["user_id"].isin(user_filter)]
 
 if test_filter:
-    df = df[df["test_id"].isin(test_filter)]
+    df = df[df["name"].isin(test_filter)]
 
 # ------------------------------------------------
 # PER-USER AGGREGATED
 # ------------------------------------------------
 st.subheader("Per-User Basic Metrics")
 
-user_metrics = df.groupby(["user_id", "name"]).agg(
+user_metrics = df.groupby(["user_id", "l_name"]).agg(
     mean_speed=("speed_raw", "mean"),
     adj_speed=("adj_speed", "mean"),
     speed_marks=("speed_marks", "mean"),
@@ -64,7 +64,7 @@ st.download_button("Download User Metrics CSV", csv_user, "user_basic_metrics.cs
 # ------------------------------------------------
 st.subheader("Per-Test Basic Metrics")
 
-test_metrics = df.groupby("test_id").agg(
+test_metrics = df.groupby(["test_id", "name"]).agg(
     mean_speed=("speed_raw", "mean"),
     adj_speed=("adj_speed", "mean"),
     speed_marks=("speed_marks", "mean"),

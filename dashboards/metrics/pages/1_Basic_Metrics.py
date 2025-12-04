@@ -12,14 +12,14 @@ if df is None:
 else:
     df = compute_basic_metrics2(df)
     st.subheader("Accuracy")
-   # "We can measure a users personal accuracy by:"
-  #  "Attempted Accuracy = correct answers / attempted questions"
-  #  "We can also measure test accuracy (total accuracy)"
-  #  "Total Accuracy = correct answers / total questions"
+    "We can measure a users personal accuracy by:"
+    "Attempted Accuracy = correct answers / attempted questions"
+    "We can also measure test accuracy (total accuracy)"
+    "Total Accuracy = correct answers / total questions"
     st.dataframe(df["user_id", "test_id", "accuracy_attempt", "accuracy_total"]".head())
 
     st.subheader("Speed")
-    st.dataframe(df["user_id", "test_id", "speed_raw", "adj_speed", "norm_speed", ].head())
+    st.dataframe(df["user_id", "test_id", "speed_raw", "adj_speed", "speed_norm", ].head())
 
     st.subheader("KPIs")
     col1, col2, col3 = st.columns(3)

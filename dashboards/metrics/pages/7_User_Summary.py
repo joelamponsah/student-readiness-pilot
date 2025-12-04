@@ -12,7 +12,7 @@ from utils.metrics import (
 # ---------------------------
 # Page Title
 # ---------------------------
-st.title("🧑‍🎓 User Performance Profile")
+st.title("User Performance Profile")
 
 # ---------------------------
 # Load Data
@@ -58,7 +58,7 @@ else:
 # ---------------------------
 # SAB Behavioral Metrics
 # ---------------------------
-st.subheader("🧭 SAB Behavioral Metrics")
+st.subheader("Speed Accuracy Behavior Metrics")
 
 if not user_sab.empty:
     st.write(user_sab)
@@ -112,7 +112,7 @@ else:
 # ---------------------------
 # Test Difficulty Breakdown
 # ---------------------------
-st.subheader("📊 Test Difficulty & Stability")
+st.subheader("Test Difficulty & Stability")
 
 if not user_diff.empty:
 

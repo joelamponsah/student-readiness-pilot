@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 
 from utils.metrics import (
-    load_data_from_session_or_disk,
+    load_data_from_disk_or_session,
     compute_basic_metrics2,
     compute_difficulty_df,
     compute_test_analytics
@@ -11,7 +11,7 @@ from utils.metrics import (
 
 st.title("Tests Overview")
 
-df = load_data_from_session_or_disk()
+df = lload_data_from_disk_or_session()
 if df is None or df.empty:
     st.warning("No data loaded.")
     st.stop()

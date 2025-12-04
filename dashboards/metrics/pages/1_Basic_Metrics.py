@@ -91,7 +91,7 @@ else:
         
     st.subheader("Standard Deviations / Variablilty")
     "We find out how different users/tests are by calculating the standard deviations"
-    " This guves us the variability in the results and can be related to consistency."
+    " This gives us the variability in the results and can be related to consistency."
     col1, col2, col3, col4, col5 = st.columns(5)
     col1.metric("Std accuracy", f"{df['accuracy_total'].std():.3f}")
     col2.metric("Std accurate speed (correct/min)", f"{df['adj_speed'].std():.3f}")

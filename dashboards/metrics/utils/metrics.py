@@ -181,7 +181,7 @@ def compute_difficulty_df(df):
 
     # Label the test stability
     test_pass['test_stability'] = pd.cut(
-        df['DCI'],
+        test_pass['DCI'],
         bins=[0, 0.33, 0.66, 1.0],
         labels=['unstable', 'moderately stable', 'highly stable'],
         include_lowest=True

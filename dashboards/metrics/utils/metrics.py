@@ -187,9 +187,9 @@ def compute_difficulty_df(df):
         include_lowest=True
     )
 
-    df = df.merge(test_pass, on='test_id', how='left')
+    test_pass = test_pass.merge(df[['passed', 'difficultyScore','difficulty_label']], on='test_id', how='left')
 
-    df.fillna({'pass_rate': 0, 'test_consistency': 0, 'difficulty_score': 0}, inplace=True)
+    test_pass.fillna({'pass_rate': 0, 'test_consistency': 0, 'difficulty_score': 0}, inplace=True)
 
     # Normalize test consistency (variability)
     #scaler = MinMaxScaler()
@@ -199,7 +199,7 @@ def compute_difficulty_df(df):
     # Compute Difficulty–Consistency Index
     #df['DCI'] = df['difficulty_score'] * df['consistency_norm']
     
-    return df
+    return test_pass
 
 # --- SAB behavioral computations (per-user) ---
 def compute_sab_behavioral(df):

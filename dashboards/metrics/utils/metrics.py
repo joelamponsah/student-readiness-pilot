@@ -197,7 +197,6 @@ def compute_difficulty_df(df):
 
     # Compute Difficulty–Consistency Index
     #df['DCI'] = df['difficulty_score'] * df['consistency_norm']
-
     
     return df
 

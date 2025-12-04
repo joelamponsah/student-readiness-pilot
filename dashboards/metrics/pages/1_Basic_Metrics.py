@@ -13,12 +13,12 @@ else:
     df = compute_basic_metrics2(df)
     
     st.subheader("Accuracy")
-    " From a user's test scores (marks) and number of questions, we can measure a users;"
+    " From a user's test scores (marks) and number of questions, we can measure a user's;"
     "1. Personal Accuracy"
     "2. Test Accuracy"
     "We can measure a users personal accuracy by:"
     "Attempted Accuracy = correct answers / attempted questions"
-    "We can also measure test accuracy (total accuracy)"
+    "We can also measure test accuracy (total accuracy):"
     "Total Accuracy = correct answers / total questions"
 
     st.dataframe(df[["user_id", "test_id", "accuracy_attempt", "accuracy_total"]].head())
@@ -32,29 +32,29 @@ else:
     "“Time” ≈ time taken"
     "Thus, we can define several relevant speed metrics."
 
-    "1. Raw Speed = attempted_questions / time taken"
-    "2. Accurate Speed (adjusted speed) = correct_answers / time taken"
+    "1. Raw Speed = attempted questions / time taken"
+    "2. Accurate Speed (adjusted speed) = correct answers / time taken"
     "3. speed_marks = marks / time taken"
     "4. Relative Speed = time remaining / test duration"
     "5. Time Consumed = time taken / test duration"
     
     st.dataframe(df[["user_id", "test_id", "time_consumed", "speed_raw", "adj_speed", "speed_norm", "speed_rel_time" ]].head())
 
-    st.subheader("Distributions")
+    st.subheader("Distributions of Accuracy and Time consumption")
     import plotly.express as px
     c1, c2 = st.columns(2)
     with c1:
         fig = px.histogram(df, x='accuracy_total', nbins=30, title='Accuracy distribution')
         st.plotly_chart(fig, use_container_width=True)
     with c2:
-        fig2 = px.histogram(df, x='adj_speed', nbins=30, title='Adjusted speed (correct/min)')
+        fig2 = px.histogram(df, x='time_consumed', nbins=30, title='Time Consumption (in minutes)')
         st.plotly_chart(fig2, use_container_width=True)
 
     st.subheader("Accuracy to Speed Ratio")
 
-    "From deriving and calculating a user's accuracy ans speed we can that define the a relationship between both in a ratio"
-    " our Accurate speed definition is already a form of accuracy-speed ratio since we are taking correct answers over the time taken"
-    " Accurate Speed = correct answers / time taken"
+    "From deriving and calculating a user's accuracy and speed we can define a relationship between both in a ratio"
+    "Our Accurate speed definition is already a form of accuracy-speed ratio since we are taking correct answers over the time taken"
+    "Accurate Speed = correct answers / time taken"
 
     "We can also look at the effeciency ratio which measure accuracy over time consumed"
     "Effeciency Ratio = test accuracy / time consumed"
@@ -73,10 +73,20 @@ else:
     col5.metric("Mean efficiency", f"{df['efficiency_ratio'].mean():.3f}")
 
     st.subheader("Relative Average")
-    "Now that we now the averages we can calculate ther relative avergae of a user"
-    "This shows us how a user is performing individuallu amongst the group/population"
+    "Now that we know the averages we can calculate the relative avergae of a user"
+    "This shows us how a user is performing individually amongst the group/population"
     "Rel Avg = test accuracy - test average"
-    
+
+    st.subheader("Distributions of Relative Accuracy & Relative Speed")
+    import plotly.express as px
+    c1, c2 = st.columns(2)
+    with c1:
+        fig = px.histogram(df, x='rel_acc', nbins=30, title='Relative Accuracy')
+        st.plotly_chart(fig, use_container_width=True)
+    with c2:
+        fig2 = px.histogram(df, x='speed_rel_time', nbins=30, title='Relative Speed (in minutes)')
+        st.plotly_chart(fig2, use_container_width=True)
+        
     st.subheader("Standard Deviations / Variablilty")
     "We find out how different users/tests are by calculating the standard deviations"
     " This guves us the variability in the results and can be related to consistency."

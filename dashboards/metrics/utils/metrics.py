@@ -166,6 +166,7 @@ def compute_sab_behavioral(df):
     df = df.copy()
     df = df[df['time_taken'] > 0]
     df['speed'] = df['correct_answers'] / df['time_taken']
+    df['accuracy_total'] = (df['marks'] / df['no_of_questions']).fillna(0)
     sab = df.groupby('user_id').agg(
         mean_speed=('speed','mean'),
         std_speed=('speed','std'),

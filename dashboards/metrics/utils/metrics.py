@@ -163,7 +163,8 @@ def compute_difficulty_df(df):
     bins=[0, 0.59, 0.89, 1.0],
     labels=['easy', 'moderate', 'hard'],
     include_lowest=True
-        
+    )
+    
     test_pass = df.groupby('test_id').agg(
         pass_rate=('passed','mean'),
         mean_accuracy=('accuracy_total','mean'),

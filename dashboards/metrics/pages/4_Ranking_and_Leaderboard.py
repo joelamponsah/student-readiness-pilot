@@ -36,7 +36,7 @@ W_SPEED = 0.3
 
 df["leaderboard_score"] = (
     (df["accuracy_total"] * W_ACCURACY) +
-    (df["adj_speed"] / df["adj.speed"].max() * W_SPEED)
+    (df["adj_speed"] / df["adj_speed"].max() * W_SPEED)
 )
 
 # ===============================================

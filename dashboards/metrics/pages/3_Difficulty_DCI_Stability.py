@@ -1,9 +1,9 @@
 import streamlit as st
-from utils.metrics import load_data_with_upload, compute_difficulty_df
+from utils.metrics import load_data_from_disk_or_session, compute_difficulty_df
 
 st.title("Difficulty, Pass-Rate, Stability & DCI")
 
-df = load_data_with_upload()
+df = load_data_from_disk_or_session()
 
 if df is None or df.empty:
     st.warning("Upload data to continue.")

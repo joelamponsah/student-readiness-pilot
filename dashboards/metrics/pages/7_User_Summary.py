@@ -32,7 +32,9 @@ test_df = compute_test_analytics(df)
 user_id = st.selectbox("Select User ID", sorted(df["user_id"].unique()))
 user_basic = df[df["user_id"] == user_id]
 user_sab = sab_df[sab_df["user_id"] == user_id]
-user_tests = test_df[test_df["user_id"] == user_id]
+#user_tests = test_df[test_df["user_id"] == user_id]
+user_tests = df[df["user_id"] == user_id].copy()
+user_tests = user_tests.merge(test_df, on="test_id", how="left")
 
 st.subheader(f"📌 Profile Summary for User {user_id}")
 

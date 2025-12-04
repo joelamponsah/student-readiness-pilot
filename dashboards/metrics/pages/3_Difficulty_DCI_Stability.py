@@ -25,7 +25,7 @@ st.subheader('Test Difficulty')
 "Therefore, every test is rated based on its diffiuclty."
 difficulty_df = compute_difficulty_df(df)
 
-difficulty_df.groupby('difficulty_label')['difficulty'].agg(['min', 'max', 'mean', 'count'])
+st.dataframe(difficulty_df.groupby('difficulty_label')['difficulty'].agg(['min', 'max', 'mean', 'count']))
 
 st.subheader("Test Consistency")
 "We looked at the consistency of a test by checking how far test takers were from the average marks." 

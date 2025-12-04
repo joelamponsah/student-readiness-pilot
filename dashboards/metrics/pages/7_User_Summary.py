@@ -40,7 +40,7 @@ user_tests = df[df["user_id"] == user_id].copy()
 user_tests = user_tests.merge(test_df, on="test_id", how="left")
 
 user_diff = df[df["user_id"] == user_id].copy()
-user_diff = userdiff.merge(diff_df, on="test_id", how="left")
+user_diff = user_diff.merge(diff_df, on="test_id", how="left")
 
 st.subheader(f"📌 Profile Summary for User {user_id}")
 

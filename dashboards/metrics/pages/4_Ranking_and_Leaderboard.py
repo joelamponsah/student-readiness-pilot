@@ -4,6 +4,7 @@ from utils.metrics import load_data_from_disk_or_session, compute_basic_metrics2
 
 st.title(" Ranking & Leaderboard")
 
+st.write("Ranking users by test based on weighted test accuracy (0.7) and accurate speed (0.3)")
 # try to get df from session or disk
 df = load_data_from_disk_or_session()
 if df is None:

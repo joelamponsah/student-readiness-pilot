@@ -105,6 +105,7 @@ def compute_test_analytics(df):
     df = df.copy()
     df = df[df['time_taken'] > 0]
     df['speed_marks'] = df['marks'] / df['time_taken']
+    df['accuracy_total'] = (df['marks'] / df['no_of_questions']).fillna(0)
     agg = df.groupby('test_id').agg(
         mean_time=('time_taken','mean'),
         std_time=('time_taken','std'),

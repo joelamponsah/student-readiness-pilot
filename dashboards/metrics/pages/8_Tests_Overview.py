@@ -11,7 +11,7 @@ from utils.metrics import (
 
 st.title("Tests Overview")
 
-df = lload_data_from_disk_or_session()
+df = load_data_from_disk_or_session()
 if df is None or df.empty:
     st.warning("No data loaded.")
     st.stop()

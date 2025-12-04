@@ -150,18 +150,56 @@ def compute_difficulty_df(df):
         df['passed'] = (df['marks'] >= df['pass_mark']).astype(int)
     else:
         df['passed'] = (df['marks'] >= df['no_of_questions']).astype(int)
+        
+     # --- Handle inactive (no attempts) users ---
+    df['inactive'] = (df['attempted_questions'] == 0).astype(int)
+    df.loc[df['inactive'] == 1, ['marks', 'accuracy_total', 'accuracy_attempt', 'accuracy_norm']] = 0
+    df['passed'] = np.where(df['marks'] >= df['pass_mark'], 1, 0)
+    
+    # --- Fix difficulty scoring ---
+    df['difficulty_score'] = df['pass_mark'] / df['no_of_questions']
+    df['difficulty_label'] = pd.cut(
+    df['difficulty_score'],
+    bins=[0, 0.59, 0.89, 1.0],
+    labels=['easy', 'moderate', 'hard'],
+    include_lowest=True
+        
     test_pass = df.groupby('test_id').agg(
         pass_rate=('passed','mean'),
         mean_accuracy=('accuracy_total','mean'),
-        std_accuracy=('accuracy_total','std'),
+        test_consistency=('accuracy_total','std'),
         takers=('user_id','nunique')
     ).reset_index()
+    
     # DCI: closeness between mean_accuracy and (1 - difficulty), difficulty ~ 1-pass_rate
     test_pass['difficulty'] = 1 - test_pass['pass_rate']
     test_pass['DCI'] = 1 - (abs(test_pass['mean_accuracy'] - (1 - test_pass['difficulty'])) )
+    
     # test stability
-    test_pass['stability'] = 1 / (1 + test_pass['std_accuracy'].fillna(0))
-    return test_pass
+    test_pass['stability'] = 1 / (1 + test_pass['test_consistency'].fillna(0))
+
+    # Label the test stability
+    test_pass['test_stability'] = pd.cut(
+        df['DCI'],
+        bins=[0, 0.33, 0.66, 1.0],
+        labels=['unstable', 'moderately stable', 'highly stable'],
+        include_lowest=True
+    )
+
+    df = df.merge(test_pass, on='test_id', how='left')
+
+    df.fillna({'pass_rate': 0, 'test_consistency': 0, 'difficulty_score': 0}, inplace=True)
+
+    # Normalize test consistency (variability)
+    #scaler = MinMaxScaler()
+    #df['consistency_norm'] = 1 - scaler.fit_transform(df[['test_consistency']])
+    # Invert because high std = low consistency
+
+    # Compute Difficulty–Consistency Index
+    #df['DCI'] = df['difficulty_score'] * df['consistency_norm']
+
+    
+    return df
 
 # --- SAB behavioral computations (per-user) ---
 def compute_sab_behavioral(df):

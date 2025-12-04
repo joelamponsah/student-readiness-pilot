@@ -49,7 +49,7 @@ else:
     "We can also look at the effeciency ratio which measure accuracy over time consumed"
     "Effeciency Ratio = test accuracy / time consumed"
 
-    df['accurate_speed] = df[adj_speed]
+    df['accurate_speed'] = df['adj_speed']
     st.dataframe(df[["user_id", "test_id", "accurate_speed", "efficiency_ratio"]].head())
 
     st.subheader("KPIs")

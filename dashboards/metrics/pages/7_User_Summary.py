@@ -5,7 +5,8 @@ from utils.metrics import (
     load_data_from_disk_or_session,
     compute_basic_metrics2,
     compute_sab_behavioral,
-    compute_test_analytics
+    compute_test_analytics,
+    compute_difficulty_df
 )
 
 # ---------------------------
@@ -25,6 +26,7 @@ if df is None or df.empty:
 df = compute_basic_metrics2(df)
 sab_df = compute_sab_behavioral(df)
 test_df = compute_test_analytics(df)
+diff_df = compute_difficulty_df(df)
 
 # ---------------------------
 # Select User
@@ -33,8 +35,12 @@ user_id = st.selectbox("Select User ID", sorted(df["user_id"].unique()))
 user_basic = df[df["user_id"] == user_id]
 user_sab = sab_df[sab_df["user_id"] == user_id]
 #user_tests = test_df[test_df["user_id"] == user_id]
+
 user_tests = df[df["user_id"] == user_id].copy()
 user_tests = user_tests.merge(test_df, on="test_id", how="left")
+
+user_diff = df[df["user_id"] == user_id].copy()
+user_diff = userdiff.merge(diff_df, on="test_id", how="left")
 
 st.subheader(f"📌 Profile Summary for User {user_id}")
 

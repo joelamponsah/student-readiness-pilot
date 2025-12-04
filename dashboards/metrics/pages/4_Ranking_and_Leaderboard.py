@@ -1,20 +1,15 @@
-# ===============================================
-# 1. IMPORTS
-# ===============================================
+import streamlit as st
 import pandas as pd
-import numpy as np
-from utils.metrics import compute_basic_metrics2
-# ===============================================
-# 2. SAMPLE DATA (Replace with your actual df)
-# ===============================================
-#df = pd.DataFrame({
- #   "student_id": [1,2,3,4],
-  # "attempted_questions": [40, 50, 30, 60],
-   # "correct_answers": [32, 40, 20, 50],
-    #"time_taken": [20, 25, 15, 30]  # minutes
-#})
+from utils.metrics import load_data_from_disk_or_session, compute_basic_metrics2
 
-df = compute_basic_metrics2(df)
+st.title(" Ranking & Leaderboard")
+
+# try to get df from session or disk
+df = load_data_from_disk_or_session()
+if df is None:
+    st.warning("No dataset loaded. Upload in sidebar or add data/verify_df_fixed.csv.")
+else:
+    df = compute_basic_metrics2(df)
 
 # ===============================================
 # 3. FEATURE ENGINEERING

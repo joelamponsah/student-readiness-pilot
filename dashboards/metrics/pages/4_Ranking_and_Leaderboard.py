@@ -2,49 +2,63 @@ import streamlit as st
 import pandas as pd
 from utils.metrics import load_data_from_disk_or_session, compute_basic_metrics2
 
-st.title(" Ranking & Leaderboard")
+st.title("🏆 Ranking & Leaderboard")
 
-st.write("Ranking users by test based on weighted test accuracy (0.7) and accurate speed (0.3)")
-# try to get df from session or disk
+st.write("Adjust the weights below to define how accuracy and speed contribute to ranking.")
+
+# ---------------------------------------------
+# Load data
+# ---------------------------------------------
 df = load_data_from_disk_or_session()
 if df is None:
     st.warning("No dataset loaded. Upload in sidebar or add data/verify_df_fixed.csv.")
-else:
-    df = compute_basic_metrics2(df)
+    st.stop()
 
-# ===============================================
-# 3. FEATURE ENGINEERING
-# ===============================================
-
-# Raw speed (questions per minute)
-#df["speed_raw"] = df["attempted_questions"] / df["time_taken"]
-
-# Accuracy
-#df["accuracy"] = df["correct_answers"] / df["no_of_questions"]
-
-# Adjusted speed = correct answers per minute
-#df["speed_acc_raw"] = df["correct_answers"] / df["time_taken"]
+df = compute_basic_metrics2(df)
 
 # Optional percent score
 df["percent_score"] = df["accuracy_total"] * 100
-
 df.rename(columns={'name': 'Test'}, inplace=True)
 
-# ===============================================
-# 4. LEADERBOARD SCORE
-# ===============================================
-# Weighted score (you can tune weights)
-W_ACCURACY = 0.7
-W_SPEED = 0.3
+# ---------------------------------------------
+# WEIGHT SLIDERS
+# ---------------------------------------------
+st.subheader("⚖️ Adjust Leaderboard Weights")
 
+w_accuracy = st.slider("Accuracy Weight", min_value=0.0, max_value=1.0, value=0.7, step=0.05)
+w_speed = st.slider("Speed Weight", min_value=0.0, max_value=1.0, value=0.3, step=0.05)
+
+# Auto-normalize
+total = w_accuracy + w_speed
+if total == 0:
+    w_accuracy, w_speed = 0.7, 0.3
+else:
+    w_accuracy /= total
+    w_speed /= total
+
+st.info(f"Normalized Weights → Accuracy: **{w_accuracy:.2f}**, Speed: **{w_speed:.2f}**")
+
+# ---------------------------------------------
+# Ensure safe speed scaling
+# ---------------------------------------------
+max_speed = df["adj_speed"].max()
+df["speed_norm"] = df["adj_speed"] / max_speed if max_speed > 0 else 0
+
+# ---------------------------------------------
+# LEADERBOARD SCORE
+# ---------------------------------------------
 df["leaderboard_score"] = (
-    (df["accuracy_total"] * W_ACCURACY) +
-    (df["adj_speed"] / df["adj_speed"].max() * W_SPEED)
+    (df["accuracy_total"] * w_accuracy) +
+    (df["speed_norm"] * w_speed)
 )
 
-# ===============================================
-# 5. SORT LEADERBOARD
-# ===============================================
+# ---------------------------------------------
+# SORT AND DISPLAY
+# ---------------------------------------------
 leaderboard_df = df.sort_values("leaderboard_score", ascending=False).reset_index(drop=True)
 
-leaderboard_df
+st.subheader("🏅 Leaderboard Results")
+st.dataframe(leaderboard_df[[
+    "user_id", "Test", "accuracy_total", "adj_speed", 
+    "speed_norm", "leaderboard_score"
+]])

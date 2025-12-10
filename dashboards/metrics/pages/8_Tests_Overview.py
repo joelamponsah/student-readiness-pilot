@@ -51,6 +51,7 @@ test_users = df[df["test_id"] == test_id][[
     "marks",
     "time_taken",
     "time_consumed",
+    "passed"
 ]]
 
 st.subheader("Users Who Took This Test")

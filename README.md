@@ -50,5 +50,5 @@ This project explores whether we can **predict a student's exam readiness** base
 ## 🔹 Next Steps
 - [x] Extract datasets (Core user profile + Exam results).  
 - [x] Run EDA and generate initial business insights.  
-- [-] Define predictive features. (ongoing  
-- [ ] Pilot predictive models with 400 students.  
+- [x] Define predictive features. (ongoing)  
+- [ ] Pilot predictive models with 4000 students.  

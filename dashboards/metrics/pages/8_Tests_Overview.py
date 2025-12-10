@@ -38,6 +38,7 @@ difficulty_summary = difficulty_df[difficulty_df["test_id"] == test_id]
 st.subheader("📊 Test Summary")
 st.write(test_summary.merge(difficulty_summary, on="test_id", how="left"))
 
+#df['passed'] = (df['marks'] >= df['pass_mark']).astype(int)
 # ---------------------------
 # User-Level Performance for this Test
 # ---------------------------
@@ -50,10 +51,11 @@ test_users = df[df["test_id"] == test_id][[
     "speed_marks",
     "marks",
     "time_taken",
-    "time_consumed"    
+    "time_consumed".
+    "passed"
 ]]
 
-test_users = test_users.merge(difficulty_df['passed'], on="test_id", how="left)
+#test_users = test_users.merge(difficulty_df['passed'], on="test_id", how="left)
                               
 st.subheader("Users Who Took This Test")
 st.dataframe(test_users, use_container_width=True)

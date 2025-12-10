@@ -50,10 +50,11 @@ test_users = df[df["test_id"] == test_id][[
     "speed_marks",
     "marks",
     "time_taken",
-    "time_consumed",
-    "passed"
+    "time_consumed"    
 ]]
 
+test_users = test_users.merge(difficulty_df['passed'], on="test_id", how="left)
+                              
 st.subheader("Users Who Took This Test")
 st.dataframe(test_users, use_container_width=True)
 

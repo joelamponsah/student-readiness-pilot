@@ -3,7 +3,7 @@ import streamlit as st
 import pandas as pd
 from utils.metrics import load_data_from_disk_or_session, save_uploaded_df
 
-st.set_page_config(page_title="Student Readiness Dashboard", layout="wide")
+st.set_page_config(page_title="Learner Readiness Dashboard", layout="wide")
 st.sidebar.title("Student Readiness")
 
 st.sidebar.markdown("## Data")
@@ -21,7 +21,7 @@ else:
     if df is not None:
         st.session_state['df'] = df
 
-st.title("Student Readiness Dashboard")
+st.title("Learner Readiness Dashboard")
 st.write("To improve interpretability and ensure relevance to the actual student landscape, we refined the key behavioral performance indicators — accuracy, speed, and the derived accuracy–speed ratio (ASR). We will explore more nuanced definitions of accuracy, speed and more advanced metrics like DCI, SAB Index, test their relationships empirically, and evaluate how they influence exam readiness predictions and feature importance outcomes.")
 st.write("Navigate through pages with the menu on the top-left. Use the sidebar to upload data (optional).")
 

@@ -7,7 +7,7 @@ This project explores whether we can **predict a student's exam readiness** base
 
 - **Goal:** Provide readiness insights for students, parents, teachers, schools, and corporate clients.  
 - **Dataset:** User activity logs (60K+ students, 10 years).  
-- **Pilot:** 500 students taking in-app tests (2025).  
+- **Pilot:** 4000 students taking in-app tests (2025).  
 
 ---
 

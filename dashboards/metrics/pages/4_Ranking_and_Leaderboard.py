@@ -100,5 +100,5 @@ st.dataframe(leaderboard_df[leaderboard_df["Test"] == Test][[
 # Charts
 # ---------------------------
 
-fig = px.histogram(leaderboard_df[leaderboard_df["Test"] == Test], x="leaderboard_score", nbins=20, title="Leaderboard")
+fig = px.histogram(leaderboard_df[leaderboard_df["Test"] == Test], x="leaderboard_score", title="Leaderboard")
 st.plotly_chart(fig, use_container_width=True)

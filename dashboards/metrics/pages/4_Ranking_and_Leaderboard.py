@@ -73,13 +73,6 @@ st.dataframe(leaderboard_df[[
 
 # Test Leaderboards
 
-
-# ---------------------------
-# Extract Test-Level Metrics
-# ---------------------------
-#test_summary = test_stats[test_stats["test_id"] == test_id]
-#difficulty_summary = difficulty_df[difficulty_df["test_id"] == test_id]
-
 st.subheader("Leaderboard By Test")
 Test = st.selectbox("Select Test", sorted(leaderboard_df["Test"].unique()))
 
@@ -87,9 +80,8 @@ if Test is None:
     st.info("Select a test to view the leaderboard.")
     st.stop()
 
-st.write(leaderboard_df.Test)
+#st.write(leaderboard_df.Test)
 
-#df['passed'] = (df['marks'] >= df['pass_mark']).astype(int)
 # ---------------------------
 # User-Level Performance for this Test
 # ---------------------------

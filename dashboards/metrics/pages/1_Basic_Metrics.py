@@ -3,7 +3,7 @@ import streamlit as st
 import pandas as pd
 from utils.metrics import load_data_from_disk_or_session, compute_basic_metrics2
 
-st.title("1 — Basic Metrics")
+st.title("Basic Metrics")
 
 # try to get df from session or disk
 df = load_data_from_disk_or_session()
@@ -17,14 +17,14 @@ else:
     "1. Personal Accuracy"
     "2. Test Accuracy"
     "We can measure a users personal accuracy by:"
-    "Attempted Accuracy = correct answers / attempted questions"
+    st.info("Attempted Accuracy = correct answers / attempted questions")
     "We can also measure test accuracy (total accuracy):"
-    "Total Accuracy = correct answers / total questions"
+    st.info("Total Accuracy = correct answers / total questions")
 
     st.dataframe(df[["user_id", "test_id", "accuracy_attempt", "accuracy_total"]].head())
 
     st.subheader("Speed")
-    "In physics: 	Speed = Distance / Time​"
+    st.info("In physics: 	Speed = Distance / Time​")
     
     "In our context:"
     
@@ -32,11 +32,11 @@ else:
     "“Time” ≈ time taken"
     "Thus, we can define several relevant speed metrics."
 
-    "1. Raw Speed = attempted questions / time taken"
-    "2. Accurate Speed (adjusted speed) = correct answers / time taken"
-    "3. speed_marks = marks / time taken"
-    "4. Relative Speed = time remaining / test duration"
-    "5. Time Consumed = time taken / test duration"
+    st.info("1. Raw Speed = attempted questions / time taken")
+    st.info("2. Accurate Speed (adjusted speed) = correct answers / time taken")
+    st.info("3. speed_marks = marks / time taken")
+    st.info("4. Relative Speed = time remaining / test duration")
+    st.info("5. Time Consumed = time taken / test duration")
     
     st.dataframe(df[["user_id", "test_id", "time_consumed", "speed_raw", "adj_speed", "speed_norm", "speed_rel_time" ]].head())
 
@@ -54,10 +54,10 @@ else:
 
     "From deriving and calculating a user's accuracy and speed we can define a relationship between both in a ratio"
     "Our Accurate speed definition is already a form of accuracy-speed ratio since we are taking correct answers over the time taken"
-    "Accurate Speed = correct answers / time taken"
+    st.info("Accurate Speed = correct answers / time taken")
 
     "We can also look at the effeciency ratio which measure accuracy over time consumed"
-    "Effeciency Ratio = test accuracy / time consumed"
+    st.info("Effeciency Ratio = test accuracy / time consumed")
 
     df['accurate_speed'] = df['adj_speed']
     st.dataframe(df[["user_id", "test_id", "accurate_speed", "efficiency_ratio"]].head())
@@ -75,7 +75,7 @@ else:
     st.subheader("Relative Average")
     "Now that we know the averages we can calculate the relative avergae of a user"
     "This shows us how a user is performing individually amongst the group/population"
-    "Rel Avg = test accuracy - test average"
+    st.info("Rel Avg = test accuracy - test average")
     df["accuracy_avg"] = df["accuracy_total"].mean()
     df["rel_acc"] = df["accuracy_total"] - df["accuracy_avg"]
 

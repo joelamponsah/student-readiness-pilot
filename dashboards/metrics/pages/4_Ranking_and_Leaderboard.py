@@ -59,7 +59,7 @@ df["leaderboard_score"] = (
 )
 
 # ---------------------------------------------
-# SORT AND DISPLAY
+# SORT AND DISPLAY - Global Leaderboard
 # ---------------------------------------------
 leaderboard_df = df.sort_values("leaderboard_score", ascending=False).reset_index(drop=True)
 
@@ -69,8 +69,42 @@ st.dataframe(leaderboard_df[[
     "speed_norm", "leaderboard_score"
 ]])
 
-st.subheader("Test Leaderboard Results")
-st.dataframe(leaderboard_df.groupby("Test")[[
-    "user_id", "Test", "accuracy_total", "speed_rel_time", 
-    "speed_norm", "leaderboard_score"
-]])
+
+# Test Leaderboards
+
+test_id = st.selectbox("Select Test ID", sorted(df["test_id"].unique()))
+
+if test_id is None:
+    st.info("Select a test to view the leaderboard.")
+    st.stop()
+
+# ---------------------------
+# Extract Test-Level Metrics
+# ---------------------------
+#test_summary = test_stats[test_stats["test_id"] == test_id]
+#difficulty_summary = difficulty_df[difficulty_df["test_id"] == test_id]
+
+st.subheader("Test Leaderboard")
+st.write(df.Test)
+
+#df['passed'] = (df['marks'] >= df['pass_mark']).astype(int)
+# ---------------------------
+# User-Level Performance for this Test
+# ---------------------------
+test_users = leaderboard_df[leaderboard_df["test_id"] == test_id][[
+    "user_id",
+    "accuracy_total",
+    "adj_speed",
+    "speed_rel_time,
+    "marks",
+    "leaderboard_score"
+   # "passed"
+]]
+
+
+# ---------------------------
+# Charts
+# ---------------------------
+
+fig = px.histogram(df, x="leaderboard_score", nbins=20, title="Leaderboard")
+st.plotly_chart(fig, use_container_width=True)

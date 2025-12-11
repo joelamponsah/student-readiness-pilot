@@ -44,7 +44,7 @@ st.subheader("Difficulty Consistency Index (DCI)")
 "So we want a single metric that reflects: How hard and consistent a test is in evaluating skill."
 "Using a combination of the average accuracy per test and the test consistency we label the each test"
 
-st.subheader("DCI = average accuracy X test Consistency")
+st.info("DCI = average accuracy X test Consistency")
 
 st.subheader('Stability')
 "Based on the DCI we can categorize tests based on stability"

@@ -87,13 +87,13 @@ if Test is None:
     st.info("Select a test to view the leaderboard.")
     st.stop()
 
-st.write(df.Test)
+st.write(leaderboard_df.Test)
 
 #df['passed'] = (df['marks'] >= df['pass_mark']).astype(int)
 # ---------------------------
 # User-Level Performance for this Test
 # ---------------------------
-st.dataframe(test_users = leaderboard_df[leaderboard_df["Test"] == Test][[
+st.dataframe(leaderboard_df[leaderboard_df["Test"] == Test][[
     "user_id",
     "accuracy_total",
     "adj_speed",
@@ -108,5 +108,5 @@ st.dataframe(test_users = leaderboard_df[leaderboard_df["Test"] == Test][[
 # Charts
 # ---------------------------
 
-fig = px.histogram(test_users, x="leaderboard_score", nbins=20, title="Leaderboard")
+fig = px.histogram(leaderboard_df, x="leaderboard_score", nbins=20, title="Leaderboard")
 st.plotly_chart(fig, use_container_width=True)

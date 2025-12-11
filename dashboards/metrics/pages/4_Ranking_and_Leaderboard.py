@@ -43,8 +43,8 @@ st.info(f"Normalized Weights → Accuracy: **{w_accuracy:.2f}**, Speed: **{w_spe
 # ---------------------------------------------
 # Ensure safe speed scaling
 # ---------------------------------------------
-max_speed = df["time_consumed"].max()
-df["speed_norm"] = df["time_consumed"] / max_speed if max_speed > 0 else 0 #avoid division by zero
+max_speed = df["speed_rel_time"].max()
+df["speed_norm"] = df["speed_rel_time"] / max_speed if max_speed > 0 else 0 #avoid division by zero
 
 # ---------------------------------------------
 # LEADERBOARD SCORE
@@ -61,12 +61,12 @@ leaderboard_df = df.sort_values("leaderboard_score", ascending=False).reset_inde
 
 st.subheader("Global Leaderboard Results")
 st.dataframe(leaderboard_df[[
-    "user_id", "Test", "accuracy_total", "time_consumed", 
+    "user_id", "Test", "accuracy_total", "speed_rel_time", 
     "speed_norm", "leaderboard_score"
 ]])
 
 st.subheader("Test Leaderboard Results")
 st.dataframe(leaderboard_df.groupby("Test")[[
-    "user_id", "Test", "accuracy_total", "time_consumed", 
+    "user_id", "Test", "accuracy_total", "speed_rel_time", 
     "speed_norm", "leaderboard_score"
 ]])

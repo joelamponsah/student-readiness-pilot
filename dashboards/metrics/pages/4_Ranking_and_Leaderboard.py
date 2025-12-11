@@ -80,7 +80,7 @@ if Test is None:
     st.info("Select a test to view the leaderboard.")
     st.stop()
 
-st.write(Test, "Results")
+st.write(Test)
 
 # ---------------------------
 # User-Level Performance for this Test

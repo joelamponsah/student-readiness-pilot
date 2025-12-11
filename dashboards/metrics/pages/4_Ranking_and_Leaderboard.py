@@ -105,3 +105,13 @@ st.dataframe(leaderboard_df[leaderboard_df["Test"] == Test][[
 
 fig = px.histogram(leaderboard_df[leaderboard_df["Test"] == Test], x="leaderboard_score", title="Leaderboard Score Distribution")
 st.plotly_chart(fig, use_container_width=True)
+
+
+#Ranking Tests
+st.subheader("Test Rankings")
+
+st.write("We can rank tests based on their difficulty level and the learner pass ratio ")
+
+
+
+

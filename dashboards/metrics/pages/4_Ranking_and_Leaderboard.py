@@ -81,7 +81,7 @@ st.dataframe(leaderboard_df[[
 #difficulty_summary = difficulty_df[difficulty_df["test_id"] == test_id]
 
 st.subheader("Leaderboard By Test")
-Test = st.selectbox("Select Test", sorted(df["Test"].unique()))
+Test = st.selectbox("Select Test", sorted(leaderboard_df["Test"].unique()))
 
 if Test is None:
     st.info("Select a test to view the leaderboard.")
@@ -93,7 +93,7 @@ st.write(df.Test)
 # ---------------------------
 # User-Level Performance for this Test
 # ---------------------------
-test_users = leaderboard_df[leaderboard_df["Test"] == Test][[
+st.dataframe(test_users = leaderboard_df[leaderboard_df["Test"] == Test][[
     "user_id",
     "accuracy_total",
     "adj_speed",
@@ -101,12 +101,12 @@ test_users = leaderboard_df[leaderboard_df["Test"] == Test][[
     "marks",
     "leaderboard_score"
    # "passed"
-]]
+]])
 
 
 # ---------------------------
 # Charts
 # ---------------------------
 
-fig = px.histogram(df, x="leaderboard_score", nbins=20, title="Leaderboard")
+fig = px.histogram(test_users, x="leaderboard_score", nbins=20, title="Leaderboard")
 st.plotly_chart(fig, use_container_width=True)

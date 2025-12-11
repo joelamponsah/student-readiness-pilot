@@ -4,9 +4,13 @@ from utils.metrics import load_data_from_disk_or_session, compute_basic_metrics2
 
 st.title("Ranking & Leaderboards ")
 st.subheader("Weighted Accuracy - Speed Ratio (WASR)")
-st.write("Using an adjusted weighting system to rank users on the platform gives a flixible option in deciding who is leading in a test, or global test outcomes ")
+st.write("Using an adjusted weighting system to rank users on the platform gives a flixible option in deciding who is leading in a test, or global test outcomes. ")
+st.write("We us the weighted test accuracy and the weighted relative speed")
+st.write("We then calculate the leaderboard score as follows")
+st.info("leaderboard score = (test accuracy * w_acc) + (normalize relative speed * w_spd)")
+st.info("accuracy weight (w_acc) + speed weight (w_spd) = 1")
 st.write("Adjust the weights below to define how accuracy and speed contribute to ranking.")
-st.info("accuracy weight + speed weight = 1")
+
 
 # ---------------------------------------------
 # Load data

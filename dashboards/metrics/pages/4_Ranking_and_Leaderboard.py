@@ -61,12 +61,12 @@ leaderboard_df = df.sort_values("leaderboard_score", ascending=False).reset_inde
 
 st.subheader("Global Leaderboard Results")
 st.dataframe(leaderboard_df[[
-    "user_id", "Test", "accuracy_total", "adj_speed", 
+    "user_id", "Test", "accuracy_total", "time_consumed", 
     "speed_norm", "leaderboard_score"
 ]])
 
 st.subheader("Test Leaderboard Results")
 st.dataframe(leaderboard_df.groupby("Test")[[
-    "user_id", "Test", "accuracy_total", "adj_speed", 
+    "user_id", "Test", "accuracy_total", "time_consumed", 
     "speed_norm", "leaderboard_score"
 ]])

@@ -70,6 +70,9 @@ st.dataframe(leaderboard_df[[
     "speed_norm", "leaderboard_score"
 ]])
 
+#chart distribution
+fig = px.histogram(leaderboard_df, x="leaderboard_score", title="Global Leaderboard Score Distribution")
+st.plotly_chart(fig, use_container_width=True)
 
 # Test Leaderboards
 
@@ -100,5 +103,5 @@ st.dataframe(leaderboard_df[leaderboard_df["Test"] == Test][[
 # Charts
 # ---------------------------
 
-fig = px.histogram(leaderboard_df[leaderboard_df["Test"] == Test], x="leaderboard_score", title="Leaderboard")
+fig = px.histogram(leaderboard_df[leaderboard_df["Test"] == Test], x="leaderboard_score", title="Leaderboard Score Distribution")
 st.plotly_chart(fig, use_container_width=True)

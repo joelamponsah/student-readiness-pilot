@@ -3,10 +3,10 @@ import pandas as pd
 from utils.metrics import load_data_from_disk_or_session, compute_basic_metrics2
 
 st.title("Ranking & Leaderboards ")
-st.subheader("Weighted Accuracy - Speed Ratio (WASR")
+st.subheader("Weighted Accuracy - Speed Ratio (WASR)")
 st.write("Using an adjusted weighting system to rank users on the platform gives a flixible option in deciding who is leading in a test, or global test outcomes ")
 st.write("Adjust the weights below to define how accuracy and speed contribute to ranking.")
-st.write("ccuracy weight + speed weight = 1")
+st.info("accuracy weight + speed weight = 1")
 
 # ---------------------------------------------
 # Load data
@@ -43,8 +43,8 @@ st.info(f"Normalized Weights → Accuracy: **{w_accuracy:.2f}**, Speed: **{w_spe
 # ---------------------------------------------
 # Ensure safe speed scaling
 # ---------------------------------------------
-max_speed = df["adj_speed"].max()
-df["speed_norm"] = df["adj_speed"] / max_speed if max_speed > 0 else 0
+max_speed = df["time_consumed"].max()
+df["speed_norm"] = df["time_consumed"] / max_speed if max_speed > 0 else 0 #avoid division by zero
 
 # ---------------------------------------------
 # LEADERBOARD SCORE

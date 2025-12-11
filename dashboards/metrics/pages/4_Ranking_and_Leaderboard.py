@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import plotly.express as px
 from utils.metrics import load_data_from_disk_or_session, compute_basic_metrics2
 
 st.title("Ranking & Leaderboards ")
@@ -72,11 +73,6 @@ st.dataframe(leaderboard_df[[
 
 # Test Leaderboards
 
-test_id = st.selectbox("Select Test ID", sorted(df["test_id"].unique()))
-
-if test_id is None:
-    st.info("Select a test to view the leaderboard.")
-    st.stop()
 
 # ---------------------------
 # Extract Test-Level Metrics
@@ -84,14 +80,20 @@ if test_id is None:
 #test_summary = test_stats[test_stats["test_id"] == test_id]
 #difficulty_summary = difficulty_df[difficulty_df["test_id"] == test_id]
 
-st.subheader("Test Leaderboard")
+st.subheader("Leaderboard By Test")
+test_id = st.selectbox("Select Test", sorted(df["Test"].unique()))
+
+if Test is None:
+    st.info("Select a test to view the leaderboard.")
+    st.stop()
+
 st.write(df.Test)
 
 #df['passed'] = (df['marks'] >= df['pass_mark']).astype(int)
 # ---------------------------
 # User-Level Performance for this Test
 # ---------------------------
-test_users = leaderboard_df[leaderboard_df["test_id"] == test_id][[
+test_users = leaderboard_df[leaderboard_df["Test"] == Test][[
     "user_id",
     "accuracy_total",
     "adj_speed",

@@ -80,7 +80,7 @@ if Test is None:
     st.info("Select a test to view the leaderboard.")
     st.stop()
 
-#st.write(leaderboard_df.Test)
+st.write(Test "Results")
 
 # ---------------------------
 # User-Level Performance for this Test
@@ -100,5 +100,5 @@ st.dataframe(leaderboard_df[leaderboard_df["Test"] == Test][[
 # Charts
 # ---------------------------
 
-fig = px.histogram(leaderboard_df, x="leaderboard_score", nbins=20, title="Leaderboard")
+fig = px.histogram(Test, x="leaderboard_score", nbins=20, title="Leaderboard")
 st.plotly_chart(fig, use_container_width=True)

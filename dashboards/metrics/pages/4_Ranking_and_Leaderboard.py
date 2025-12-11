@@ -95,7 +95,7 @@ test_users = leaderboard_df[leaderboard_df["test_id"] == test_id][[
     "user_id",
     "accuracy_total",
     "adj_speed",
-    "speed_rel_time,
+    "speed_rel_time",
     "marks",
     "leaderboard_score"
    # "passed"

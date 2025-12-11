@@ -9,9 +9,9 @@ st.write("Using an adjusted weighting system to rank users on the platform gives
 st.write("We us the weighted test accuracy and the weighted relative speed")
 st.write("We then calculate the leaderboard score as follows")
 st.info("leaderboard score = (test accuracy * w_acc) + (normalize relative speed * w_spd)")
-st.info("accuracy weight (w_acc) + speed weight (w_spd) = 1")
-st.write("Adjust the weights below to define how accuracy and speed contribute to ranking.")
 
+st.write("Adjust the weights below to define how accuracy and speed contribute to ranking.")
+st.info("NOTE: accuracy weight (w_acc) + speed weight (w_spd) = 1")
 
 # ---------------------------------------------
 # Load data

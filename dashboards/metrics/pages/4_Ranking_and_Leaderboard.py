@@ -2,9 +2,11 @@ import streamlit as st
 import pandas as pd
 from utils.metrics import load_data_from_disk_or_session, compute_basic_metrics2
 
-st.title("🏆 Ranking & Leaderboard")
-
+st.title("Ranking & Leaderboards ")
+st.subheader("Weighted Accuracy - Speed Ratio (WASR")
+st.write("Using an adjusted weighting system to rank users on the platform gives a flixible option in deciding who is leading in a test, or global test outcomes ")
 st.write("Adjust the weights below to define how accuracy and speed contribute to ranking.")
+st.write("ccuracy weight + speed weight = 1")
 
 # ---------------------------------------------
 # Load data
@@ -23,7 +25,7 @@ df.rename(columns={'name': 'Test'}, inplace=True)
 # ---------------------------------------------
 # WEIGHT SLIDERS
 # ---------------------------------------------
-st.subheader("⚖️ Adjust Leaderboard Weights")
+st.subheader("Adjust Leaderboard Weights")
 
 w_accuracy = st.slider("Accuracy Weight", min_value=0.0, max_value=1.0, value=0.7, step=0.05)
 w_speed = st.slider("Speed Weight", min_value=0.0, max_value=1.0, value=0.3, step=0.05)
@@ -57,8 +59,14 @@ df["leaderboard_score"] = (
 # ---------------------------------------------
 leaderboard_df = df.sort_values("leaderboard_score", ascending=False).reset_index(drop=True)
 
-st.subheader("🏅 Leaderboard Results")
+st.subheader("Global Leaderboard Results")
 st.dataframe(leaderboard_df[[
+    "user_id", "Test", "accuracy_total", "adj_speed", 
+    "speed_norm", "leaderboard_score"
+]])
+
+st.subheader("Test Leaderboard Results")
+st.dataframe(leaderboard_df.groupby("Test")[[
     "user_id", "Test", "accuracy_total", "adj_speed", 
     "speed_norm", "leaderboard_score"
 ]])

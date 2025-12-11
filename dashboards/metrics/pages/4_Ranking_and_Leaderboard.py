@@ -81,7 +81,7 @@ st.dataframe(leaderboard_df[[
 #difficulty_summary = difficulty_df[difficulty_df["test_id"] == test_id]
 
 st.subheader("Leaderboard By Test")
-test_id = st.selectbox("Select Test", sorted(df["Test"].unique()))
+Test = st.selectbox("Select Test", sorted(df["Test"].unique()))
 
 if Test is None:
     st.info("Select a test to view the leaderboard.")

@@ -14,7 +14,7 @@ st.title("Cumulative Results")
 # ----------------------------------------
 # LOAD & SORT DATA
 # ----------------------------------------
-df = pd.read_csv("data/processed_data.csv")
+#df = pd.read_csv("data/processed_data.csv")
 
 # Ensure datetime parsing
 df['created_at'] = pd.to_datetime(df['created_at'])

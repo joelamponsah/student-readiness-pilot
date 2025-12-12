@@ -10,6 +10,12 @@ if df is None:
     st.warning("No dataset loaded. Upload in sidebar or add data/verify_df_fixed.csv.")
 else:
     df = compute_basic_metrics2(df)
+
+st.write("We are exploring using culamtive accuracy and speed to better understand user behavior")
+st.write('Below are some of the cumulative results calculated as follows')
+st.info("cummulative Test (total) accuracy = sum of correct answers / sum of all questions")
+st.info("cummulative accurate speed = sum of correct answers / sum of time taken")
+st.info("cummulative time consumed = sum of time taken / sum of duration")
 st.title("Cumulative Results")
 # ----------------------------------------
 # LOAD & SORT DATA

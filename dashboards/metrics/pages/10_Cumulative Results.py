@@ -95,11 +95,11 @@ dashboard_df = df[[
     'user_id', 'created_at', 'attempt_idx',
     
     # basic accuracy
-    'attempted_accuracy', 'total_accuracy',
+   # 'attempted_accuracy', 'total_accuracy',
     
     # basic speed metrics
-    'raw_speed', 'accurate_speed', 'speed_marks',
-    'relative_speed', 'time_consumed',
+    #'raw_speed', 'accurate_speed', 'speed_marks',
+   # 'relative_speed', 'time_consumed',
     
     # cumulative metrics
     'c_total_accuracy','c_attempt_accuracy', 'c_time_consumed', 

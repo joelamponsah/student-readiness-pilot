@@ -13,6 +13,7 @@ def load_data_from_disk_or_session(default_path="data/verify_df_fixed.csv"):
     try:
         import streamlit as st
         if 'df' in st.session_state and st.session_state['df'] is not None:
+            df = df.drop_duplicates(subset=['user_id', 'created_at'])
             return st.session_state['df']
     except Exception:
         pass

@@ -102,6 +102,6 @@ dashboard_df = df[[
     # raw fields for reference
     'attempted_questions', 'correct_answers', 'time_taken', 'duration'
 ]]
-
+dashboard_df = dashboard_df.drop_duplicates(subset=['user_id', 'created_at'])
 st.subheader("Cumulative Results ")
 st.dataframe(dashboard_df)

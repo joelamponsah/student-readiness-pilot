@@ -66,7 +66,7 @@ df['c_total_questions'] = df.groupby('user_id')['no_of_questions'].cumsum()
 df['c_duration'] = df.groupby('user_id')['duration'].cumsum()
 
 # Cumulative Test Accuracy (main longitudinal metric)
-df['c__total_accuracy'] = df['c_correct'] / df['c_total_questions']
+df['c_total_accuracy'] = df['c_correct'] / df['c_total_questions']
 
 #cumulative personal accuracy 
 df['c_attempt_accuracy'] = df['c_correct'] / df['c_attempted']

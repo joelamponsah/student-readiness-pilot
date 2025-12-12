@@ -1,7 +1,15 @@
 import pandas as pd
 import numpy as np
 import streamlit as st
+from utils.metrics import load_data_from_disk_or_session, compute_basic_metrics2
 
+
+# try to get df from session or disk
+df = load_data_from_disk_or_session()
+if df is None:
+    st.warning("No dataset loaded. Upload in sidebar or add data/verify_df_fixed.csv.")
+else:
+    df = compute_basic_metrics2(df)
 st.title("Cumulative Results")
 # ----------------------------------------
 # LOAD & SORT DATA

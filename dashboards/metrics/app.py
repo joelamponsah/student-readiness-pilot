@@ -4,7 +4,7 @@ import pandas as pd
 from utils.metrics import load_data_from_disk_or_session, save_uploaded_df
 
 st.set_page_config(page_title="Learner Readiness Dashboard", layout="wide")
-st.sidebar.title("Student Readiness")
+st.sidebar.title("Learner Readiness")
 
 st.sidebar.markdown("## Data")
 uploaded = st.sidebar.file_uploader("Upload processed verify_df_fixed.csv (optional)", type=["csv"])

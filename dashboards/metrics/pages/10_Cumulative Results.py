@@ -105,8 +105,8 @@ dashboard_df = df[[
     'c_total_accuracy','c_attempt_accuracy', 'c_time_consumed', 
     'c_accurate_speed', 'c_raw_speed',
     
-    # raw fields for reference
-    'c_attempted_questions', 'c_correct_answers', 'c_time_taken', 'c_duration'
+    # cumulative raw fields for reference
+    'c_attempted', 'c_correct', 'c_total_questions', 'c_time', 'c_duration'
 ]]
 dashboard_df = dashboard_df.drop_duplicates(subset=['user_id', 'created_at'])
 st.subheader("Cumulative Results ")

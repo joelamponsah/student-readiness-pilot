@@ -10,8 +10,8 @@ if df is None:
     st.warning("No dataset loaded. Upload in sidebar or add data/verify_df_fixed.csv.")
 else:
     df = compute_basic_metrics2(df)
-st.title("Cumulative Results")
-st.write("We are exploring using culamtive accuracy and speed to better understand user behavior")
+st.title("Cumulative Results (Under construction")
+st.write("We are exploring using cumulative accuracy and speed to better understand user behavior")
 st.write('Below are some of the cumulative results calculated as follows')
 st.info("cummulative Test (total) accuracy = sum of correct answers / sum of all questions")
 st.info("cummulative accurate speed = sum of correct answers / sum of time taken")
@@ -111,3 +111,5 @@ dashboard_df = df[[
 dashboard_df = dashboard_df.drop_duplicates(subset=['user_id', 'created_at'])
 st.subheader("Cumulative Results ")
 st.dataframe(dashboard_df)
+
+st.write("with these metrics we can research using percentile ranking for Speed - Accuracy Behavior (SABpr) and SAB ratio  ")

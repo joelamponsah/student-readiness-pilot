@@ -47,8 +47,8 @@ df['attempted_accuracy'] = df.apply(
 df['total_accuracy'] = df['correct_answers'] / df['no_of_questions']        #test accuracy
 
 # Speed metrics
-df['raw_speed'] = df['attempted_questions'] / df['time_taken']         # questions/sec
-df['accurate_speed'] = df['correct_answers'] / df['time_taken']        # correct/sec
+df['raw_speed'] = df['attempted_questions'] / df['time_taken']         # questions/min
+df['accurate_speed'] = df['correct_answers'] / df['time_taken']        # correct/min
 df['speed_marks'] = df['marks'] / df['time_taken']                     # marks per sec
 
 # Time consumption ratios
@@ -106,7 +106,7 @@ dashboard_df = df[[
     'c_accurate_speed', 'c_raw_speed',
     
     # raw fields for reference
-    'attempted_questions', 'correct_answers', 'time_taken', 'duration'
+    'c_attempted_questions', 'c_correct_answers', 'c_time_taken', 'c_duration'
 ]]
 dashboard_df = dashboard_df.drop_duplicates(subset=['user_id', 'created_at'])
 st.subheader("Cumulative Results ")

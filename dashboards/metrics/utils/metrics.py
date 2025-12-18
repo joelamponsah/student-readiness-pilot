@@ -99,6 +99,8 @@ def compute_basic_metrics2(df):
     df['speed_norm'] = scaler.fit_transform(df[['speed_raw']].fillna(0))
     # efficiency ratio
     df['efficiency_ratio'] = df['accuracy_total'] / df['time_consumed'].replace(0, np.nan)
+
+    df.replace([np.inf, -np.inf], np.nan, inplace=True)
     return df
 
 # --- Per-test analytics ---

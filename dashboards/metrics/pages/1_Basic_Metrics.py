@@ -54,14 +54,14 @@ else:
 
     st.subheader("Distributions of Accuracy, Time consumption & Raw Speed")
     import plotly.express as px
-    c1, c2, c3 = st.columns(3)
+    c1, c2 = st.columns()
     with c1:
         fig = px.histogram(df, x='accuracy_total', nbins=30, title='Accuracy distribution')
         st.plotly_chart(fig, use_container_width=True)
     with c2:
         fig2 = px.histogram(df, x='time_consumed', nbins=30, title='Time Consumption (in minutes)')
         st.plotly_chart(fig2, use_container_width=True)
-    with c3:
+   # with c3:
         fig3 = px.histogram(df, x ='speed_raw', nbins=30, title='Speed based on Attempted Questions')
         st.plotly_chart(fig3, use_container_width=True)
 
@@ -81,7 +81,7 @@ else:
 
     c4, c5 = st.columns(2)
     with c4:
-        fig4 = px.histogram(df, x='accuracy_speed', nbins=30, title='Correct Answers by Time Taken Distribution')
+        fig4 = px.histogram(df, x='accurate_speed', nbins=30, title='Correct Answers by Time Taken Distribution')
         st.plotly_chart(fig, use_container_width=True)
     with c5:
         fig5 = px.histogram(df, x='effeciency_ratio', nbins=30, title='Learner Effeciency Scores - Accuracy by time Consumption')

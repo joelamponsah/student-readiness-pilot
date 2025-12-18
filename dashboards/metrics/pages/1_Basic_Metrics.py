@@ -38,13 +38,15 @@ else:
 
     st.subheader("Time")
     st.write("We can also treat time as a unit in itself and determine metrics with regards to time only and also a combination with accuracy.")
-    st.info("1. Relative Time (speed_rel_time) = time remaining / test duration")
+    st.info("1. Raw time = time taken")
     st.info("2. Time Consumed = time taken / test duration")
+    st.info("3. Relative Time (speed_rel_time) = time remaining / test duration")
+    
 
     st.subheader("Latency (optional)")
     st.write("We can check minutes per question or answers as opposed to questions per minute as an alternative to speed.")
     st.write("This will help calculate the latency.")
-    st.write("However, for this research we will focus on sepeed but note the latency definitions for future use cases")
+    st.write("However, for this research we will focus on speed but note the latency definitions for future use cases")
     st.info("Raw Latency = time taken / atttempted questions")
     st.info("Accuracte Latency = time taken / correct answers")
     

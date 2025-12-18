@@ -62,8 +62,8 @@ else:
         fig2 = px.histogram(df, x='time_consumed', nbins=30, title='Time Consumption (in minutes)')
         st.plotly_chart(fig2, use_container_width=True)
    # with c3:
-    fig3 = px.histogram(df, x ='speed_raw', nbins=30, title='Speed based on Attempted Questions')
-    st.plotly_chart(fig3, use_container_width=True)
+        fig3 = px.histogram(df, x ='speed_raw', nbins=30, title='Speed based on Attempted Questions')
+        st.plotly_chart(fig3, use_container_width=True)
 
     st.subheader("Accuracy to Speed Ratio")
 
@@ -78,6 +78,7 @@ else:
     st.dataframe(df[["user_id", "test_id", "accurate_speed", "efficiency_ratio"]].head())
 
     st.subheader("Distributions of Speed-Accuracy Ratios")
+    import plotly.express as px
 
     c4, c5 = st.columns(2)
     with c4:

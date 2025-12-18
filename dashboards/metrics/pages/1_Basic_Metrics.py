@@ -35,8 +35,18 @@ else:
     st.info("1. Raw Speed = attempted questions / time taken")
     st.info("2. Accurate Speed (adjusted speed) = correct answers / time taken")
     st.info("3. speed_marks = marks / time taken")
-    st.info("4. Relative Speed = time remaining / test duration")
-    st.info("5. Time Consumed = time taken / test duration")
+
+    st.subheader("Time")
+    st.write("We can also treat time as a unit in itself and determine metrics with regards to time only and also a combination with accuracy.")
+    st.info("1. Relative Time (speed_rel_time) = time remaining / test duration")
+    st.info("2. Time Consumed = time taken / test duration")
+
+    st.subheader("Latency (optional)")
+    st.write("We can check minutes per question or answers as opposed to questions per minute as an alternative to speed.")
+    st.write("This will help calculate the latency.")
+    st.write("However, for this research we will focus on sepeed but note the latency definitions for future use cases")
+    st.info("Raw Latency = time taken / atttempted questions")
+    st.info("Accuracte Latency = time taken / correct answers")
     
     st.dataframe(df[["user_id", "test_id", "time_consumed", "speed_raw", "adj_speed", "speed_norm", "speed_rel_time" ]].head())
 

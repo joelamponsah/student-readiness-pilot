@@ -13,7 +13,7 @@ else:
     df = compute_basic_metrics2(df)
     
     st.subheader("Accuracy")
-    " From a user's test scores (marks) and number of questions, we can measure a user's;"
+    " From a user's test scores (marks) and number of questions and number of attempts, we can measure a user's;"
     "1. Personal Accuracy"
     "2. Test Accuracy"
     "We can measure a users personal accuracy by:"
@@ -22,6 +22,12 @@ else:
     st.info("Total Accuracy = correct answers / total questions")
 
     st.dataframe(df[["user_id", "test_id", "accuracy_attempt", "accuracy_total"]].head())
+
+    st.subheader("Time")
+    st.write("We can also treat time as a unit in itself and determine metrics with regards to time only and also a combination with accuracy to deduce speed.")
+    st.info("1. Raw time = time taken")
+    st.info("2. Time Consumed = time taken / test duration")
+    st.info("3. Relative Time (speed_rel_time) = time remaining / test duration")
 
     st.subheader("Speed")
     st.info("In physics: 	Speed = Distance / Time​")
@@ -36,12 +42,6 @@ else:
     st.info("2. Accurate Speed (adjusted speed) = correct answers / time taken")
     st.info("3. speed_marks = marks / time taken")
 
-    st.subheader("Time")
-    st.write("We can also treat time as a unit in itself and determine metrics with regards to time only and also a combination with accuracy.")
-    st.info("1. Raw time = time taken")
-    st.info("2. Time Consumed = time taken / test duration")
-    st.info("3. Relative Time (speed_rel_time) = time remaining / test duration")
-    
 
     st.subheader("Latency (optional)")
     st.write("We can check minutes per question or answers as opposed to questions per minute as an alternative to speed.")
@@ -52,15 +52,18 @@ else:
     
     st.dataframe(df[["user_id", "test_id", "time_consumed", "speed_raw", "adj_speed", "speed_norm", "speed_rel_time" ]].head())
 
-    st.subheader("Distributions of Accuracy and Time consumption")
+    st.subheader("Distributions of Accuracy, Time consumption & Raw Speed")
     import plotly.express as px
-    c1, c2 = st.columns(2)
+    c1, c2, c3 = st.columns(3)
     with c1:
         fig = px.histogram(df, x='accuracy_total', nbins=30, title='Accuracy distribution')
         st.plotly_chart(fig, use_container_width=True)
     with c2:
         fig2 = px.histogram(df, x='time_consumed', nbins=30, title='Time Consumption (in minutes)')
         st.plotly_chart(fig2, use_container_width=True)
+    with c3:
+        fig3 = px.histogram(df, x ='speed_raw', nbins=30, title='Speed based on Attempted Questions')
+        st.plotly_chart(fig3, use_container_width=True)
 
     st.subheader("Accuracy to Speed Ratio")
 
@@ -73,6 +76,16 @@ else:
 
     df['accurate_speed'] = df['adj_speed']
     st.dataframe(df[["user_id", "test_id", "accurate_speed", "efficiency_ratio"]].head())
+
+    st.subheader("Distributions of Speed-Accuracy Ratios")
+
+    c4, c5 = st.columns(2)
+    with c4:
+        fig4 = px.histogram(df, x='accuracy_speed', nbins=30, title='Correct Answers by Time Taken Distribution')
+        st.plotly_chart(fig, use_container_width=True)
+    with c5:
+        fig5 = px.histogram(df, x='effeciency_ratio', nbins=30, title='Learner Effeciency Scores - Accuracy by time Consumption')
+        st.plotly_chart(fig2, use_container_width=True)
 
     st.subheader("Mean / Averages ")
     "We can now take the averages (mean) of our prime metrics and further derive more advanced metrics"

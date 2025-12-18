@@ -84,7 +84,7 @@ else:
         fig4 = px.histogram(df, x='accurate_speed', nbins=30, title='Correct Answers by Time Taken Distribution')
         st.plotly_chart(fig4, use_container_width=True)
     with c5:
-        fig5 = px.histogram(df, x='effeciency_ratio', nbins=30, title='Learner Effeciency Scores - Accuracy by time Consumption')
+        fig5 = px.histogram(df, x='efficiency_ratio', nbins=30, title='Efficieny - Accuracy by time Consumption')
         st.plotly_chart(fig5, use_container_width=True)
 
     st.subheader("Mean / Averages ")

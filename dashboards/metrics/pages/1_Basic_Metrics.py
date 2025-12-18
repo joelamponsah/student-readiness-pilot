@@ -54,7 +54,7 @@ else:
 
     st.subheader("Distributions of Accuracy, Time consumption & Raw Speed")
     import plotly.express as px
-    c1, c2 = st.columns()
+    c1, c2 = st.columns(2)
     with c1:
         fig = px.histogram(df, x='accuracy_total', nbins=30, title='Accuracy distribution')
         st.plotly_chart(fig, use_container_width=True)

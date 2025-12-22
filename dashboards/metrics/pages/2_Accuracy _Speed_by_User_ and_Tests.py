@@ -44,13 +44,13 @@ if test_filter:
 st.subheader("Per-User Basic Metrics")
 
 user_metrics = df.groupby(["user_id", "l_name"]).agg(
-    mean_speed=("speed_raw", "mean"),
-    adj_speed=("adj_speed", "mean"),
-    speed_marks=("speed_marks", "mean"),
-    accuracy=("accuracy_total", "mean"),
-    efficiency=("efficiency_ratio", "mean"),
-    speed_norm=("speed_norm", "mean"),
-    time_consumed=("time_consumed", "mean"),
+    avg_speed=("speed_raw", "mean"),
+    avg_accurate_speed=("adj_speed", "mean"),
+    avg_speed_marks=("speed_marks", "mean"),
+    avg_accuracy=("accuracy_total", "mean"),
+    avg_efficiency=("efficiency_ratio", "mean"),
+    avg_speed_norm=("speed_norm", "mean"),
+    avg_time_consumed=("time_consumed", "mean"),
     attempts=("test_id", "count")
 ).reset_index()
 

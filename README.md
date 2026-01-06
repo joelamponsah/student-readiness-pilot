@@ -1,9 +1,9 @@
-# student-readiness-pilot
+# Learner-readiness-pilot
 
-# 📚 eCampus Exam Readiness Prediction
+# 📚 Learner Exam Readiness Prediction
 
 ## 🔹 Project Overview
-This project explores whether we can **predict a student's exam readiness** based on how they interact with the eCampus learning app (watching, listening, reading, practicing, testing, earning points).
+This project explores whether we can **predict a student's exam readiness** based on how they interact with the learning app (watching, listening, reading, practicing, testing, earning points).
 
 - **Goal:** Provide readiness insights for students, parents, teachers, schools, and corporate clients.  
 - **Dataset:** User activity logs (60K+ students, 10 years).  

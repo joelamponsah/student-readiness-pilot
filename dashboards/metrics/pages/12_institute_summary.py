@@ -25,17 +25,17 @@ df = compute_basic_metrics2(df)
 sab_df = compute_sab_behavioral(df)
 test_df = compute_test_analytics(df)
 
-if "institute_name" not in df.columns:
+if "institute" not in df.columns:
     st.error("Missing `institute_name` column.")
     st.stop()
 
 # ---------------------------------------------------
 # Institute Selector
 # ---------------------------------------------------
-institutes = sorted(df["institute_name"].dropna().unique())
+institutes = sorted(df["institute"].dropna().unique())
 institute = st.selectbox("Select Institute", institutes)
 
-inst_df = df[df["institute_name"] == institute]
+inst_df = df[df["institute"] == institute]
 inst_users = sab_df[sab_df["user_id"].isin(inst_df["user_id"])]
 
 # ---------------------------------------------------

@@ -11,7 +11,7 @@ from utils.metrics import (
 )
 
 st.set_page_config(page_title="Institute Performance", layout="wide")
-st.title("🏫 Institute Performance Summary")
+st.title("Institute Performance Summary")
 
 # ---------------------------------------------------
 # Load & Compute
@@ -54,7 +54,7 @@ st.divider()
 # ---------------------------------------------------
 # TOP PERFORMERS
 # ---------------------------------------------------
-st.subheader("🌟 Top Performers")
+st.subheader("Top Performers")
 
 top_users = inst_users.sort_values("robust_SAB_scaled", ascending=False).head(10)
 
@@ -91,7 +91,7 @@ else:
 # ---------------------------------------------------
 # TEST STABILITY INSIGHTS
 # ---------------------------------------------------
-st.subheader("🧪 Test Stability & Difficulty")
+st.subheader("Test Stability & Difficulty")
 
 inst_tests = test_df[test_df["test_id"].isin(inst_df["test_id"])]
 

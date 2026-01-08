@@ -3,10 +3,11 @@ import pandas as pd
 import plotly.express as px
 
 from utils.metrics import (
-    load_data_with_upload,
-    compute_basic_metrics,
+    load_data_from_disk_or_session,
+    compute_basic_metrics2,
     compute_sab_behavioral,
-    compute_test_analytics
+    compute_test_analytics,
+    compute_difficulty_df
 )
 
 st.set_page_config(page_title="Institute Performance", layout="wide")
@@ -15,12 +16,12 @@ st.title("🏫 Institute Performance Summary")
 # ---------------------------------------------------
 # Load & Compute
 # ---------------------------------------------------
-df = load_data_with_upload()
+df = load_data_from_disk_or_session()
 if df is None or df.empty:
     st.warning("Upload data to continue.")
     st.stop()
 
-df = compute_basic_metrics(df)
+df = compute_basic_metrics2(df)
 sab_df = compute_sab_behavioral(df)
 test_df = compute_test_analytics(df)
 

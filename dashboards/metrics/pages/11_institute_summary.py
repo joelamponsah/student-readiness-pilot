@@ -56,7 +56,7 @@ col3.metric("🧠 Avg Readiness (Robust SAB)", f"{inst_users['robust_SAB_scaled'
 
 at_risk = inst_users[inst_users["exam_status"] == "Not Eligible"]
 non_risk = inst_users[inst_users["exam_status"] == "Conditionally Eligible"]
-ready = inst_user[inst_users["exam_status"] == "Eligible"]
+ready = inst_users[inst_users["exam_status"] == "Eligible"]
 #st.metric
 col1.metric("⚠️ At-Risk Learners", len(at_risk))
 col2.metric("Non-risk Learners", len(non_risk))

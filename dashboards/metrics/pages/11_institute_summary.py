@@ -83,7 +83,7 @@ st.subheader("Top Performers")
 
 
 st.dataframe(
-    top_users[[
+    ready[[
         "user_id", "mean_accuracy", "mean_speed",
         "test_count", "robust_SAB_scaled"
     ]],

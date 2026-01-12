@@ -58,7 +58,7 @@ else:
 
 st.subheader("🧠 Exam Readiness Insight")
 
-user_row = sab_df[sab_df["user_id"] == user_id].iloc[0]
+user_row = user_sab[user_sab["user_id"] == user_id].iloc[0]
 
 st.metric("Exam Status", user_row["exam_status"])
 

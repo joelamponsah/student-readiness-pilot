@@ -63,17 +63,6 @@ col2.metric("Non-risk Learners", len(non_risk))
 col3.metric("Ready Learners", len(ready))
 
 st.divider()
-st.subheader("Readiness Distribution")
-
-insight_dist = (
-    inst_users["insight_code"]
-    .value_counts()
-    .reset_index()
-    .rename(columns={"index": "Insight", "insight_code": "Learners"})
-)
-
-#st.bar_chart(insight_dist.set_index("Insight"))
-st.bar_chart(insight_dist)
 
 st.subheader("📊 Institute Readiness Summary")
 
@@ -88,6 +77,21 @@ st.markdown(
     **{at_risk_pct:.1f}%** require foundational intervention before exam attempts.
     """
 )
+st.divider()
+
+st.subheader("Readiness Distribution")
+
+insight_dist = (
+    inst_users["insight_code"]
+    .value_counts()
+    .reset_index()
+    .rename(columns={"index": "Insight", "insight_code": "Learners"})
+)
+
+#st.bar_chart(insight_dist.set_index("Insight"))
+st.bar_chart(insight_dist)
+
+
 
 # ---------------------------------------------------
 # TOP PERFORMERS

@@ -41,12 +41,13 @@ inst_users = sab_df[sab_df["user_id"].isin(inst_df["user_id"])]
 # ---------------------------------------------------
 # KPI METRICS
 # ---------------------------------------------------
-col1, col2, col3, col4, col5 = st.columns(5)
+col1, col2, col3, col4, col5, col6 = st.columns(6)
 
 col1.metric("👥 Learners", inst_users["user_id"].nunique())
 col2.metric("🧪 Unique Tests", inst_df["test_id"].nunique())
 col3.metric("📊 Total Attempts", len(inst_df))
 col4.metric("🎯 Avg Accuracy", f"{inst_df['accuracy_total'].mean():.2f}")
+col5.metric("Avg Speed", f"{inst_df['attempted_speed'].mean():.2f}")
 col5.metric("🧠 Avg Readiness (Robust SAB)", f"{inst_users['robust_SAB_scaled'].mean():.1f}")
 st.info("Average accuracy of 0.31 means students are performing very low ")
 st.info("Average readiness score of -0.3 means majority of students might not be ready for a final test yet")

@@ -104,7 +104,7 @@ else:
     st.dataframe(
         filtered[[
             "user_id", "test_count", "speed_consistency", 
-            "accuracy_consistecny", "robust_SAB_scaled", "exam_status"
+            "accuracy_consistency", "robust_SAB_scaled", "exam_status"
         ]],
         use_container_width=True )
 #at_risk = inst_users[

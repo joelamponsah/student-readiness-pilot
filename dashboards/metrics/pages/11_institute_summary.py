@@ -75,6 +75,20 @@ insight_dist = (
 #st.bar_chart(insight_dist.set_index("Insight"))
 st.bar_chart(insight_dist)
 
+st.subheader("📊 Institute Readiness Summary")
+
+eligible_pct = (inst_users["exam_status"] == "Eligible").mean() * 100
+near_ready_pct = (inst_users["insight_code"] == "NEAR_READY").mean() * 100
+at_risk_pct = (inst_users["exam_status"] == "Not Eligible").mean() * 100
+
+st.markdown(
+    f"""
+    **{eligible_pct:.1f}%** of learners meet exam eligibility criteria.  
+    **{near_ready_pct:.1f}%** are approaching readiness with targeted support.  
+    **{at_risk_pct:.1f}%** require foundational intervention before exam attempts.
+    """
+)
+
 # ---------------------------------------------------
 # TOP PERFORMERS
 # ---------------------------------------------------

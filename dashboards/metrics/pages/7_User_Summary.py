@@ -67,9 +67,17 @@ if user_row["exam_status"] == "Eligible":
 else:
     st.warning(user_row["insight_message"])
 
+st.info("📘 Instructor / Stakeholder Summary")
+st.write(user_row["stakeholder_insight"])
+
+st.success("🎯 Coach Feedback")
+st.write(user_row["coach_feedback"])
+
 st.info(f"👉 Recommended Action: {user_row['recommended_action']}")
 
 st.caption(f"Insight Code: {user_row['insight_code']}")
+
+
 
 # ---------------------------
 # SAB Behavioral Metrics

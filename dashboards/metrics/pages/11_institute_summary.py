@@ -63,7 +63,8 @@ insight_dist = (
     .rename(columns={"index": "Insight", "insight_code": "Learners"})
 )
 
-st.bar_chart(insight_dist.set_index("Insight"))
+#st.bar_chart(insight_dist.set_index("Insight"))
+st.bar_chart(insight_dist)
 
 # ---------------------------------------------------
 # TOP PERFORMERS
@@ -88,6 +89,7 @@ at_risk = sab_df[sab_df["exam_status"] == "Not Eligible"]
 
 st.metric("⚠️ At-Risk Learners", len(at_risk))
 
+st.write("Select based on exam_status")
 selected_status = st.multiselect(
     "Filter by Exam Status",
     sab_df["exam_status"].unique(),
@@ -96,22 +98,31 @@ selected_status = st.multiselect(
 
 filtered = sab_df[sab_df["exam_status"].isin(selected_status)]
 
-at_risk = inst_users[
-    (inst_users["robust_SAB_scaled"] < 40) &
-    (inst_users["test_count"] >= 5)
-].sort_values("robust_SAB_scaled")
-
-if at_risk.empty:
-    st.success("No at-risk learners detected 🎉")
+if filtered.empty:
+    st.success('No learners detected')
 else:
     st.dataframe(
-        at_risk[[
-            "user_id", "mean_accuracy",
-            "speed_consistency", "accuracy_consistency",
-            "test_count", "robust_SAB_scaled"
+        filtered[[
+            "user_id", "test_count", "speed_consistency", 
+            "accuracy_consistecny", "robust_SAB_scaled", "exam_status"
         ]],
-        use_container_width=True
-    )
+        use_container_width=True )
+#at_risk = inst_users[
+ #   (inst_users["robust_SAB_scaled"] < 40) &
+  #  (inst_users["test_count"] >= 5)
+#].sort_values("robust_SAB_scaled")
+
+#if at_risk.empty:
+ #   st.success("No at-risk learners detected 🎉")
+#else:
+ #   st.dataframe(
+  #      at_risk[[
+   #         "user_id", "mean_accuracy",
+    #        "speed_consistency", "accuracy_consistency",
+     #       "test_count", "robust_SAB_scaled"
+      #  ]],
+       # use_container_width=True
+    #)
 
 # ---------------------------------------------------
 # TEST STABILITY INSIGHTS

@@ -54,7 +54,7 @@ col1.metric("🎯 Avg Accuracy", f"{inst_df['accuracy_total'].mean():.2f}")
 col2.metric("Avg Speed", f"{inst_df['speed_raw'].mean():.2f}")
 col3.metric("🧠 Avg Readiness (Robust SAB)", f"{inst_users['robust_SAB_scaled'].mean():.1f}")
 st.divider()
-st.subheader("🏫 Readiness Distribution")
+st.subheader("Readiness Distribution")
 
 insight_dist = (
     sab_df["insight_code"]

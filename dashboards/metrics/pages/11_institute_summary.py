@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-
+from utils.insights import apply_insight_engine
 from utils.metrics import (
     load_data_from_disk_or_session,
     compute_basic_metrics2,
@@ -23,6 +23,7 @@ if df is None or df.empty:
 
 df = compute_basic_metrics2(df)
 sab_df = compute_sab_behavioral(df)
+sab_df = apply_insight_engine(sab_df)
 test_df = compute_test_analytics(df)
 
 if "institute" not in df.columns:
@@ -52,10 +53,17 @@ col3.metric("📊 Total Attempts", len(inst_df))
 col1.metric("🎯 Avg Accuracy", f"{inst_df['accuracy_total'].mean():.2f}")
 col2.metric("Avg Speed", f"{inst_df['speed_raw'].mean():.2f}")
 col3.metric("🧠 Avg Readiness (Robust SAB)", f"{inst_users['robust_SAB_scaled'].mean():.1f}")
-st.info("Average accuracy of 0.31 means students are performing very low getting 3 questions right out of 10. This is a learning risk signal")
-st.info("Average speed 3.24 suggest learners are attempting 3 questions per minute on average. This is not a bottleneck learners are answering ata a decent pace. ")
-st.info("Average readiness score of -0.3 means majority of students are performing below the baseline or threshold used to determine exam readiness. Most of them might not be ready for a final test yet")
 st.divider()
+st.subheader("🏫 Readiness Distribution")
+
+insight_dist = (
+    sab_df["insight_code"]
+    .value_counts()
+    .reset_index()
+    .rename(columns={"index": "Insight", "insight_code": "Learners"})
+)
+
+st.bar_chart(insight_dist.set_index("Insight"))
 
 # ---------------------------------------------------
 # TOP PERFORMERS
@@ -76,6 +84,17 @@ st.dataframe(
 # AT-RISK USERS
 # ---------------------------------------------------
 st.subheader("🚩 At-Risk Learners")
+at_risk = sab_df[sab_df["exam_status"] == "Not Eligible"]
+
+st.metric("⚠️ At-Risk Learners", len(at_risk))
+
+selected_status = st.multiselect(
+    "Filter by Exam Status",
+    sab_df["exam_status"].unique(),
+    default=sab_df["exam_status"].unique()
+)
+
+filtered = sab_df[sab_df["exam_status"].isin(selected_status)]
 
 at_risk = inst_users[
     (inst_users["robust_SAB_scaled"] < 40) &

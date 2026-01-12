@@ -53,25 +53,34 @@ col3.metric("📊 Total Attempts", len(inst_df))
 col1.metric("🎯 Avg Accuracy", f"{inst_df['accuracy_total'].mean():.2f}")
 col2.metric("Avg Speed", f"{inst_df['speed_raw'].mean():.2f}")
 col3.metric("🧠 Avg Readiness (Robust SAB)", f"{inst_users['robust_SAB_scaled'].mean():.1f}")
+
+at_risk = inst_users[inst_users["exam_status"] == "Not Eligible"]
+non_risk = inst_users[inst_users["exam_status"] == "Eligible" and "Conditionally Eligible"]
+ready = inst_user[inst_users["exam_status"] == "Eligible"]
+#st.metric
+col1.metric("⚠️ At-Risk Learners", len(at_risk))
+col2.metric("Non-risk Learners", len(non_risk))
+col3.metric("Ready Learners", len(ready))
+
 st.divider()
 st.subheader("Readiness Distribution")
 
 insight_dist = (
-    sab_df["insight_code"]
+    inst_users["insight_code"]
     .value_counts()
     .reset_index()
     .rename(columns={"index": "Insight", "insight_code": "Learners"})
 )
 
-#st.bar_chart(insight_dist.set_index("Insight"))
-st.bar_chart(insight_dist)
+st.bar_chart(insight_dist.set_index("Insight"))
+#st.bar_chart(insight_dist)
 
 # ---------------------------------------------------
 # TOP PERFORMERS
 # ---------------------------------------------------
 st.subheader("Top Performers")
 
-top_users = inst_users.sort_values("robust_SAB_scaled", ascending=False).head(10)
+
 
 st.dataframe(
     top_users[[
@@ -84,19 +93,15 @@ st.dataframe(
 # ---------------------------------------------------
 # AT-RISK USERS
 # ---------------------------------------------------
-st.subheader("🚩 At-Risk Learners")
-at_risk = sab_df[sab_df["exam_status"] == "Not Eligible"]
-
-st.metric("⚠️ At-Risk Learners", len(at_risk))
 
 st.write("Select based on exam_status")
 selected_status = st.multiselect(
     "Filter by Exam Status",
-    sab_df["exam_status"].unique(),
-    default=sab_df["exam_status"].unique()
+    inst_users["exam_status"].unique(),
+    default=inst_users["exam_status"].unique()
 )
 
-filtered = sab_df[sab_df["exam_status"].isin(selected_status)]
+filtered = inst_users[inst_users["exam_status"].isin(selected_status)]
 
 if filtered.empty:
     st.success('No learners detected')

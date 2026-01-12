@@ -52,8 +52,9 @@ col3.metric("📊 Total Attempts", len(inst_df))
 col1.metric("🎯 Avg Accuracy", f"{inst_df['accuracy_total'].mean():.2f}")
 col2.metric("Avg Speed", f"{inst_df['speed_raw'].mean():.2f}")
 col3.metric("🧠 Avg Readiness (Robust SAB)", f"{inst_users['robust_SAB_scaled'].mean():.1f}")
-st.info("Average accuracy of 0.31 means students are performing very low ")
-st.info("Average readiness score of -0.3 means majority of students might not be ready for a final test yet")
+st.info("Average accuracy of 0.31 means students are performing very low getting 3 questions right out of 10. This is a learning risk signal")
+st.info("Average speed 3.24 suggest learners are attempting 3 questions per minute on average. This is not a bottleneck learners are answering ata a decent pace. ")
+st.info("Average readiness score of -0.3 means majority of students are performing below the baseline or threshold used to determine exam readiness. Most of them might not be ready for a final test yet")
 st.divider()
 
 # ---------------------------------------------------

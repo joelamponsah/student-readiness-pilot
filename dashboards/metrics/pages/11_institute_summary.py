@@ -55,7 +55,7 @@ col2.metric("Avg Speed", f"{inst_df['speed_raw'].mean():.2f}")
 col3.metric("🧠 Avg Readiness (Robust SAB)", f"{inst_users['robust_SAB_scaled'].mean():.1f}")
 
 at_risk = inst_users[inst_users["exam_status"] == "Not Eligible"]
-non_risk = inst_users[inst_users["exam_status"] == "Eligible" and "Conditionally Eligible"]
+non_risk = inst_users[inst_users["exam_status"] == "Conditionally Eligible"]
 ready = inst_user[inst_users["exam_status"] == "Eligible"]
 #st.metric
 col1.metric("⚠️ At-Risk Learners", len(at_risk))

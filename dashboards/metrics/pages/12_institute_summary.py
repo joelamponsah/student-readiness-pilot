@@ -84,7 +84,7 @@ else:
             "user_id", "mean_accuracy",
             "speed_consistency", "accuracy_consistency",
             "test_count", "robust_SAB_scaled"
-        ]].head(10),
+        ]],
         use_container_width=True
     )
 

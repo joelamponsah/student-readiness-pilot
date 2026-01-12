@@ -72,8 +72,8 @@ insight_dist = (
     .rename(columns={"index": "Insight", "insight_code": "Learners"})
 )
 
-st.bar_chart(insight_dist.set_index("Insight"))
-#st.bar_chart(insight_dist)
+#st.bar_chart(insight_dist.set_index("Insight"))
+st.bar_chart(insight_dist)
 
 # ---------------------------------------------------
 # TOP PERFORMERS

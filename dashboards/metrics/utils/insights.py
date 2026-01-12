@@ -48,20 +48,20 @@ def blocking_insight(row, cohort_median_speed):
     if row["mean_accuracy"] < 0.35 and row["mean_speed"] > cohort_median_speed:
         return "FAST_GUESSING"
 
-    if row["std_acc"] > 0.25:
+    if row["std_acc"] > 0.35:
         return "INCONSISTENT"
 
     return None
 
 
 def gap_insight(row):
-    if row["accuracy_consistency"] < 0.55:
+    if row["accuracy_consistency"] < 0.5:
         return "ACCURACY_RISK"
 
-    if row["speed_consistency"] < 0.50:
+    if row["speed_consistency"] < 0.35:
         return "SPEED_RISK"
 
-    if row["robust_SAB_scaled"] < 70:
+    if row["robust_SAB_scaled"] < 50:
         return "NEAR_READY"
 
     return "READY"

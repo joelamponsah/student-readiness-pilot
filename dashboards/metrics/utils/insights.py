@@ -1,4 +1,7 @@
 import numpy as np
+from utils.insight_text import stakeholder_summary
+from utils.coach_feedback import coach_feedback
+
 
 INSIGHT_TEXT = {
     "READY": {
@@ -92,5 +95,8 @@ def apply_insight_engine(sab_df):
     sab_df["recommended_action"] = sab_df["insight_code"].map(
         lambda c: INSIGHT_TEXT[c]["action"]
     )
+    
+    sab_df["stakeholder_insight"] = sab_df.apply(stakeholder_summary, axis=1)
+    sab_df["coach_feedback"] = sab_df.apply(coach_feedback, axis=1)
 
     return sab_df

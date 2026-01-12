@@ -1,6 +1,6 @@
 import streamlit as st
 import plotly.express as px
-
+from utils.insights import apply_insight_engine
 from utils.metrics import (
     load_data_from_disk_or_session,
     compute_basic_metrics2,
@@ -25,6 +25,7 @@ if df is None or df.empty:
 # Compute metrics
 df = compute_basic_metrics2(df)
 sab_df = compute_sab_behavioral(df)
+sab_df = apply_insight_engine(sab_df)
 test_df = compute_test_analytics(df)
 diff_df = compute_difficulty_df(df)
 
@@ -54,6 +55,21 @@ if not user_basic.empty:
     col3.metric("Average Efficiency Ratio", f"{user_basic['efficiency_ratio'].mean():.2f}")
 else:
     st.info("No basic metric data for this user.")
+
+st.subheader("🧠 Exam Readiness Insight")
+
+user_row = sab_df[sab_df["user_id"] == user_id].iloc[0]
+
+st.metric("Exam Status", user_row["exam_status"])
+
+if user_row["exam_status"] == "Eligible":
+    st.success(user_row["insight_message"])
+else:
+    st.warning(user_row["insight_message"])
+
+st.info(f"👉 Recommended Action: {user_row['recommended_action']}")
+
+st.caption(f"Insight Code: {user_row['insight_code']}")
 
 # ---------------------------
 # SAB Behavioral Metrics

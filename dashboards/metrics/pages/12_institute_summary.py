@@ -41,11 +41,14 @@ inst_users = sab_df[sab_df["user_id"].isin(inst_df["user_id"])]
 # ---------------------------------------------------
 # KPI METRICS
 # ---------------------------------------------------
-col1, col2, col3, col4, col5, col6 = st.columns(6)
+col1, col2, col3 = st.columns(3)
 
 col1.metric("👥 Learners", inst_users["user_id"].nunique())
 col2.metric("🧪 Unique Tests", inst_df["test_id"].nunique())
 col3.metric("📊 Total Attempts", len(inst_df))
+
+col4, col5, col6 = st.columns(3)
+
 col4.metric("🎯 Avg Accuracy", f"{inst_df['accuracy_total'].mean():.2f}")
 col5.metric("Avg Speed", f"{inst_df['speed_raw'].mean():.2f}")
 col5.metric("🧠 Avg Readiness (Robust SAB)", f"{inst_users['robust_SAB_scaled'].mean():.1f}")

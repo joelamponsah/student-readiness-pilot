@@ -36,7 +36,7 @@ sab_df = compute_sab_behavioral(df)
 sab_df = apply_insight_engine(sab_df)
 test_df = compute_test_analytics(df)
 
-if "institute_standardized" not in df.columns:
+if "institute_standardized" not in sab_df.columns:
     st.error("Missing `institute_name` column.")
     st.stop()
 

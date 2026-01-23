@@ -79,7 +79,7 @@ else:
     "We can also look at the effeciency ratio which measure accuracy over time consumed"
     st.info("Effeciency = test accuracy / time consumed")
 
-    df['accurate_speed'] = df['adj_speed']
+    df['accurate_speed'] = df['speed_answer']
     st.dataframe(df[["user_id", "test_id", "accurate_speed", "efficiency"]].head())
 
     st.subheader("Distributions of Speed-Accuracy Ratios")

@@ -26,17 +26,17 @@ sab_df = compute_sab_behavioral(df)
 sab_df = apply_insight_engine(sab_df)
 test_df = compute_test_analytics(df)
 
-if "institute" not in df.columns:
+if "institute_standardized" not in df.columns:
     st.error("Missing `institute_name` column.")
     st.stop()
 
 # ---------------------------------------------------
 # Institute Selector
 # ---------------------------------------------------
-institutes = sorted(df["institute"].dropna().unique())
+institutes = sorted(df["institute_standardized"].dropna().unique())
 institute = st.selectbox("Select Institute", institutes)
 
-inst_df = df[df["institute"] == institute]
+inst_df = df[df["institute_standardized"] == institute]
 inst_users = sab_df[sab_df["user_id"].isin(inst_df["user_id"])]
 
 # ---------------------------------------------------

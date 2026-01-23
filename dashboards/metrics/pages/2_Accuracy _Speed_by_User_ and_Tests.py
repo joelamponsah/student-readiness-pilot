@@ -44,13 +44,13 @@ if test_filter:
 st.subheader("Per-User Basic Metrics")
 
 user_metrics = df.groupby(["user_id", "l_name"]).agg(
-    avg_speed=("speed_raw", "mean"),
-    avg_accurate_speed=("adj_speed", "mean"),
-    avg_speed_marks=("speed", "mean"),
+    avg_speed=("speed", "mean"),
+    avg_speed=("speed_attempt", "mean"),
     avg_accuracy=("accuracy", "mean"),
+    avg_readiness=("readiness_score", "mean"),
     avg_efficiency=("efficiency", "mean"),
-    avg_speed_norm=("speed_norm", "mean"),
-    avg_time_consumed=("time_used", "mean"),
+    avg_time_used=("time_used", "mean"),
+    avg_time_left=("time_left", "mean")
     attempts=("test_id", "count")
 ).reset_index()
 
@@ -65,13 +65,12 @@ st.download_button("Download User Metrics CSV", csv_user, "user_basic_metrics.cs
 st.subheader("Per-Test Basic Metrics")
 
 test_metrics = df.groupby(["test_id", "name"]).agg(
-    mean_speed=("speed_raw", "mean"),
-    adj_speed=("adj_speed", "mean"),
-    speed_marks=("speed_marks", "mean"),
-    accuracy=("accuracy_total", "mean"),
+    speed=("speed_marks", "mean"),
+    mean_speed=("speed_attempt", "mean"),
+    accuracy=("accuracy", "mean"),
     efficiency=("efficiency", "mean"),
-    speed_norm=("speed_norm", "mean"),
-    time_consumed=("time_used", "mean"),
+    readiness=("readiness_score", "mean"),
+    time_used=("time_used", "mean"),
     takers=("user_id", "nunique")
 ).reset_index()
 

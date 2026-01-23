@@ -9,23 +9,24 @@ def save_uploaded_df(df: pd.DataFrame, path="data/verify_df_fixed.csv"):
     df.to_csv(path, index=False)
 
 def load_data_from_disk_or_session(default_path="data/verify_df_fixed.csv"):
-    # prefer session state if available (pages will read from it via streamlit)
     try:
         import streamlit as st
         if 'df' in st.session_state and st.session_state['df'] is not None:
+            df = st.session_state['df'].copy()
             df = df.drop_duplicates(subset=['user_id', 'created_at'])
-            return st.session_state['df']
+            return df
     except Exception:
         pass
 
-    # else load from disk if present
     if os.path.exists(default_path):
         try:
             df = pd.read_csv(default_path, low_memory=False)
+            df = df.drop_duplicates(subset=['user_id', 'created_at'])
             return df
         except Exception:
             return None
     return None
+
 
 # utils/metrics.py
 #import pandas as pd

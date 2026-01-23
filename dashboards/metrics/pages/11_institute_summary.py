@@ -138,14 +138,22 @@ st.divider()
 # ---------------------------------------------------
 st.subheader("Readiness Distribution")
 
-insight_dist = (
-    sab_inst_users["insight_code"]
-    .value_counts(dropna=False)
-    .reset_index(name="Learners")
-    .rename(columns={"index": "Insight"})
-)
 
-st.bar_chart(insight_dist.set_index("Insight")["Learners"])
+
+vc = sab_inst_users["insight_code"].value_counts(dropna=False)
+
+# vc is a Series: index=insight_code, values=count
+
+#st.bar_chart(vc)
+
+#insight_dist = (
+ #   sab_inst_users["insight_code"]
+  #  .value_counts(dropna=False)
+   # .reset_index(name="Learners")
+    #.rename(columns={"index": "Insight"})
+#)
+
+#st.bar_chart(insight_dist.set_index("Insight")["Learners"])
 
 
 # ---------------------------------------------------

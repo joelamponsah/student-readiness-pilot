@@ -51,12 +51,24 @@ df = compute_basic_metrics2(df)
 
 # IMPORTANT: sab_df should be user-level; ensure institute_std survives or is merged in
 sab_df = compute_sab_behavioral(df)
+
+# After df is standardized and sab_df is computed
+user_inst = df[["user_id", "institute_std"]].drop_duplicates("user_id")
+
+# Remove any conflicting institute column names to avoid confusion
+for col in ["institute", "institute_standardized", "institute_name"]:
+    if col in sab_df.columns and col != "institute_std":
+        pass  # leave it if you need it; otherwise you can drop it safely
+
+# Ensure institute_std exists in sab_df
 if "institute_std" not in sab_df.columns:
-    # If compute_sab_behavioral drops it, merge back from df at user_id level
-    user_inst = df[["user_id", "institute_std"]].drop_duplicates("user_id")
     sab_df = sab_df.merge(user_inst, on="user_id", how="left")
+else:
+    # If it exists but is raw/incorrect, overwrite from canonical source
+    sab_df = sab_df.drop(columns=["institute_std"]).merge(user_inst, on="user_id", how="left")
 
 sab_df["institute_std"] = sab_df["institute_std"].fillna("Unknown").astype(str)
+
 
 sab_df = apply_insight_engine(sab_df)
 
@@ -68,8 +80,10 @@ test_df = compute_test_analytics(df)
 institutes = sorted(sab_df["institute_std"].unique().tolist())
 institute = st.selectbox("Select Institute", institutes)
 
+
 # User-level slice
-sab_inst_users = sab_df[sab_df["institute_std"] == institute].copy()
+sab_inst_users = sab_df[sab_df["institute_std"] == institute]
+
 
 # Attempt-level slice (this is the one for attempts / tests taken)
 df_inst_attempts = df[df["user_id"].isin(sab_inst_users["user_id"])].copy()
@@ -124,12 +138,13 @@ st.subheader("Readiness Distribution")
 
 insight_dist = (
     sab_inst_users["insight_code"]
-    .value_counts()
-    .reset_index()
-    .rename(columns={"index": "Insight", "insight_code": "Learners"})
+    .value_counts(dropna=False)
+    .reset_index(name="Learners")
+    .rename(columns={"index": "Insight"})
 )
 
-st.bar_chart(insight_dist.set_index("Insight"))
+st.bar_chart(insight_dist.set_index("Insight")["Learners"])
+
 
 # ---------------------------------------------------
 # Top Performers

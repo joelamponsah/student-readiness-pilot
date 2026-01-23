@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import streamlit as st
-from utils.metrics import load_data_from_disk_or_session, compute_basic_metrics2
+from utils.metrics import load_data_from_disk_or_session, compute_basic_metrics
 
 
 # try to get df from session or disk
@@ -9,7 +9,7 @@ df = load_data_from_disk_or_session()
 if df is None:
     st.warning("No dataset loaded. Upload in sidebar or add data/verify_df_fixed.csv.")
 else:
-    df = compute_basic_metrics2(df)
+    df = compute_basic_metrics(df)
 st.title("Cumulative Results (Under construction")
 st.write("We are exploring using cumulative accuracy and speed to better understand user behavior")
 st.write('Below are some of the cumulative results calculated as follows')
@@ -44,16 +44,16 @@ df['attempted_accuracy'] = df.apply(
 )
 
 #personal accuracy
-df['total_accuracy'] = df['correct_answers'] / df['no_of_questions']        #test accuracy
+df['accuracy'] = df['correct_answers'] / df['no_of_questions']        #test accuracy
 
 # Speed metrics
 df['raw_speed'] = df['attempted_questions'] / df['time_taken']         # questions/min
 df['accurate_speed'] = df['correct_answers'] / df['time_taken']        # correct/min
-df['speed_marks'] = df['marks'] / df['time_taken']                     # marks per sec
+df['speed'] = df['marks'] / df['time_taken']                     # marks per sec
 
 # Time consumption ratios
-df['relative_speed'] = (df['duration'] - df['time_taken']) / df['duration']
-df['time_consumed'] = df['time_taken'] / df['duration']
+df['time_left'] = (df['duration'] - df['time_taken']) / df['duration']
+df['time_used'] = df['time_taken'] / df['duration']
 
 # ----------------------------------------
 # ATTEMPT INDEX PER USER

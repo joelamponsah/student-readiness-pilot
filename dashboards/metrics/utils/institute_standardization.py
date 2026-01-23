@@ -27,7 +27,7 @@ def standardize_institute(df: pd.DataFrame, column: str, mapping_path: str) -> p
     #possible_norm = ["institute_norm", "norm", "normalized", "institute_normalized"]
     possible_std  = ["institute_std", "std", "standardized", "institute_standardized", "canonical_institute"]
 
-    norm_col = next((c for c in possible_norm if c in mapping.columns), None)
+    #norm_col = next((c for c in possible_norm if c in mapping.columns), None)
     std_col  = next((c for c in possible_std  if c in mapping.columns), None)
 
     if norm_col is None or std_col is None:

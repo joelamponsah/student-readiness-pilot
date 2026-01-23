@@ -34,7 +34,7 @@ df = standardize_institute(
 
 #st.write(df["institute_std"].value_counts().head(10))
 st.write("Unknown rate:", (df["institute_std"] == "Unknown").mean())
-st.write("Top standardized institutes:", sab_df["institute_std"].value_counts().head(15))
+#st.write("Top standardized institutes:", sab_df["institute_std"].value_counts().head(15))
 
 # Create one canonical name used across the app
 # (If your standardizer outputs institute_std)

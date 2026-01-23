@@ -14,17 +14,29 @@ def standardize_institute(df: pd.DataFrame, column: str, mapping_path: str) -> p
 
     df[f"{column}_raw"] = df[column]
 
-    # Unknown handling
     clean = df[f"{column}_raw"].fillna("").astype(str).str.strip().str.lower()
     clean = clean.where(~clean.isin(UNKNOWN_TOKENS), other="unknown")
     df[f"{column}_clean"] = clean
 
-    # Normalize
     df[f"{column}_norm"] = df[f"{column}_clean"].apply(_normalize_text)
 
-    # Mapping (expects columns: institute_norm, institute_std)
     mapping = pd.read_csv(mapping_path)
-    mapping_dict = dict(zip(mapping["institute_norm"], mapping["institute_std"]))
+    mapping.columns = mapping.columns.str.strip()
+
+    # Allow flexible mapping column names
+    possible_norm = ["institute_norm", "norm", "normalized", "institute_normalized"]
+    possible_std  = ["institute_std", "std", "standardized", "institute_standardized", "canonical_institute"]
+
+    norm_col = next((c for c in possible_norm if c in mapping.columns), None)
+    std_col  = next((c for c in possible_std  if c in mapping.columns), None)
+
+    if norm_col is None or std_col is None:
+        raise KeyError(
+            f"Mapping file must include norm+std columns. Found: {mapping.columns.tolist()}"
+        )
+
+    mapping_dict = dict(zip(mapping[norm_col].astype(str).str.strip(),
+                            mapping[std_col].astype(str).str.strip()))
 
     df["institute_std"] = df[f"{column}_norm"].map(mapping_dict)
     df["institute_std"] = df["institute_std"].fillna(df[f"{column}_norm"].str.title())

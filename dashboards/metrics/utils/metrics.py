@@ -28,78 +28,35 @@ def load_data_from_disk_or_session(default_path="data/verify_df_fixed.csv"):
     return None
 
 
-# utils/metrics.py
-#import pandas as pd
-#import numpy as np
-#from sklearn.preprocessing import MinMaxScaler
-#import streamlit as st
-
-#@st.cache_data
-#def load_data_default(path):
-  #  df = pd.read_csv(path, parse_dates=True, low_memory=False)
- #   return df
-
-#def load_data_with_upload(default_path="data/verify_df_fixed.csv"):
-    #uploaded = st.sidebar.file_uploader("Upload verify_df_fixed.csv (optional)", type=["csv"])
-   # if uploaded is not None:
-  #      df = pd.read_csv(uploaded, low_memory=False)
-  #      return df
-    # fallback to repo file if exists
-   # try:
-      #  df = load_data_default(default_path)
-       # return df
-   # except Exception:
-       # return None
-# basic metrics ------------------------------------------------
-def compute_basic_metrics1(df: pd.DataFrame) -> pd.DataFrame:
-    df = df.copy()
-    # ensure numeric columns exist
-    for c in ['attempted_questions','correct_answers','marks','time_taken','duration','no_of_questions','pass_mark']:
-        if c not in df.columns:
-            df[c] = np.nan
-    # guard time
-    df['time_taken'] = pd.to_numeric(df['time_taken'], errors='coerce')
-    df['time_taken'] = df['time_taken'].replace(0, np.nan)
-    # speeds
-    df['speed_raw'] = df['attempted_questions'] / df['time_taken']
-    df['speed_acc_raw'] = df['correct_answers'] / df['time_taken']
-    df['speed_marks'] = df['marks'] / df['time_taken']
-    # accuracy
-    df['accuracy_total'] = (df['correct_answers'] / df['attempted_questions']).fillna(0)
-    # relative time
-    df['time_consumed'] = (df['time_taken'] / df['duration']).clip(0,1)
-    df['speed_rel_time'] = ((df['duration'] - df['time_taken']) / df['duration']).clip(lower=0)
-    # efficiency (guard divide-by-zero)
-    df['efficiency_ratio'] = df['accuracy_total'] / df['time_consumed'].replace(0, np.nan)
-    # basic cleaning
-    df.replace([np.inf, -np.inf], np.nan, inplace=True)
-    return df
-
-
-
 # --- Speed & accuracy base features (idempotent) ---
-def compute_basic_metrics2(df):
+def compute_basic_metrics(df):
     df = df.copy()
+
+    if 'duration' not in df.columns or df['duration'].isna().all():
+    # if time_limit is minutes
+    df['duration'] = pd.to_numeric(df.get('time_limit', None), errors='coerce')
+
     # ensure numeric
     for c in ['attempted_questions','correct_answers','marks','time_taken','duration']:
         if c not in df.columns:
             df[c] = np.nan
     # avoid zero time issues
     df['time_taken'] = df['time_taken'].replace(0, np.nan)
-    df['speed_raw'] = df['attempted_questions'] / df['time_taken']
-    df['adj_speed'] = df['correct_answers'] / df['time_taken']
-    df['speed_marks'] = df['marks'] / df['time_taken']
-    df['speed_rel_time'] = ((df['duration'] - df['time_taken']) / df['duration']).clip(lower=0)
-    df['time_consumed'] = (df['time_taken'] / df['duration']).clip(0,1)
+    df['speed_attempts'] = df['attempted_questions'] / df['time_taken']
+    df['speed_answers'] = df['correct_answers'] / df['time_taken']
+    df['speed'] = df['marks'] / df['time_taken']
+    df['time_left'] = ((df['duration'] - df['time_taken']) / df['duration']).clip(lower=0)
+    df['time_used'] = (df['time_taken'] / df['duration']).clip(0,1)
     # accuracy
     df['accuracy_attempt'] = (df['correct_answers'] / df['attempted_questions']).fillna(0)
-    df['accuracy_total'] = (df['marks'] / df['no_of_questions']).fillna(0)
+    df['accuracy'] = (df['marks'] / df['no_of_questions']).fillna(0)
+    df['readiness_score'] = (df['marks'] / df['pass_mark']).fillna(0)
 
     # normalized speed (safe)
     scaler = MinMaxScaler()
     df['speed_norm'] = scaler.fit_transform(df[['speed_raw']].fillna(0))
     # efficiency ratio
-    df['efficiency_ratio'] = df['accuracy_total'] / df['time_consumed'].replace(0, np.nan)
+    df['efficiency'] = df['accuracy'] / df['time_used'].replace(0, np.nan)
 
     df.replace([np.inf, -np.inf], np.nan, inplace=True)
     return df
@@ -108,16 +65,16 @@ def compute_basic_metrics2(df):
 def compute_test_analytics(df):
     df = compute_basic_metrics2(df)
     df = df[df['time_taken'] > 0]
-    df['speed_marks'] = df['marks'] / df['time_taken']
-    df['accuracy_total'] = (df['marks'] / df['no_of_questions']).fillna(0)
-    df['efficiency_ratio'] = df['accuracy_total'] / df['time_consumed'].replace(0, np.nan)
+    df['speed'] = df['marks'] / df['time_taken']
+    df['accuracy'] = (df['marks'] / df['no_of_questions']).fillna(0)
+    df['efficiency'] = df['accuracy_total'] / df['time_used'].replace(0, np.nan)
     agg = df.groupby('test_id').agg(
         mean_time=('time_taken','mean'),
         std_time=('time_taken','std'),
-        mean_speed=('speed_marks','mean'),
-        std_speed=('speed_marks','std'),
-        mean_efficiency=('efficiency_ratio','mean'),
-        mean_accuracy=('accuracy_total','mean'),
+        mean_speed=('speed','mean'),
+        std_speed=('speed','std'),
+        mean_efficiency=('efficiency','mean'),
+        mean_accuracy=('accuracy','mean'),
         pass_count=('marks', lambda x: (x >= df.loc[x.index,'pass_mark']).sum() if 'pass_mark' in df.columns else np.nan),
         taker_count=('test_taker_id','count')
     ).reset_index()
@@ -125,7 +82,7 @@ def compute_test_analytics(df):
     agg['std_speed'] = agg['std_speed'].fillna(0)
     agg['std_time'] = agg['std_time'].fillna(0)
     agg['mean_speed'] = agg['mean_speed'].replace(0, np.nan)
-    agg['speed_consistency'] = 1 / (1 + (agg['std_speed'] / agg['mean_speed']).fillna(0))
+    agg['pace'] = 1 / (1 + (agg['std_speed'] / agg['mean_speed']).fillna(0))
     agg['time_consistency'] = 1 / (1 + (agg['std_time'] / agg['mean_time']).fillna(0))
     # pass_rate
     if 'pass_count' in agg.columns:
@@ -137,10 +94,10 @@ def compute_topic_analytics(df, topic_col='topic'):
     if topic_col not in df.columns:
         return pd.DataFrame()
     df = df.copy()
-    df['speed_marks'] = df['marks'] / df['time_taken']
+    df['speed'] = df['marks'] / df['time_taken']
     agg = df.groupby(topic_col).agg(
-        mean_accuracy=('accuracy_total','mean'),
-        mean_speed=('speed_marks','mean'),
+        mean_accuracy=('accuracy','mean'),
+        mean_speed=('speed','mean'),
         tests=('test_id','nunique'),
         takers=('user_id','nunique')
     ).reset_index()
@@ -157,14 +114,14 @@ def compute_difficulty_df(df):
         
      # --- Handle inactive (no attempts) users ---
     df['inactive'] = (df['attempted_questions'] == 0).astype(int)
-    df.loc[df['inactive'] == 1, ['marks', 'accuracy_total', 'accuracy_attempt', 'accuracy_norm']] = 0
+    df.loc[df['inactive'] == 1, ['marks', 'accuracy', 'accuracy_attempt', 'readiness_score']] = 0
     df['passed'] = np.where(df['marks'] >= df['pass_mark'], 1, 0)
     
         
     test_pass = df.groupby('test_id').agg(
         pass_rate=('passed','mean'),
-        mean_accuracy=('accuracy_total','mean'),
-        test_consistency=('accuracy_total','std'),
+        mean_accuracy=('accuracy','mean'),
+        test_consistency=('accuracy','std'),
         takers=('user_id','nunique')
     ).reset_index()
     
@@ -192,17 +149,7 @@ def compute_difficulty_df(df):
     )
 
     test_pass
-    #test_pass = test_pass.merge(df[['passed', 'difficulty_score','difficulty_label']], on='test_id', how='left')
-
-    #test_pass.fillna({'pass_rate': 0, 'test_consistency': 0, 'difficulty_score': 0}, inplace=True)
-
-    # Normalize test consistency (variability)
-    #scaler = MinMaxScaler()
-    #df['consistency_norm'] = 1 - scaler.fit_transform(df[['test_consistency']])
-    # Invert because high std = low consistency
-
-    # Compute Difficulty–Consistency Index
-    #df['DCI'] = df['difficulty_score'] * df['consistency_norm']
+    
     
     return test_pass
 
@@ -211,17 +158,17 @@ def compute_sab_behavioral(df):
     df = df.copy()
     df = df[df['time_taken'] > 0]
     df['speed'] = df['correct_answers'] / df['time_taken']
-    df['accuracy_total'] = (df['marks'] / df['no_of_questions']).fillna(0)
+    df['accuracy'] = (df['marks'] / df['no_of_questions']).fillna(0)
     sab = df.groupby('user_id').agg(
         mean_speed=('speed','mean'),
         std_speed=('speed','std'),
-        mean_accuracy=('accuracy_total','mean'),
-        std_acc=('accuracy_total','std'),
+        mean_accuracy=('accuracy','mean'),
+        std_acc=('accuracy','std'),
         test_count=('test_id','count')
     ).reset_index()
     sab[['std_speed','std_acc']] = sab[['std_speed','std_acc']].fillna(0)
     # dampened consistency penalizing low counts
-    sab['speed_consistency'] = sab.apply(
+    sab['pace'] = sab.apply(
         lambda r: r['test_count'] / (r['test_count'] + (r['std_speed'] / r['mean_speed'] if r['mean_speed']>0 else 1) + 5),
         axis=1
     )
@@ -229,7 +176,7 @@ def compute_sab_behavioral(df):
         lambda r: r['test_count'] / (r['test_count'] + (r['std_acc'] / r['mean_accuracy'] if r['mean_accuracy']>0 else 1) + 5),
         axis=1
     )
-    sab['SAB_index'] = sab['mean_accuracy'] * sab['speed_consistency']
+    sab['SAB_index'] = sab['mean_accuracy'] * sab['pace']
     # robust normalization (winsorize mean_speed)
     Q1 = sab['mean_speed'].quantile(0.25); Q3 = sab['mean_speed'].quantile(0.75)
     IQR = max(Q3 - Q1, 1e-6)
@@ -252,47 +199,3 @@ def compute_sab_behavioral(df):
     return sab
 
 
-def compute_SAB(df):
-
-    df = df.copy()
-
-    user_group = df.groupby("user_id")
-
-    sab = user_group.agg(
-        mean_speed = ("speed_acc_raw", "mean"),
-        std_speed  = ("speed_acc_raw", "std"),
-        mean_accuracy = ("accuracy", "mean"),
-        std_acc = ("accuracy", "std"),
-        test_count = ("test_id", "count")
-    ).reset_index()
-
-    sab["std_speed"] = sab["std_speed"].fillna(0)
-    sab["std_acc"] = sab["std_acc"].fillna(0)
-
-    sab["speed_consistency"] = 1 / (1 + sab["std_speed"] / sab["mean_speed"])
-    sab["accuracy_consistency"] = 1 / (1 + sab["std_acc"] / sab["mean_accuracy"])
-
-    sab["SAB_index"] = sab["mean_accuracy"] * sab["speed_consistency"]
-
-    # Robust SAB
-    mu_speed = sab["mean_speed"].mean()
-    sigma_speed = sab["mean_speed"].std()
-
-    mu_acc = sab["mean_accuracy"].mean()
-    sigma_acc = sab["mean_accuracy"].std()
-
-    sab["normalized_speed"] = (sab["mean_speed"] - mu_speed) / sigma_speed
-    sab["normalized_accuracy"] = (sab["mean_accuracy"] - mu_acc) / sigma_acc
-
-    sab["weight"] = np.log1p(sab["test_count"])
-
-    sab["robust_SAB_index"] = (
-        ((sab["normalized_speed"] + sab["normalized_accuracy"]) / 2)
-        * sab["speed_consistency"]
-        * sab["accuracy_consistency"]
-        * sab["weight"]
-    )
-
-    sab["rank"] = sab["robust_SAB_index"].rank(ascending=False)
-
-    return sab

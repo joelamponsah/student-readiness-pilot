@@ -138,9 +138,11 @@ st.divider()
 # ---------------------------------------------------
 st.subheader("Readiness Distribution")
 
-
-
 vc = sab_inst_users["insight_code"].value_counts(dropna=False)
+
+insight_dist = vc.reset_index()
+insight_dist.columns = ["Insight", "Learners"]
+st.dataframe(insight_dist, use_container_width=True)
 
 # vc is a Series: index=insight_code, values=count
 

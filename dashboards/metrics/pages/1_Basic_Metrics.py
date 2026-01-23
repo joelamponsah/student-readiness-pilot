@@ -10,7 +10,7 @@ df = load_data_from_disk_or_session()
 if df is None:
     st.warning("No dataset loaded. Upload in sidebar or add data/verify_df_fixed.csv.")
 else:
-    df = compute_basic_metrics2(df)
+    df = compute_basic_metrics(df)
     
     st.subheader("Accuracy")
     " From a user's test scores (marks) and number of questions and number of attempts, we can measure a user's;"

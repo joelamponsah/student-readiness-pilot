@@ -32,8 +32,9 @@ df = standardize_institute(
     mapping_path="data/mapping.csv"     # your mapping file
 )
 
-st.write(df["institute_std"].value_counts().head(10))
+#st.write(df["institute_std"].value_counts().head(10))
 st.write("Unknown rate:", (df["institute_std"] == "Unknown").mean())
+st.write("Top standardized institutes:", sab_df["institute_std"].value_counts().head(15))
 
 # Create one canonical name used across the app
 # (If your standardizer outputs institute_std)
@@ -88,6 +89,23 @@ sab_inst_users = sab_df[sab_df["institute_std"] == institute]
 # Attempt-level slice (this is the one for attempts / tests taken)
 df_inst_attempts = df[df["user_id"].isin(sab_inst_users["user_id"])].copy()
 
+# Institute Readiness Summary
+# ---------------------------------------------------
+st.subheader("Institute Readiness Summary")
+
+eligible_pct = (sab_inst_users["exam_status"] == "Eligible").mean() * 100
+near_ready_pct = (sab_inst_users["insight_code"] == "NEAR_READY").mean() * 100
+at_risk_pct = (sab_inst_users["exam_status"] == "Not Eligible").mean() * 100
+
+st.markdown(
+    f"""
+    **{eligible_pct:.1f}%** of learners meet exam eligibility criteria.  
+    **{near_ready_pct:.1f}%** are approaching readiness with targeted support.  
+    **{at_risk_pct:.1f}%** require foundational intervention before exam attempts.
+    """
+)
+
+st.divider()
 # ---------------------------------------------------
 # KPI METRICS (use separate rows)
 # ---------------------------------------------------
@@ -113,23 +131,7 @@ row3[2].metric("Ready Learners", len(ready))
 st.divider()
 
 # ---------------------------------------------------
-# Institute Readiness Summary
-# ---------------------------------------------------
-st.subheader("Institute Readiness Summary")
 
-eligible_pct = (sab_inst_users["exam_status"] == "Eligible").mean() * 100
-near_ready_pct = (sab_inst_users["insight_code"] == "NEAR_READY").mean() * 100
-at_risk_pct = (sab_inst_users["exam_status"] == "Not Eligible").mean() * 100
-
-st.markdown(
-    f"""
-    **{eligible_pct:.1f}%** of learners meet exam eligibility criteria.  
-    **{near_ready_pct:.1f}%** are approaching readiness with targeted support.  
-    **{at_risk_pct:.1f}%** require foundational intervention before exam attempts.
-    """
-)
-
-st.divider()
 
 # ---------------------------------------------------
 # Readiness Distribution

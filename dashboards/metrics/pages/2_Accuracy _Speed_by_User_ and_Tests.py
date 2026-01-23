@@ -15,7 +15,7 @@ if df is None or df.empty:
     st.warning("No data loaded. Upload verify_df_fixed.csv.")
     st.stop()
 
-df = compute_basic_metrics2(df)
+df = compute_basic_metrics(df)
 
 # ------------------------------------------------
 # 🔍 Filters Sidebar
@@ -46,11 +46,11 @@ st.subheader("Per-User Basic Metrics")
 user_metrics = df.groupby(["user_id", "l_name"]).agg(
     avg_speed=("speed_raw", "mean"),
     avg_accurate_speed=("adj_speed", "mean"),
-    avg_speed_marks=("speed_marks", "mean"),
-    avg_accuracy=("accuracy_total", "mean"),
-    avg_efficiency=("efficiency_ratio", "mean"),
+    avg_speed_marks=("speed", "mean"),
+    avg_accuracy=("accuracy", "mean"),
+    avg_efficiency=("efficiency", "mean"),
     avg_speed_norm=("speed_norm", "mean"),
-    avg_time_consumed=("time_consumed", "mean"),
+    avg_time_consumed=("time_used", "mean"),
     attempts=("test_id", "count")
 ).reset_index()
 
@@ -69,9 +69,9 @@ test_metrics = df.groupby(["test_id", "name"]).agg(
     adj_speed=("adj_speed", "mean"),
     speed_marks=("speed_marks", "mean"),
     accuracy=("accuracy_total", "mean"),
-    efficiency=("efficiency_ratio", "mean"),
+    efficiency=("efficiency", "mean"),
     speed_norm=("speed_norm", "mean"),
-    time_consumed=("time_consumed", "mean"),
+    time_consumed=("time_used", "mean"),
     takers=("user_id", "nunique")
 ).reset_index()
 

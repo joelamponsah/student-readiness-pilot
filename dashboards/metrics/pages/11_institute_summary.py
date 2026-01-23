@@ -9,7 +9,7 @@ from utils.metrics import (
     compute_test_analytics,
     compute_difficulty_df
 )
-from utils.institute_standardization import standardize_institute
+#from utils.institute_standardization import standardize_institute
 
 st.set_page_config(page_title="Institute Performance", layout="wide")
 st.title("Institute Performance Summary")
@@ -22,31 +22,31 @@ if df is None or df.empty:
     st.warning("Upload data to continue.")
     st.stop()
 
-df = standardize_institute(
-    df=df,
-    column='institute',
-    mapping_path='data/mapping.csv'
-)
+#df = standardize_institute(
+#    df=df,
+ #   column='institute',
+#    mapping_path='data/mapping.csv'
+#)
 
-assert df['institute_std'].isna().sum() == 0, "Null institutes after standardization!"
-assert len(df) > 0, "Fact table is empty!"
+#assert df['institute_std'].isna().sum() == 0, "Null institutes after standardization!"
+#assert len(df) > 0, "Fact table is empty!"
 
 df = compute_basic_metrics2(df)
 sab_df = compute_sab_behavioral(df)
 sab_df = apply_insight_engine(sab_df)
 test_df = compute_test_analytics(df)
 
-if "institute_std" not in df.columns:
+if "institute_standardized" not in df.columns:
     st.error("Missing `institute_name` column.")
     st.stop()
 
 # ---------------------------------------------------
 # Institute Selector
 # ---------------------------------------------------
-institutes = sorted(sab_df["institute_std"].dropna().unique())
+institutes = sorted(sab_df["institute_standardized"].dropna().unique())
 institute = st.selectbox("Select Institute", institutes)
 
-inst_df = sab_df[sab_df["institute_std"] == institute]
+inst_df = sab_df[sab_df["institute_standardized"] == institute]
 inst_users = sab_df[sab_df["user_id"].isin(inst_df["user_id"])]
 
 # ---------------------------------------------------

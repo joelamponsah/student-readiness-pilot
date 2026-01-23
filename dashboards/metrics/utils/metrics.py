@@ -34,7 +34,7 @@ def compute_basic_metrics(df):
 
     if 'duration' not in df.columns or df['duration'].isna().all():
     # if time_limit is minutes
-    df['duration'] = pd.to_numeric(df.get('time_limit', None), errors='coerce')
+        df['duration'] = pd.to_numeric(df.get('time_limit', None), errors='coerce')
 
     # ensure numeric
     for c in ['attempted_questions','correct_answers','marks','time_taken','duration']:

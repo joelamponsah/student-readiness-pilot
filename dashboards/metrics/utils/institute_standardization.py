@@ -1,8 +1,8 @@
-pip install --force-reinstall unidecode
+#pip install --force-reinstall unidecode
 
 import pandas as pd
 import re
-import unidecode
+#import unidecode
 
 # -----------------------
 # CONFIG

@@ -29,8 +29,8 @@ else:
     st.subheader("Time")
     st.write("We can also treat time as a unit in itself and determine metrics with regards to time only and also a combination with accuracy to deduce speed.")
     st.info("1. Raw time = time taken")
-    st.info("2. Time Consumed = time taken / test duration")
-    st.info("3. Relative Time (speed_rel_time) = time remaining / test duration")
+    st.info("2. Time Used = time taken / test duration")
+    st.info("3. Time Left = time remaining / test duration")
 
     st.subheader("Speed")
     st.info("In physics: 	Speed = Distance / Time​")
@@ -45,6 +45,8 @@ else:
     st.info("2. Accurate Speed (adjusted speed) = correct answers / time taken")
     st.info("3. speed_marks = marks / time taken")
 
+    "for learner behaviour we will use speed marks as our main speed metric"
+
 
     st.subheader("Latency (optional)")
     st.write("We can check minutes per question or answers as opposed to questions per minute as an alternative to speed.")
@@ -53,19 +55,19 @@ else:
     st.info("Raw Latency = time taken / atttempted questions")
     st.info("Accuracte Latency = time taken / correct answers")
     
-    st.dataframe(df[["user_id", "test_id", "time_used", "speed_attempt", "speed_norm", "speed_rel_time" ]].head())
+    st.dataframe(df[["user_id", "test_id", "time_used", "time_left", "speed_attempt", "speed" ]].head())
 
     st.subheader("Distributions of Accuracy, Time consumption & Raw Speed")
     import plotly.express as px
     c1, c2 = st.columns(2)
     with c1:
-        fig = px.histogram(df, x='accuracy_total', nbins=30, title='Accuracy distribution')
+        fig = px.histogram(df, x='accuracy', nbins=30, title='Accuracy distribution')
         st.plotly_chart(fig, use_container_width=True)
     with c2:
-        fig2 = px.histogram(df, x='time_consumed', nbins=30, title='Time Consumption (in minutes)')
+        fig2 = px.histogram(df, x='time_used', nbins=30, title='Time Consumption (in minutes)')
         st.plotly_chart(fig2, use_container_width=True)
    # with c3:
-        fig3 = px.histogram(df, x ='speed_raw', nbins=30, title='Speed based on Attempted Questions')
+        fig3 = px.histogram(df, x ='speed', nbins=30, title='Speed based on Marks')
         st.plotly_chart(fig3, use_container_width=True)
 
     st.subheader("Accuracy to Speed Ratio")
@@ -88,7 +90,7 @@ else:
         fig4 = px.histogram(df, x='accurate_speed', nbins=50, title='Correct Answers by Time Taken Distribution')
         st.plotly_chart(fig4, use_container_width=True)
     with c5:
-        fig5 = px.histogram(df, x='efficiency_ratio', nbins=50, title='Efficieny - Accuracy by time Consumption')
+        fig5 = px.histogram(df, x='efficiency', nbins=50, title='Efficieny - Accuracy by time Consumption')
         st.plotly_chart(fig5, use_container_width=True)
 
     st.subheader("Mean / Averages ")
@@ -97,9 +99,9 @@ else:
     col1, col2, col3, col4, col5 = st.columns(5)
     col1.metric("Mean accuracy", f"{df['accuracy'].mean():.3f}")
     col2.metric("Mean speed (marks/min)", f"{df['speed'].mean():.3f}")
-    col3.metric("Mean time consumed", f"{df['time_consumed'].mean():.3f}")
+    col3.metric("Mean time consumed", f"{df['time_used'].mean():.3f}")
     col4.metric("Mean time taken", f"{df['time_taken'].mean():.3f}")
-    col5.metric("Mean efficiency", f"{df['efficiency_ratio'].mean():.3f}")
+    col5.metric("Mean efficiency", f"{df['efficiency'].mean():.3f}")
 
     st.subheader("Relative Average")
     "Now that we know the averages we can calculate the relative average of a user"
@@ -115,7 +117,7 @@ else:
         fig = px.histogram(df, x='rel_acc', nbins=30, title='Relative Accuracy')
         st.plotly_chart(fig, use_container_width=True)
     with c2:
-        fig2 = px.histogram(df, x='speed_rel_time', nbins=30, title='Relative Speed (in minutes)')
+        fig2 = px.histogram(df, x='time_left', nbins=30, title='Relative Speed (in minutes)')
         st.plotly_chart(fig2, use_container_width=True)
         
     st.subheader("Standard Deviations / Variablilty")

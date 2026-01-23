@@ -128,8 +128,12 @@ else:
     col2.metric("Std speed (marks/min)", f"{df['speed'].std():.3f}")
     col3.metric("Std time used", f"{df['time_used'].std():.3f}")
     col4.metric("Std time taken", f"{df['time_taken'].std():.3f}")
-    col5.metric("Std efficiency", f"{df['efficiency'].std():.3f}")
-   
+    col5.metric("Std efficiency", f"{df['efficiency'].std():.3f}").apply(lambda x: f"{x:.2%}")
+
+#user_metrics['avg_efficiency_percent'] = user_metrics['avg_efficiency'].apply(lambda x: f"{x:.2%}")
+
+
+
 
 
 

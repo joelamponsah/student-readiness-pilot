@@ -21,7 +21,10 @@ else:
     "We can also measure test accuracy (total accuracy):"
     st.info("Total Accuracy = correct answers / total questions")
 
-    st.dataframe(df[["user_id", "test_id", "accuracy_attempt", "accuracy_total"]].head())
+    "We can also check a standard readinsess score by taking the normalized accuracy which is mark of the pass mark"
+    st.info("Readiness Score = mark / pass mark")
+
+    st.dataframe(df[["user_id", "test_id", "accuracy_attempt", "accuracy", "readiness_score"]].head())
 
     st.subheader("Time")
     st.write("We can also treat time as a unit in itself and determine metrics with regards to time only and also a combination with accuracy to deduce speed.")
@@ -50,7 +53,7 @@ else:
     st.info("Raw Latency = time taken / atttempted questions")
     st.info("Accuracte Latency = time taken / correct answers")
     
-    st.dataframe(df[["user_id", "test_id", "time_consumed", "speed_raw", "adj_speed", "speed_norm", "speed_rel_time" ]].head())
+    st.dataframe(df[["user_id", "test_id", "time_used", "speed_attempt", "speed_norm", "speed_rel_time" ]].head())
 
     st.subheader("Distributions of Accuracy, Time consumption & Raw Speed")
     import plotly.express as px
@@ -72,10 +75,10 @@ else:
     st.info("Accurate Speed = correct answers / time taken")
 
     "We can also look at the effeciency ratio which measure accuracy over time consumed"
-    st.info("Effeciency Ratio = test accuracy / time consumed")
+    st.info("Effeciency = test accuracy / time consumed")
 
     df['accurate_speed'] = df['adj_speed']
-    st.dataframe(df[["user_id", "test_id", "accurate_speed", "efficiency_ratio"]].head())
+    st.dataframe(df[["user_id", "test_id", "accurate_speed", "efficiency"]].head())
 
     st.subheader("Distributions of Speed-Accuracy Ratios")
     import plotly.express as px
@@ -92,18 +95,18 @@ else:
     "We can now take the averages (mean) of our prime metrics and further derive more advanced metrics"
     "This shows us how the population is performing as a whole"
     col1, col2, col3, col4, col5 = st.columns(5)
-    col1.metric("Mean accuracy", f"{df['accuracy_total'].mean():.3f}")
-    col2.metric("Mean accurate speed (correct/min)", f"{df['adj_speed'].mean():.3f}")
+    col1.metric("Mean accuracy", f"{df['accuracy'].mean():.3f}")
+    col2.metric("Mean speed (marks/min)", f"{df['speed'].mean():.3f}")
     col3.metric("Mean time consumed", f"{df['time_consumed'].mean():.3f}")
     col4.metric("Mean time taken", f"{df['time_taken'].mean():.3f}")
     col5.metric("Mean efficiency", f"{df['efficiency_ratio'].mean():.3f}")
 
     st.subheader("Relative Average")
-    "Now that we know the averages we can calculate the relative avergae of a user"
+    "Now that we know the averages we can calculate the relative average of a user"
     "This shows us how a user is performing individually amongst the group/population"
     st.info("Rel Avg = test accuracy - test average")
-    df["accuracy_avg"] = df["accuracy_total"].mean()
-    df["rel_acc"] = df["accuracy_total"] - df["accuracy_avg"]
+    df["accuracy_avg"] = df["accuracy"].mean()
+    df["rel_acc"] = df["accuracy"] - df["accuracy_avg"]
 
     st.subheader("Distributions of Relative Accuracy & Relative Speed")
     import plotly.express as px
@@ -119,11 +122,11 @@ else:
     "We find out how different users/tests are by calculating the standard deviations"
     " This gives us the variability in the results and can be related to consistency."
     col1, col2, col3, col4, col5 = st.columns(5)
-    col1.metric("Std accuracy", f"{df['accuracy_total'].std():.3f}")
-    col2.metric("Std accurate speed (correct/min)", f"{df['adj_speed'].std():.3f}")
-    col3.metric("Std time consumed", f"{df['time_consumed'].std():.3f}")
+    col1.metric("Std accuracy", f"{df['accuracy'].std():.3f}")
+    col2.metric("Std speed (marks/min)", f"{df['speed'].std():.3f}")
+    col3.metric("Std time used", f"{df['time_used'].std():.3f}")
     col4.metric("Std time taken", f"{df['time_taken'].std():.3f}")
-    col5.metric("Std efficiency", f"{df['efficiency_ratio'].std():.3f}")
+    col5.metric("Std efficiency", f"{df['efficiency'].std():.3f}")
    
 
 

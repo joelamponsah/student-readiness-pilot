@@ -9,11 +9,8 @@ from utils.metrics import (
     compute_test_analytics,
     compute_difficulty_df
 )
-from utils.institute_standardization import ( 
-    normalize_text,
-    handle_unkowns,
-    standardize_institute
-)
+from utils.institute_standardization import standardize_institute
+
 st.set_page_config(page_title="Institute Performance", layout="wide")
 st.title("Institute Performance Summary")
 

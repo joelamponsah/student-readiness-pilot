@@ -42,8 +42,8 @@ def compute_basic_metrics(df):
             df[c] = np.nan
     # avoid zero time issues
     df['time_taken'] = df['time_taken'].replace(0, np.nan)
-    df['speed_attempts'] = df['attempted_questions'] / df['time_taken']
-    df['speed_answers'] = df['correct_answers'] / df['time_taken']
+    df['speed_attempt'] = df['attempted_questions'] / df['time_taken']
+    df['speed_answer'] = df['correct_answers'] / df['time_taken']
     df['speed'] = df['marks'] / df['time_taken']
     df['time_left'] = ((df['duration'] - df['time_taken']) / df['duration']).clip(lower=0)
     df['time_used'] = (df['time_taken'] / df['duration']).clip(0,1)
@@ -54,7 +54,7 @@ def compute_basic_metrics(df):
 
     # normalized speed (safe)
     scaler = MinMaxScaler()
-    df['speed_norm'] = scaler.fit_transform(df[['speed_raw']].fillna(0))
+    df['speed_norm'] = scaler.fit_transform(df[['speed_attempt']].fillna(0))
     # efficiency ratio
     df['efficiency'] = df['accuracy'] / df['time_used'].replace(0, np.nan)
 

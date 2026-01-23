@@ -1,4 +1,5 @@
-!pip install unidecode
+pip install unidecode
+
 import pandas as pd
 import re
 import unidecode

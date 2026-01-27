@@ -117,7 +117,7 @@ else:
         fig = px.histogram(df, x='rel_acc', nbins=30, title='Relative Accuracy')
         st.plotly_chart(fig, use_container_width=True)
     with c2:
-        fig2 = px.histogram(df, x='time_left', nbins=30, title='Relative Speed (in minutes)')
+        fig2 = px.histogram(df, x='time_left', nbins=30, title='Time Remaining (in minutes)')
         st.plotly_chart(fig2, use_container_width=True)
         
     st.subheader("Standard Deviations / Variablilty")
@@ -128,7 +128,7 @@ else:
     col2.metric("Std speed (marks/min)", f"{df['speed'].std():.3f}")
     col3.metric("Std time used", f"{df['time_used'].std():.3f}")
     col4.metric("Std time taken", f"{df['time_taken'].std():.3f}")
-    col5.metric("Std efficiency", f"{df['efficiency'].std():.2f%}")
+    col5.metric("Std efficiency", f"{df['efficiency'].std():.3f}")
 
 #user_metrics['avg_efficiency_percent'] = user_metrics['avg_efficiency'].apply(lambda x: f"{x:.2%}")
 

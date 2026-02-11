@@ -281,11 +281,11 @@ st.divider()
 # ----------------------------
 # KPI Metrics (user-friendly labels)
 # ----------------------------
-row1 = st.columns(4)
+row1 = st.columns(3)
 row1[0].metric("Learners", f"{n_learners}")
 row1[1].metric("Unique Tests Taken", f"{df_inst_attempts['test_id'].nunique() if 'test_id' in df_inst_attempts.columns else 0}")
 row1[2].metric("Total Attempts", f"{len(df_inst_attempts)}")
-row1[3].metric("Institute Data Quality (Unknown Institute Rate)", fmt_pct(unknown_rate, 1))
+#row1[3].metric("Institute Data Quality (Unknown Institute Rate)", fmt_pct(unknown_rate, 1))
 
 # accuracy_total is typically 0..1
 avg_acc = df_inst_attempts["accuracy_total"].mean() if "accuracy_total" in df_inst_attempts.columns else np.nan
@@ -294,7 +294,7 @@ avg_sab = sab_inst_users["robust_SAB_scaled"].mean() if "robust_SAB_scaled" in s
 
 row2 = st.columns(3)
 row2[0].metric("Average Accuracy", fmt_pct(avg_acc, 0))
-row2[1].metric("Average Speed (time per item)", f"{fmt_num(avg_speed, 2)}")
+row2[1].metric("Average Speed ", f"{fmt_num(avg_speed, 2)}")
 row2[2].metric("Average Readiness Score (0–100)", f"{fmt_num(avg_sab, 1)}")
 
 row3 = st.columns(3)
@@ -409,6 +409,38 @@ if "mean_accuracy" in near_df.columns:
 
 show_table2 = near_df[cols_show2].rename(columns=rename_map)
 st.dataframe(show_table2.head(50), use_container_width=True)
+
+st.subheader("Top learners (by pass performance)")
+
+# attempt-level summary per learner
+if "username" in df_inst_attempts.columns:
+    learner_pass = (
+        df_inst_attempts.groupby("username", as_index=False)
+        .agg(
+            Attempts=("is_pass", "size"),
+            Passes=("is_pass", "sum"),
+            PassRate=("is_pass", "mean"),
+            AvgPassRatio=("pass_ratio", "mean")
+        )
+    )
+    learner_pass["PassRatePct"] = learner_pass["PassRate"] * 100
+    learner_pass = learner_pass.sort_values(
+        ["PassRate", "Attempts", "AvgPassRatio"],
+        ascending=[False, False, False]
+    )
+
+    st.dataframe(
+        learner_pass.rename(columns={
+            "username": "Learner (School ID)",
+            "Attempts": "Attempts",
+            "Passes": "Passes",
+            "PassRatePct": "Pass rate (%)",
+            "AvgPassRatio": "Avg pass ratio"
+        })[["Learner (School ID)", "Attempts", "Passes", "Pass rate (%)", "Avg pass ratio"]].head(30),
+        use_container_width=True
+    )
+else:
+    st.info("Missing `username` column — cannot rank learners by passes.")
 
 st.divider()
 

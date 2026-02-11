@@ -47,6 +47,18 @@ def fmt_num(x, decimals=1):
         return f"{x:.{decimals}f}"
     except Exception:
         return "—"
+        
+def fmt_pct_guard(p, n, decimals=0):
+    """
+    p: proportion 0..1
+    n: count corresponding to p
+    If rounding to 0 decimals would show 0% but n>0 and p<1%, show '<1%'.
+    """
+    if pd.isna(p):
+        return "—"
+    if decimals == 0 and n > 0 and p < 0.01:
+        return "<1%"
+    return f"{p*100:.{decimals}f}%"
 
 def detect_school_id_column(df: pd.DataFrame):
     """
@@ -234,16 +246,16 @@ risk_pct = not_eligible_n / n_learners if n_learners else np.nan
 # ----------------------------
 # Institute Summary Narrative
 # ----------------------------
-st.subheader("What this means (plain English)")
+#st.subheader("What this means (plain English)")
 
 if view_mode == "Minister (High-level)":
     st.markdown(
         f"""
 **{institute}** currently has **{n_learners} learners** using the platform.
 
-- **Exam-ready:** {fmt_pct(eligible_pct, 0)} (**{eligible_n} learners**)  
-- **Almost ready (needs targeted support):** {fmt_pct(cond_pct, 0)} (**{cond_n} learners**)  
-- **At risk (needs foundational intervention):** {fmt_pct(risk_pct, 0)} (**{not_eligible_n} learners**)
+- **Exam-ready:** {fmt_pct_gaurd(eligible_pct, 0)} (**{eligible_n} learners**)  
+- **Almost ready (needs targeted support):** {fmt_pct_guard(cond_pct, 0)} (**{cond_n} learners**)  
+- **At risk (needs foundational intervention):** {fmt_pct_guard(risk_pct, 0)} (**{not_eligible_n} learners**)
 
 **Policy signal:** This institute can improve outcomes fastest by focusing support on the **{not_eligible_n} at-risk learners**, while helping the **{cond_n} near-ready group** close their final gaps.
 """

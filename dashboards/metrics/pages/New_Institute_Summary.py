@@ -1,0 +1,467 @@
+import streamlit as st
+import pandas as pd
+import numpy as np
+import plotly.express as px
+
+from utils.insights import apply_insight_engine
+from utils.metrics import (
+    load_data_from_disk_or_session,
+    compute_basic_metrics2,
+    compute_sab_behavioral,
+    compute_test_analytics,
+)
+
+from utils.institute_standardization import standardize_institute  # ensure exists
+
+# ----------------------------
+# Page Config
+# ----------------------------
+st.set_page_config(page_title="Institute Performance", layout="wide")
+st.title("Institute Performance Summary")
+
+# ----------------------------
+# Helpers
+# ----------------------------
+def fmt_pct(x, decimals=0):
+    """Format fraction (0..1) as percentage string."""
+    try:
+        if pd.isna(x):
+            return "—"
+        return f"{x*100:.{decimals}f}%"
+    except Exception:
+        return "—"
+
+def fmt_pct_from_0_100(x, decimals=0):
+    """Format 0..100 as percentage string."""
+    try:
+        if pd.isna(x):
+            return "—"
+        return f"{x:.{decimals}f}%"
+    except Exception:
+        return "—"
+
+def fmt_num(x, decimals=1):
+    try:
+        if pd.isna(x):
+            return "—"
+        return f"{x:.{decimals}f}"
+    except Exception:
+        return "—"
+
+def detect_school_id_column(df: pd.DataFrame):
+    """
+    Detect the School ID / username column.
+    Prefer explicit school identifiers, then username-like fields.
+    """
+    candidates = [
+        "school_id", "school_user_id", "student_id", "student_code",
+        "username", "user_name", "login", "account_username",
+        "candidate_id", "index_number"
+    ]
+    for c in candidates:
+        if c in df.columns:
+            return c
+    return None
+
+def detect_datetime_column(df: pd.DataFrame):
+    """
+    Detect attempt timestamp column for trends.
+    """
+    candidates = [
+        "attempt_time", "attempted_at", "created_at", "timestamp",
+        "submitted_at", "date", "datetime"
+    ]
+    for c in candidates:
+        if c in df.columns:
+            return c
+    return None
+
+def safe_to_datetime(series):
+    return pd.to_datetime(series, errors="coerce", utc=False)
+
+# ----------------------------
+# Load
+# ----------------------------
+df = load_data_from_disk_or_session()
+if df is None or df.empty:
+    st.warning("Upload data to continue.")
+    st.stop()
+
+# ----------------------------
+# Standardize Institute (DO THIS EARLY)
+# ----------------------------
+df = standardize_institute(
+    df=df,
+    column="institute",
+    mapping_path="data/mapping.csv"
+)
+
+if "institute_std" not in df.columns:
+    st.error("Standardization failed: missing `institute_std`.")
+    st.stop()
+
+df["institute_std"] = df["institute_std"].fillna("Unknown").astype(str)
+
+unknown_rate = (df["institute_std"] == "Unknown").mean()
+with st.expander("Data quality checks"):
+    st.write("Institute 'Unknown' rate:", fmt_pct(unknown_rate, decimals=1))
+    st.write("Top standardized institutes:")
+    st.dataframe(df["institute_std"].value_counts().head(15).reset_index().rename(
+        columns={"index": "Institute", "institute_std": "Rows"}
+    ), use_container_width=True)
+
+# ----------------------------
+# Compute Metrics
+# ----------------------------
+df = compute_basic_metrics2(df)              # attempt-level enrichments
+sab_df = compute_sab_behavioral(df)          # user-level metrics
+
+# ----------------------------
+# Attach Institute + SchoolID to sab_df robustly
+# ----------------------------
+school_id_col = detect_school_id_column(df)
+
+# canonical per-user mapping
+cols = ["user_id", "institute_std"]
+if school_id_col:
+    cols.append(school_id_col)
+
+user_map = df[cols].drop_duplicates("user_id").copy()
+
+# ensure sab_df has institute_std
+if "institute_std" in sab_df.columns:
+    sab_df = sab_df.drop(columns=["institute_std"])
+sab_df = sab_df.merge(user_map, on="user_id", how="left")
+sab_df["institute_std"] = sab_df["institute_std"].fillna("Unknown").astype(str)
+
+# create a display identifier column for UI tables
+if school_id_col:
+    sab_df["learner_id_display"] = sab_df[school_id_col].astype(str)
+else:
+    # fallback: still show user_id if no school id exists
+    sab_df["learner_id_display"] = sab_df["user_id"].astype(str)
+
+# apply insight engine (your provided logic maps insight_code -> exam_status/message/action)
+sab_df = apply_insight_engine(sab_df)
+
+# test analytics (test-level)
+test_df = compute_test_analytics(df)
+
+# ----------------------------
+# View Toggle (Head of School first, Minister optional)
+# ----------------------------
+view_mode = st.radio(
+    "View mode",
+    ["Head of School", "Minister (High-level)"],
+    horizontal=True
+)
+
+# ----------------------------
+# Institute Selector
+# Build from attempt-level df to avoid missing institutes
+# ----------------------------
+institutes = sorted(df["institute_std"].unique().tolist())
+institute = st.selectbox("Select Institute", institutes)
+
+# slice
+sab_inst_users = sab_df[sab_df["institute_std"] == institute].copy()
+df_inst_attempts = df[df["institute_std"] == institute].copy()
+
+if sab_inst_users.empty:
+    st.info("No learner-level records found for this institute (SAB table empty).")
+    st.stop()
+
+# ----------------------------
+# Friendly Segmentation (consistent)
+# Use exam_status only (READY / BORDERLINE / AT-RISK mapped via your engine)
+# ----------------------------
+status_counts = sab_inst_users["exam_status"].value_counts(dropna=False)
+n_learners = sab_inst_users["user_id"].nunique()
+
+eligible_n = int(status_counts.get("Eligible", 0))
+cond_n = int(status_counts.get("Conditionally Eligible", 0))
+not_eligible_n = int(status_counts.get("Not Eligible", 0))
+
+eligible_pct = eligible_n / n_learners if n_learners else np.nan
+cond_pct = cond_n / n_learners if n_learners else np.nan
+risk_pct = not_eligible_n / n_learners if n_learners else np.nan
+
+# ----------------------------
+# Institute Summary Narrative
+# ----------------------------
+st.subheader("What this means (plain English)")
+
+if view_mode == "Minister (High-level)":
+    st.markdown(
+        f"""
+**{institute}** currently has **{n_learners} learners** using the platform.
+
+- **Exam-ready:** {fmt_pct(eligible_pct, 0)} (**{eligible_n} learners**)  
+- **Almost ready (needs targeted support):** {fmt_pct(cond_pct, 0)} (**{cond_n} learners**)  
+- **At risk (needs foundational intervention):** {fmt_pct(risk_pct, 0)} (**{not_eligible_n} learners**)
+
+**Policy signal:** This institute can improve outcomes fastest by focusing support on the **{not_eligible_n} at-risk learners**, while helping the **{cond_n} near-ready group** close their final gaps.
+"""
+    )
+else:
+    st.markdown(
+        f"""
+**At a glance for school leadership:**
+
+- **Exam-ready:** {fmt_pct(eligible_pct, 0)} (**{eligible_n} learners**)  
+- **Almost ready:** {fmt_pct(cond_pct, 0)} (**{cond_n} learners**)  
+- **At risk:** {fmt_pct(risk_pct, 0)} (**{not_eligible_n} learners**)
+
+**Recommended approach this week:**  
+1) Prioritize **at-risk** learners for foundational remediation.  
+2) Push **almost-ready** learners through targeted practice + 2–3 more tests.  
+3) Keep **ready** learners on mock exams to maintain consistency.
+"""
+    )
+
+st.divider()
+
+# ----------------------------
+# KPI Metrics (user-friendly labels)
+# ----------------------------
+row1 = st.columns(4)
+row1[0].metric("Learners", f"{n_learners}")
+row1[1].metric("Unique Tests Taken", f"{df_inst_attempts['test_id'].nunique() if 'test_id' in df_inst_attempts.columns else 0}")
+row1[2].metric("Total Attempts", f"{len(df_inst_attempts)}")
+row1[3].metric("Institute Data Quality (Unknown Institute Rate)", fmt_pct(unknown_rate, 1))
+
+# accuracy_total is typically 0..1
+avg_acc = df_inst_attempts["accuracy_total"].mean() if "accuracy_total" in df_inst_attempts.columns else np.nan
+avg_speed = df_inst_attempts["speed_raw"].mean() if "speed_raw" in df_inst_attempts.columns else np.nan
+avg_sab = sab_inst_users["robust_SAB_scaled"].mean() if "robust_SAB_scaled" in sab_inst_users.columns else np.nan
+
+row2 = st.columns(3)
+row2[0].metric("Average Accuracy", fmt_pct(avg_acc, 0))
+row2[1].metric("Average Speed (time per item)", f"{fmt_num(avg_speed, 2)}")
+row2[2].metric("Average Readiness Score (0–100)", f"{fmt_num(avg_sab, 1)}")
+
+row3 = st.columns(3)
+row3[0].metric("At-risk learners", f"{not_eligible_n}")
+row3[1].metric("Almost ready learners", f"{cond_n}")
+row3[2].metric("Exam-ready learners", f"{eligible_n}")
+
+st.divider()
+
+# ----------------------------
+# Readiness Breakdown (visual)
+# ----------------------------
+st.subheader("Readiness breakdown")
+
+seg_df = pd.DataFrame({
+    "Group": ["Exam-ready", "Almost ready", "At risk"],
+    "Learners": [eligible_n, cond_n, not_eligible_n]
+})
+
+fig_seg = px.bar(
+    seg_df,
+    x="Group",
+    y="Learners",
+    text="Learners",
+    title="Learners by readiness group"
+)
+st.plotly_chart(fig_seg, use_container_width=True)
+
+# Insight code distribution (diagnostic)
+with st.expander("Detailed diagnostic breakdown (risk types)"):
+    vc = sab_inst_users["insight_code"].value_counts(dropna=False).reset_index()
+    vc.columns = ["Insight type", "Learners"]
+    st.dataframe(vc, use_container_width=True)
+
+    fig_vc = px.bar(vc, x="Insight type", y="Learners", text="Learners", title="Learners by insight type")
+    st.plotly_chart(fig_vc, use_container_width=True)
+
+st.divider()
+
+# ----------------------------
+# "What to do this week" (action counts)
+# ----------------------------
+st.subheader("Recommended actions (this week)")
+
+action_counts = (
+    sab_inst_users["recommended_action"]
+    .fillna("No action generated")
+    .value_counts()
+    .reset_index()
+)
+action_counts.columns = ["Recommended action", "Learners"]
+
+st.dataframe(action_counts, use_container_width=True)
+
+fig_actions = px.bar(action_counts, x="Recommended action", y="Learners", text="Learners", title="Action plan volume")
+st.plotly_chart(fig_actions, use_container_width=True)
+
+st.divider()
+
+# ----------------------------
+# Priority lists (non-technical, decision-ready)
+# ----------------------------
+st.subheader("Priority intervention list (at-risk learners)")
+
+at_risk_df = sab_inst_users[sab_inst_users["exam_status"] == "Not Eligible"].copy()
+# sort: lowest readiness first, then lowest test_count
+sort_cols = [c for c in ["robust_SAB_scaled", "test_count"] if c in at_risk_df.columns]
+if sort_cols:
+    at_risk_df = at_risk_df.sort_values(sort_cols, ascending=True)
+
+cols_show = ["learner_id_display"]
+for c in ["test_count", "mean_accuracy", "mean_speed", "robust_SAB_scaled", "insight_code", "recommended_action"]:
+    if c in at_risk_df.columns:
+        cols_show.append(c)
+
+# convert mean_accuracy to %
+if "mean_accuracy" in at_risk_df.columns:
+    at_risk_df["mean_accuracy_pct"] = at_risk_df["mean_accuracy"].apply(lambda x: x*100 if pd.notna(x) else np.nan)
+    cols_show = [c for c in cols_show if c != "mean_accuracy"]
+    cols_show.insert(2, "mean_accuracy_pct")
+
+# nicer column names
+rename_map = {
+    "learner_id_display": "Learner (School ID)",
+    "test_count": "Tests taken",
+    "mean_accuracy_pct": "Avg accuracy (%)",
+    "mean_speed": "Avg speed (time/item)",
+    "robust_SAB_scaled": "Readiness (0–100)",
+    "insight_code": "Main issue",
+    "recommended_action": "Recommended action"
+}
+
+show_table = at_risk_df[cols_show].rename(columns=rename_map)
+
+# limit for demo cleanliness
+st.dataframe(show_table.head(50), use_container_width=True)
+
+st.subheader("Almost ready (quick wins)")
+near_df = sab_inst_users[sab_inst_users["exam_status"] == "Conditionally Eligible"].copy()
+if "robust_SAB_scaled" in near_df.columns:
+    near_df = near_df.sort_values("robust_SAB_scaled", ascending=True)
+
+cols_show2 = ["learner_id_display"]
+for c in ["test_count", "mean_accuracy", "mean_speed", "robust_SAB_scaled", "recommended_action"]:
+    if c in near_df.columns:
+        cols_show2.append(c)
+
+if "mean_accuracy" in near_df.columns:
+    near_df["mean_accuracy_pct"] = near_df["mean_accuracy"].apply(lambda x: x*100 if pd.notna(x) else np.nan)
+    cols_show2 = [c for c in cols_show2 if c != "mean_accuracy"]
+    cols_show2.insert(2, "mean_accuracy_pct")
+
+show_table2 = near_df[cols_show2].rename(columns=rename_map)
+st.dataframe(show_table2.head(50), use_container_width=True)
+
+st.divider()
+
+# ----------------------------
+# Learner Explorer (filters)
+# ----------------------------
+st.subheader("Learners (filter & review)")
+
+status_options = [s for s in ["Eligible", "Conditionally Eligible", "Not Eligible"] if s in sab_inst_users["exam_status"].unique()]
+selected_status = st.multiselect(
+    "Filter by readiness group",
+    status_options,
+    default=status_options
+)
+
+filtered = sab_inst_users[sab_inst_users["exam_status"].isin(selected_status)].copy()
+
+# add stakeholder-friendly columns
+cols_f = ["learner_id_display"]
+for c in ["exam_status", "insight_message", "recommended_action", "test_count", "robust_SAB_scaled"]:
+    if c in filtered.columns:
+        cols_f.append(c)
+
+rename_map2 = {
+    "learner_id_display": "Learner (School ID)",
+    "exam_status": "Readiness group",
+    "insight_message": "What we see",
+    "recommended_action": "What to do next",
+    "test_count": "Tests taken",
+    "robust_SAB_scaled": "Readiness (0–100)",
+}
+
+st.dataframe(filtered[cols_f].rename(columns=rename_map2), use_container_width=True)
+
+st.divider()
+
+# ----------------------------
+# Trends over time (if timestamp exists)
+# ----------------------------
+st.subheader("Trends (optional, if attempt dates exist)")
+
+dt_col = detect_datetime_column(df_inst_attempts)
+if dt_col:
+    tmp = df_inst_attempts.copy()
+    tmp[dt_col] = safe_to_datetime(tmp[dt_col])
+    tmp = tmp.dropna(subset=[dt_col])
+
+    if not tmp.empty:
+        # Weekly attempts & accuracy
+        tmp["week"] = tmp[dt_col].dt.to_period("W").astype(str)
+        wk = tmp.groupby("week").agg(
+            Attempts=("user_id", "size"),
+            AvgAccuracy=("accuracy_total", "mean") if "accuracy_total" in tmp.columns else ("user_id", "size"),
+            AvgSpeed=("speed_raw", "mean") if "speed_raw" in tmp.columns else ("user_id", "size")
+        ).reset_index()
+
+        if "AvgAccuracy" in wk.columns:
+            wk["AvgAccuracyPct"] = wk["AvgAccuracy"] * 100
+
+        fig_wk1 = px.line(wk, x="week", y="Attempts", title="Weekly platform activity (attempts)")
+        st.plotly_chart(fig_wk1, use_container_width=True)
+
+        if "AvgAccuracyPct" in wk.columns:
+            fig_wk2 = px.line(wk, x="week", y="AvgAccuracyPct", title="Weekly average accuracy (%)")
+            st.plotly_chart(fig_wk2, use_container_width=True)
+    else:
+        st.info("Attempt date column detected, but no valid dates found to show trends.")
+else:
+    st.info("No attempt date column detected (add one like created_at/timestamp to enable trends).")
+
+st.divider()
+
+# ----------------------------
+# Test stability & difficulty (reframed)
+# ----------------------------
+st.subheader("Assessment quality check (are tests stable and fair?)")
+
+if "test_id" in df_inst_attempts.columns and "test_id" in test_df.columns:
+    inst_tests = test_df[test_df["test_id"].isin(df_inst_attempts["test_id"])].copy()
+
+    if not inst_tests.empty:
+        # Rename axes for clarity if columns exist
+        x_col = "mean_accuracy" if "mean_accuracy" in inst_tests.columns else None
+        y_col = "speed_consistency" if "speed_consistency" in inst_tests.columns else None
+
+        if x_col and y_col:
+            fig = px.scatter(
+                inst_tests,
+                x=x_col,
+                y=y_col,
+                size="taker_count" if "taker_count" in inst_tests.columns else None,
+                color="time_consistency" if "time_consistency" in inst_tests.columns else None,
+                hover_data=["test_id"],
+                title="Which tests are reliable? (higher consistency = more stable measurement)"
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+            st.markdown(
+                """
+**How to read this chart (plain English):**
+- Each dot is a test.
+- Bigger dots = more learners attempted it (more evidence).
+- Higher consistency suggests the test measures performance more reliably.
+- Use this to flag assessments that may need review (too inconsistent or unstable).
+"""
+            )
+        else:
+            st.info("Test analytics table exists but missing required columns for the stability map.")
+    else:
+        st.info("No test analytics records found for this institute.")
+else:
+    st.info("Missing test_id in attempts or test analytics; cannot show assessment quality.")
+

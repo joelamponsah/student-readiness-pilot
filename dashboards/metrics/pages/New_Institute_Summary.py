@@ -436,7 +436,7 @@ st.divider()
 # ----------------------------
 # Trends over time (if timestamp exists)
 # ----------------------------
-st.subheader("Trends (optional, if attempt dates exist)")
+st.subheader("Trends")
 
 dt_col = detect_datetime_column(df_inst_attempts)
 if dt_col:

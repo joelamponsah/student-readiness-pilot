@@ -396,11 +396,12 @@ else:
     st.markdown("**Hardest tests (priority for review / intervention):**")
     st.dataframe(
         hardest.rename(columns={
-            "test_id": "Test",
+            "test_id": "Test ID",
+            "name" : "Test",
             "Attempts": "Attempts",
             "PassRatePct": "Pass rate (%)",
             "AvgPassRatio": "Avg pass ratio"
-        })[["Test", "Attempts", "Pass rate (%)", "Avg pass ratio"]].head(30),
+        })[["Test ID", "Test", "Attempts", "Pass rate (%)", "Avg pass ratio"]].head(30),
         use_container_width=True
     )
 

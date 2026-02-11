@@ -160,8 +160,53 @@ view_mode = st.radio(
 # Institute Selector
 # Build from attempt-level df to avoid missing institutes
 # ----------------------------
-institutes = sorted(df["institute_std"].unique().tolist())
-institute = st.selectbox("Select Institute", institutes)
+#institutes = sorted(df["institute_std"].unique().tolist())
+#institute = st.selectbox("Select Institute", institutes)
+
+# ----------------------------
+# Institute Selector (Mapped-only, with search)
+# ----------------------------
+MAPPING_PATH = "data/mapping.csv"
+
+mapping_df = pd.read_csv(MAPPING_PATH)
+
+# Canonical mapped institute names from your mapping scheme
+mapped_institutes = (
+    mapping_df["institute_std"]
+    .dropna()
+    .astype(str)
+    .str.strip()
+)
+
+# Remove placeholders / non-real names
+mapped_institutes = mapped_institutes[
+    ~mapped_institutes.isin(["", "Unknown", "Other", "Unmapped", "N/A", "NA"])
+]
+
+# Only show mapped institutes that actually appear in the dataset
+institutes = sorted(
+    set(mapped_institutes).intersection(set(df["institute_std"].dropna().astype(str)))
+)
+
+if not institutes:
+    st.warning("No mapped institutes found in the current dataset.")
+    st.stop()
+
+search = st.text_input("Search institute", value="")
+if search.strip():
+    q = search.strip().lower()
+    filtered_institutes = [i for i in institutes if q in i.lower()]
+else:
+    filtered_institutes = institutes
+
+if not filtered_institutes:
+    st.warning("No matches found. Try a different search term.")
+    st.stop()
+
+st.caption(f"Showing {len(filtered_institutes)} of {len(institutes)} mapped institutes")
+
+institute = st.selectbox("Select Institute", filtered_institutes)
+
 
 # slice
 sab_inst_users = sab_df[sab_df["institute_std"] == institute].copy()

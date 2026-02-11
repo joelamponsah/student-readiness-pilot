@@ -397,11 +397,11 @@ else:
     st.dataframe(
         hardest.rename(columns={
             "test_id": "Test ID",
-            "name": "Test",
+            #"name": "Test",
             "Attempts": "Attempts",
             "PassRatePct": "Pass rate (%)",
             "AvgPassRatio": "Avg pass ratio"
-        })[["Test ID", "Test", "Attempts", "Pass rate (%)", "Avg pass ratio"]].head(30),
+        })[["Test ID", "name", "Attempts", "Pass rate (%)", "Avg pass ratio"]].head(30),
         use_container_width=True
     )
 

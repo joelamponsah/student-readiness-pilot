@@ -253,7 +253,7 @@ if view_mode == "Minister (High-level)":
         f"""
 **{institute}** currently has **{n_learners} learners** using the platform.
 
-- **Exam-ready:** {fmt_pct_gaurd(eligible_pct, 0)} (**{eligible_n} learners**)  
+- **Exam-ready:** {fmt_pct_guard(eligible_pct, 0)} (**{eligible_n} learners**)  
 - **Almost ready (needs targeted support):** {fmt_pct_guard(cond_pct, 0)} (**{cond_n} learners**)  
 - **At risk (needs foundational intervention):** {fmt_pct_guard(risk_pct, 0)} (**{not_eligible_n} learners**)
 
@@ -265,9 +265,9 @@ else:
         f"""
 **At a glance for school leadership:**
 
-- **Exam-ready:** {fmt_pct_gaurd(eligible_pct, 0)} (**{eligible_n} learners**)  
-- **Almost ready:** {fmt_pct_gaurd(cond_pct, 0)} (**{cond_n} learners**)  
-- **At risk:** {fmt_pct_gaurd(risk_pct, 0)} (**{not_eligible_n} learners**)
+- **Exam-ready:** {fmt_pct_guard(eligible_pct, 0)} (**{eligible_n} learners**)  
+- **Almost ready:** {fmt_pct_guard(cond_pct, 0)} (**{cond_n} learners**)  
+- **At risk:** {fmt_pct_guard(risk_pct, 0)} (**{not_eligible_n} learners**)
 
 **Recommended approach this week:**  
 1) Prioritize **at-risk** learners for foundational remediation.  

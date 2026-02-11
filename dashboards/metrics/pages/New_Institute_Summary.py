@@ -203,7 +203,7 @@ test_df = compute_test_analytics(df)
 # ----------------------------
 view_mode = st.radio(
     "View mode",
-    ["Head of School", "Minister (High-level)"],
+    ["Head of School", "High-level"],
     horizontal=True
 )
 
@@ -300,7 +300,7 @@ risk_pct = not_eligible_n / n_learners if n_learners else np.nan
 # ----------------------------
 #st.subheader("What this means (plain English)")
 
-if view_mode == "Minister (High-level)":
+if view_mode == "High-level":
     st.markdown(
         f"""
 **{institute}** currently has **{n_learners} learners** using the platform.

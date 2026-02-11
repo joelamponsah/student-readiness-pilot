@@ -192,7 +192,7 @@ mapped_institutes = (
 
 # Remove placeholders / non-real names
 mapped_institutes = mapped_institutes[
-    ~mapped_institutes.isin(["", "Unknown", "Other", "Unmapped", "N/A", "NA"])
+    ~mapped_institutes.isin(["", "Other", "Unmapped", "N/A", "NA"])
 ]
 
 # Only show mapped institutes that actually appear in the dataset
@@ -265,9 +265,9 @@ else:
         f"""
 **At a glance for school leadership:**
 
-- **Exam-ready:** {fmt_pct(eligible_pct, 0)} (**{eligible_n} learners**)  
-- **Almost ready:** {fmt_pct(cond_pct, 0)} (**{cond_n} learners**)  
-- **At risk:** {fmt_pct(risk_pct, 0)} (**{not_eligible_n} learners**)
+- **Exam-ready:** {fmt_pct_gaurd(eligible_pct, 0)} (**{eligible_n} learners**)  
+- **Almost ready:** {fmt_pct_gaurd(cond_pct, 0)} (**{cond_n} learners**)  
+- **At risk:** {fmt_pct_gaurd(risk_pct, 0)} (**{not_eligible_n} learners**)
 
 **Recommended approach this week:**  
 1) Prioritize **at-risk** learners for foundational remediation.  

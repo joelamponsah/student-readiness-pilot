@@ -91,6 +91,45 @@ def detect_datetime_column(df: pd.DataFrame):
 def safe_to_datetime(series):
     return pd.to_datetime(series, errors="coerce", utc=False)
 
+def compute_pass_fields(df_attempts: pd.DataFrame,
+                        marks_col: str = "marks",
+                        pass_mark_col: str = "pass_mark",
+                        default_pass_mark: float | None = None) -> pd.DataFrame:
+    """
+    Adds:
+      - pass_ratio = marks / pass_mark
+      - is_pass = marks >= pass_mark
+    Supports:
+      - per-row pass_mark column, OR
+      - a global default_pass_mark (if pass_mark column missing)
+    """
+    out = df_attempts.copy()
+
+    if marks_col not in out.columns:
+        st.error(f"Missing required column: `{marks_col}`")
+        st.stop()
+
+    if pass_mark_col in out.columns:
+        out[pass_mark_col] = pd.to_numeric(out[pass_mark_col], errors="coerce")
+    else:
+        if default_pass_mark is None:
+            st.error(f"Missing `{pass_mark_col}` and no default_pass_mark provided.")
+            st.stop()
+        out[pass_mark_col] = float(default_pass_mark)
+
+    out[marks_col] = pd.to_numeric(out[marks_col], errors="coerce")
+
+    # Avoid divide-by-zero
+    out["pass_ratio"] = np.where(
+        out[pass_mark_col] > 0,
+        out[marks_col] / out[pass_mark_col],
+        np.nan
+    )
+
+    out["is_pass"] = (out[marks_col] >= out[pass_mark_col]).fillna(False)
+
+    return out
+
 # ----------------------------
 # Load
 # ----------------------------
@@ -224,6 +263,19 @@ institute = st.selectbox("Select Institute", filtered_institutes)
 sab_inst_users = sab_df[sab_df["institute_std"] == institute].copy()
 df_inst_attempts = df[df["institute_std"] == institute].copy()
 
+# ----------------------------
+# Pass/Fail fields
+# ----------------------------
+# If pass_mark is stored per attempt, keep default_pass_mark=None
+# If you don't have a pass_mark column, set a default like 50 (or 50% depending on scale)
+df_inst_attempts = compute_pass_fields(
+    df_inst_attempts,
+    marks_col="marks",
+    pass_mark_col="pass_mark",
+    default_pass_mark=None
+)
+
+
 if sab_inst_users.empty:
     st.info("No learner-level records found for this institute (SAB table empty).")
     st.stop()
@@ -281,6 +333,8 @@ st.divider()
 # ----------------------------
 # KPI Metrics (user-friendly labels)
 # ----------------------------
+
+
 row1 = st.columns(3)
 row1[0].metric("Learners", f"{n_learners}")
 row1[1].metric("Unique Tests Taken", f"{df_inst_attempts['test_id'].nunique() if 'test_id' in df_inst_attempts.columns else 0}")
@@ -302,8 +356,64 @@ row3[0].metric("At-risk learners", f"{not_eligible_n}")
 row3[1].metric("Almost ready learners", f"{cond_n}")
 row3[2].metric("Exam-ready learners", f"{eligible_n}")
 
+
 st.divider()
 
+st.subheader("Pass / fail overview")
+
+passes = int(df_inst_attempts["is_pass"].sum())
+fails = int((~df_inst_attempts["is_pass"]).sum())
+overall_pass_rate = df_inst_attempts["is_pass"].mean() if len(df_inst_attempts) else np.nan
+avg_pass_ratio = df_inst_attempts["pass_ratio"].mean() if len(df_inst_attempts) else np.nan
+
+c1, c2, c3, c4 = st.columns(4)
+c1.metric("Overall pass rate", fmt_pct(overall_pass_rate, 1))
+c2.metric("Passes (attempts)", f"{passes}")
+c3.metric("Fails (attempts)", f"{fails}")
+c4.metric("Avg pass ratio (marks ÷ pass mark)", fmt_num(avg_pass_ratio, 2))
+
+st.subheader("Pass rate per test taken")
+
+if "test_id" not in df_inst_attempts.columns:
+    st.info("No test_id column found — cannot compute pass rate per test.")
+else:
+    test_pass = (
+        df_inst_attempts.groupby("test_id", as_index=False)
+        .agg(
+            Attempts=("is_pass", "size"),
+            PassRate=("is_pass", "mean"),
+            AvgPassRatio=("pass_ratio", "mean")
+        )
+    )
+    test_pass["PassRatePct"] = test_pass["PassRate"] * 100
+
+    # Hardest tests: low pass rate + meaningful attempts
+    min_attempts = st.slider("Minimum attempts to rank a test", 5, 100, 10)
+    hardest = test_pass[test_pass["Attempts"] >= min_attempts].sort_values(
+        ["PassRate", "Attempts"], ascending=[True, False]
+    )
+
+    st.markdown("**Hardest tests (priority for review / intervention):**")
+    st.dataframe(
+        hardest.rename(columns={
+            "test_id": "Test",
+            "Attempts": "Attempts",
+            "PassRatePct": "Pass rate (%)",
+            "AvgPassRatio": "Avg pass ratio"
+        })[["Test", "Attempts", "Pass rate (%)", "Avg pass ratio"]].head(30),
+        use_container_width=True
+    )
+
+    fig_test_pass = px.bar(
+        hardest.head(30),
+        x="test_id",
+        y="PassRatePct",
+        text="Attempts",
+        title="Pass rate by test (filtered to meaningful attempt counts)"
+    )
+    st.plotly_chart(fig_test_pass, use_container_width=True)
+
+st.divider()
 # ----------------------------
 # Readiness Breakdown (visual)
 # ----------------------------

@@ -401,7 +401,7 @@ else:
             "Attempts": "Attempts",
             "PassRatePct": "Pass rate (%)",
             "AvgPassRatio": "Avg pass ratio"
-        })[["Test ID", "name", "Attempts", "Pass rate (%)", "Avg pass ratio"]].head(30),
+        })[["Test ID", "Attempts", "Pass rate (%)", "Avg pass ratio"]].head(30),
         use_container_width=True
     )
 

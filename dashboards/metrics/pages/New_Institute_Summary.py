@@ -370,7 +370,7 @@ c1, c2, c3, c4 = st.columns(4)
 c1.metric("Overall pass rate", fmt_pct(overall_pass_rate, 1))
 c2.metric("Passes (attempts)", f"{passes}")
 c3.metric("Fails (attempts)", f"{fails}")
-c4.metric("Avg pass ratio (marks ÷ pass mark)", fmt_num(avg_pass_ratio, 2))
+c4.metric("Avg pass ratio (marks ÷ pass mark)", fmt_pct(avg_pass_ratio, 2))
 
 st.subheader("Pass rate per test taken")
 

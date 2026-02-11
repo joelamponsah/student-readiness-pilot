@@ -397,7 +397,7 @@ else:
     st.dataframe(
         hardest.rename(columns={
             "test_id": "Test ID",
-            "name" : "Test",
+            "name": "Test",
             "Attempts": "Attempts",
             "PassRatePct": "Pass rate (%)",
             "AvgPassRatio": "Avg pass ratio"

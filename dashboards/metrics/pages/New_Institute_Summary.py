@@ -172,7 +172,7 @@ mapping_df = pd.read_csv(MAPPING_PATH)
 
 # Canonical mapped institute names from your mapping scheme
 mapped_institutes = (
-    mapping_df["institute_std"]
+    mapping_df["institute_standardized"]
     .dropna()
     .astype(str)
     .str.strip()

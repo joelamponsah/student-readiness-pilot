@@ -374,11 +374,11 @@ c4.metric("Avg pass ratio (marks ÷ pass mark)", fmt_pct(avg_pass_ratio, 2))
 
 st.subheader("Pass rate per test taken")
 
-if "test_id" not in df_inst_attempts.columns:
+if "name" not in df_inst_attempts.columns:
     st.info("No test_id column found — cannot compute pass rate per test.")
 else:
     test_pass = (
-        df_inst_attempts.groupby("test_id", as_index=False)
+        df_inst_attempts.groupby("name", as_index=False)
         .agg(
             Attempts=("is_pass", "size"),
             PassRate=("is_pass", "mean"),
@@ -396,18 +396,18 @@ else:
     st.markdown("**Hardest tests (priority for review / intervention):**")
     st.dataframe(
         hardest.rename(columns={
-            "test_id": "Test ID",
+            "name": "Test",
             #"name": "Test",
             "Attempts": "Attempts",
             "PassRatePct": "Pass rate (%)",
             "AvgPassRatio": "Avg pass ratio"
-        })[["Test ID", "Attempts", "Pass rate (%)", "Avg pass ratio"]].head(30),
+        })[["Test", "Attempts", "Pass rate (%)", "Avg pass ratio"]].head(30),
         use_container_width=True
     )
 
     fig_test_pass = px.bar(
         hardest.head(30),
-        x="test_id",
+        x="name",
         y="PassRatePct",
         text="Attempts",
         title="Pass rate by test (filtered to meaningful attempt counts)"

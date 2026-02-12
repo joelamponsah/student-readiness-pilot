@@ -296,6 +296,33 @@ cond_pct = cond_n / n_learners if n_learners else np.nan
 risk_pct = not_eligible_n / n_learners if n_learners else np.nan
 
 # ----------------------------
+# KPI Metrics (user-friendly labels)
+# ----------------------------
+
+
+row1 = st.columns(3)
+row1[0].metric("Learners", f"{n_learners}")
+row1[1].metric("Unique Tests Taken", f"{df_inst_attempts['test_id'].nunique() if 'test_id' in df_inst_attempts.columns else 0}")
+row1[2].metric("Total Attempts", f"{len(df_inst_attempts)}")
+#row1[3].metric("Institute Data Quality (Unknown Institute Rate)", fmt_pct(unknown_rate, 1))
+
+# accuracy_total is typically 0..1
+avg_acc = df_inst_attempts["accuracy_total"].mean() if "accuracy_total" in df_inst_attempts.columns else np.nan
+avg_speed = df_inst_attempts["speed_raw"].mean() if "speed_raw" in df_inst_attempts.columns else np.nan
+avg_sab = sab_inst_users["robust_SAB_scaled"].mean() if "robust_SAB_scaled" in sab_inst_users.columns else np.nan
+
+row2 = st.columns(3)
+row2[0].metric("Average Accuracy", fmt_pct(avg_acc, 0))
+row2[1].metric("Average Speed ", f"{fmt_num(avg_speed, 2)}")
+row2[2].metric("Average Readiness Score (0–100)", f"{fmt_num(avg_sab, 1)}")
+
+row3 = st.columns(3)
+row3[0].metric("At-risk learners", f"{not_eligible_n}")
+row3[1].metric("Almost ready learners", f"{cond_n}")
+row3[2].metric("Exam-ready learners", f"{eligible_n}")
+
+st.divider()
+# ----------------------------
 # Institute Summary Narrative
 # ----------------------------
 # ----------------------------
@@ -361,32 +388,6 @@ else:
         st.markdown("- No action items detected from current data (no learners in any group).")
 
 st.divider()
-
-# ----------------------------
-# KPI Metrics (user-friendly labels)
-# ----------------------------
-
-
-row1 = st.columns(3)
-row1[0].metric("Learners", f"{n_learners}")
-row1[1].metric("Unique Tests Taken", f"{df_inst_attempts['test_id'].nunique() if 'test_id' in df_inst_attempts.columns else 0}")
-row1[2].metric("Total Attempts", f"{len(df_inst_attempts)}")
-#row1[3].metric("Institute Data Quality (Unknown Institute Rate)", fmt_pct(unknown_rate, 1))
-
-# accuracy_total is typically 0..1
-avg_acc = df_inst_attempts["accuracy_total"].mean() if "accuracy_total" in df_inst_attempts.columns else np.nan
-avg_speed = df_inst_attempts["speed_raw"].mean() if "speed_raw" in df_inst_attempts.columns else np.nan
-avg_sab = sab_inst_users["robust_SAB_scaled"].mean() if "robust_SAB_scaled" in sab_inst_users.columns else np.nan
-
-row2 = st.columns(3)
-row2[0].metric("Average Accuracy", fmt_pct(avg_acc, 0))
-row2[1].metric("Average Speed ", f"{fmt_num(avg_speed, 2)}")
-row2[2].metric("Average Readiness Score (0–100)", f"{fmt_num(avg_sab, 1)}")
-
-row3 = st.columns(3)
-row3[0].metric("At-risk learners", f"{not_eligible_n}")
-row3[1].metric("Almost ready learners", f"{cond_n}")
-row3[2].metric("Exam-ready learners", f"{eligible_n}")
 
 
 st.divider()

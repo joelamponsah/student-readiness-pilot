@@ -313,7 +313,7 @@ avg_sab = sab_inst_users["robust_SAB_scaled"].mean() if "robust_SAB_scaled" in s
 
 row2 = st.columns(3)
 row2[0].metric("Average Accuracy", fmt_pct(avg_acc, 0))
-row2[1].metric("Average Speed ", f"{fmt_num(avg_speed, 2)}")
+row2[1].metric("Average Speed (questions per min)", f"{fmt_num(avg_speed, 2)}")
 row2[2].metric("Average Readiness Score (0–100)", f"{fmt_num(avg_sab, 1)}")
 
 row3 = st.columns(3)

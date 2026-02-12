@@ -302,7 +302,7 @@ risk_pct = not_eligible_n / n_learners if n_learners else np.nan
 # Institute Summary Narrative (Dynamic, non-generic)
 # Place this RIGHT AFTER segmentation counts/pcts and BEFORE KPIs
 # ----------------------------
-st.subheader("What this means (plain English)")
+#st.subheader("What this means (plain English)")
 
 # 1) Always show the three-group snapshot with the <1% guard
 st.markdown(

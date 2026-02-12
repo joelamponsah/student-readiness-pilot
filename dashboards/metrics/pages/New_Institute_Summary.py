@@ -298,35 +298,67 @@ risk_pct = not_eligible_n / n_learners if n_learners else np.nan
 # ----------------------------
 # Institute Summary Narrative
 # ----------------------------
-#st.subheader("What this means (plain English)")
+# ----------------------------
+# Institute Summary Narrative (Dynamic, non-generic)
+# Place this RIGHT AFTER segmentation counts/pcts and BEFORE KPIs
+# ----------------------------
+st.subheader("What this means (plain English)")
 
-if view_mode == "High-level":
-    st.markdown(
-        f"""
-**{institute}** currently has **{n_learners} learners** using the platform.
-
-- **Exam-ready:** {fmt_pct_guard(eligible_pct, 0)} (**{eligible_n} learners**)  
-- **Almost ready (needs targeted support):** {fmt_pct_guard(cond_pct, 0)} (**{cond_n} learners**)  
-- **At risk (needs foundational intervention):** {fmt_pct_guard(risk_pct, 0)} (**{not_eligible_n} learners**)
-
-**Policy signal:** This institute can improve outcomes fastest by focusing support on the **{not_eligible_n} at-risk learners**, while helping the **{cond_n} near-ready group** close their final gaps.
+# 1) Always show the three-group snapshot with the <1% guard
+st.markdown(
+    f"""
+- **Exam-ready:** {fmt_pct_guard(eligible_pct, eligible_n, 0)} (**{eligible_n} learner{'s' if eligible_n != 1 else ''}**)  
+- **Almost ready:** {fmt_pct_guard(cond_pct, cond_n, 0)} (**{cond_n} learners**)  
+- **At risk:** {fmt_pct_guard(risk_pct, not_eligible_n, 0)} (**{not_eligible_n} learners**)  
 """
-    )
+)
+
+# 2) Add message lines that only appear if the group exists
+bullets = []
+
+if not_eligible_n > 0:
+    bullets.append(f"**At risk:** {not_eligible_n} learners need foundational support before exam attempts.")
 else:
-    st.markdown(
-        f"""
-**At a glance for school leadership:**
+    bullets.append("**At risk:** None detected in current data (good sign).")
 
-- **Exam-ready:** {fmt_pct_guard(eligible_pct, 0)} (**{eligible_n} learners**)  
-- **Almost ready:** {fmt_pct_guard(cond_pct, 0)} (**{cond_n} learners**)  
-- **At risk:** {fmt_pct_guard(risk_pct, 0)} (**{not_eligible_n} learners**)
+if cond_n > 0:
+    bullets.append(f"**Almost ready:** {cond_n} learners are close—targeted support can move them into exam-ready.")
+else:
+    bullets.append("**Almost ready:** None detected in current data.")
 
-**Recommended approach this week:**  
-1) Prioritize **at-risk** learners for foundational remediation.  
-2) Push **almost-ready** learners through targeted practice + 2–3 more tests.  
-3) Keep **ready** learners on mock exams to maintain consistency.
-"""
-    )
+if eligible_n > 0:
+    bullets.append(f"**Exam-ready:** {eligible_n} learners can proceed to mock exams to maintain readiness.")
+else:
+    bullets.append("**Exam-ready:** None detected yet—focus on building consistency through more practice.")
+
+st.markdown("\n".join([f"- {b}" for b in bullets]))
+
+# 3) Policy signal vs recommended approach:
+#    - Minister view: one policy sentence, but only if relevant
+#    - Head of School: weekly action plan, but only if there is something to act on
+if view_mode == "High-level":
+    if not_eligible_n > 0 or cond_n > 0:
+        st.markdown(
+            f"**Policy signal:** Focus resources on **{not_eligible_n} at-risk** learners and "
+            f"move **{cond_n} almost-ready** learners into exam-ready status to lift overall performance."
+        )
+    else:
+        st.markdown("**Policy signal:** No immediate risk pockets detected in this institute’s current data.")
+else:
+    # Head of School weekly plan (only show steps if needed)
+    st.markdown("**Recommended actions this week (based on your data):**")
+    action_lines = []
+    if not_eligible_n > 0:
+        action_lines.append(f"- Prioritize **{not_eligible_n} at-risk** learners for remediation sessions.")
+    if cond_n > 0:
+        action_lines.append(f"- Push **{cond_n} almost-ready** learners to close gaps and complete 2–3 more tests.")
+    if eligible_n > 0:
+        action_lines.append(f"- Keep **{eligible_n} exam-ready** learners on mock exams to maintain stability.")
+
+    if action_lines:
+        st.markdown("\n".join(action_lines))
+    else:
+        st.markdown("- No action items detected from current data (no learners in any group).")
 
 st.divider()
 

@@ -102,9 +102,18 @@ st.dataframe(user_tests[["time_taken","duration","time_consumed","accuracy_total
 col1, col2, col3 = st.columns(3)
 col1.metric("Avg Score Rate (marks/q)", f"{user_tests['accuracy_total'].mean():.2f}")
 col2.metric("Avg Correct Speed (correct/time)", f"{user_tests['adj_speed'].mean():.2f}")
-eff = user_tests['efficiency_ratio']
-eff_val = float(eff.mean()) if eff.notna().any() else None
-col3.metric("Avg Efficiency (score/time)", f"{eff_val:.2f}" if eff_val is not None else "N/A")
+eff_ratio = user_tests['efficiency_ratio']
+eff_per_min = user_tests['efficiency_per_min']
+
+eff_ratio_val = float(eff_ratio.mean()) if eff_ratio.notna().any() else None
+eff_per_min_val = float(eff_per_min.mean()) if eff_per_min.notna().any() else None
+
+if eff_ratio_val is not None:
+    col3.metric("Learning Efficiency (accuracy / time used)", f"{eff_ratio_val:.2f}")
+elif eff_per_min_val is not None:
+    col3.metric("Learning Efficiency (accuracy per minute)", f"{eff_per_min_val:.2f}")
+else:
+    col3.metric("Learning Efficiency", "N/A")
 
 st.divider()
 

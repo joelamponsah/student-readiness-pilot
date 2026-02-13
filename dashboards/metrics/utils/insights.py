@@ -100,3 +100,116 @@ def apply_insight_engine(sab_df):
     sab_df["coach_feedback"] = sab_df.apply(coach_feedback, axis=1)
 
     return sab_df
+
+
+def _sigmoid(x: float) -> float:
+    return 1 / (1 + np.exp(-x))
+
+def add_readiness_probability(sab_df):
+    """
+    Produces an interpretable probability-like score (0..1) based on current pilot signals.
+    Requires (recommended) columns:
+      robust_SAB_scaled (0..100), user_pass_rate (0..1), avg_pass_ratio, test_count, std_acc
+    """
+    sab_df = sab_df.copy()
+
+    for c in ["robust_SAB_scaled", "user_pass_rate", "avg_pass_ratio", "test_count", "std_acc", "mean_accuracy"]:
+        if c not in sab_df.columns:
+            sab_df[c] = np.nan
+
+    sab_norm = (sab_df["robust_SAB_scaled"].fillna(0).clip(0, 100)) / 100.0
+    pass_norm = sab_df["user_pass_rate"].fillna(0).clip(0, 1)
+    ratio_norm = (sab_df["avg_pass_ratio"].fillna(0).clip(0, 1.5)) / 1.5
+    evidence = (sab_df["test_count"].fillna(0) / (sab_df["test_count"].fillna(0) + 10)).clip(0, 1)
+
+    inconsistent_penalty = (sab_df["std_acc"].fillna(0) > 0.35).astype(int) * 0.15
+
+    # Weighted score -> sigmoid -> probability
+    # Conservative bias keeps probabilities from inflating too early in pilot
+    score = (
+        1.4 * sab_norm +
+        1.0 * pass_norm +
+        0.6 * ratio_norm +
+        0.6 * evidence
+        - inconsistent_penalty
+        - 1.0
+    )
+
+    prob = _sigmoid(score)
+    sab_df["readiness_probability"] = prob
+    sab_df["readiness_probability_pct"] = (prob * 100).round(1)
+
+    return sab_df
+
+def add_risk_band(sab_df):
+    """
+    Simple cohort-relative banding for minister-friendly storytelling.
+    Uses robust_SAB_scaled percentile (0..100).
+    """
+    sab_df = sab_df.copy()
+    if "robust_SAB_scaled" not in sab_df.columns:
+        sab_df["risk_band"] = "Unknown"
+        return sab_df
+
+    sab_df["risk_band"] = "On Track"
+    sab_df.loc[sab_df["test_count"] < 3, "risk_band"] = "Low Evidence"
+    sab_df.loc[sab_df["robust_SAB_scaled"] < 20, "risk_band"] = "At Risk"
+    sab_df.loc[(sab_df["robust_SAB_scaled"] >= 20) & (sab_df["robust_SAB_scaled"] < 40), "risk_band"] = "Watchlist"
+    sab_df.loc[sab_df["robust_SAB_scaled"] >= 75, "risk_band"] = "Ready"
+
+    # Optional pass-based override (if available)
+    if "user_pass_rate" in sab_df.columns and "avg_pass_ratio" in sab_df.columns:
+        sab_df.loc[(sab_df["user_pass_rate"] < 0.5) & (sab_df["avg_pass_ratio"] < 0.9), "risk_band"] = "At Risk"
+
+    return sab_df
+
+def redemption_plan(row):
+    """
+    Milestone-based plan (demo-friendly).
+    Uses insight_code + risk_band.
+    """
+    code = str(row.get("insight_code", "LOW_EVIDENCE"))
+    band = str(row.get("risk_band", "On Track"))
+    tc = float(row.get("test_count", 0) or 0)
+
+    if tc < 3 or code == "LOW_EVIDENCE" or band == "Low Evidence":
+        return [
+            "Week 1: Complete 3 full tests to establish a reliable baseline.",
+            "Week 2: Review mistakes; repeat 1 timed test under exam conditions.",
+            "Checkpoint: Recompute readiness after 5 total attempts."
+        ]
+
+    if code == "FAST_GUESSING" or band == "At Risk":
+        return [
+            "Week 1: Pacing + accuracy drills (slow down, reduce careless errors).",
+            "Week 2: 2 full tests focusing on accuracy-first strategy.",
+            "Checkpoint: Aim for pass ratio ≥ 0.95 and rising pass rate."
+        ]
+
+    if code in ["ACCURACY_RISK", "INCONSISTENT"]:
+        return [
+            "Week 1: Concept reinforcement + error log on weak topics.",
+            "Week 2: 2–3 tests; target stable accuracy across attempts.",
+            "Checkpoint: Improve accuracy consistency and maintain steady pace."
+        ]
+
+    if code == "SPEED_RISK":
+        return [
+            "Week 1: Timed sections + pacing drills to stabilize speed.",
+            "Week 2: 2 full tests under exam conditions.",
+            "Checkpoint: Improve speed consistency without sacrificing accuracy."
+        ]
+
+    if code == "NEAR_READY" or band in ["Watchlist", "On Track"]:
+        return [
+            "Next 7 days: 2–3 tests targeting weak topics.",
+            "Next 14 days: 1 full mock under exam conditions.",
+            "Checkpoint: Maintain readiness probability > 75%."
+        ]
+
+    return [
+        "Maintain performance with 1–2 full mocks per week.",
+        "Practice under exam conditions and review mistakes.",
+        "Checkpoint: Keep readiness stable above target threshold."
+    ]
+

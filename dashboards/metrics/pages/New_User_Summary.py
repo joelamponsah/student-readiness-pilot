@@ -165,7 +165,17 @@ if "created_at" in user_tests.columns and user_tests["created_at"].notna().any()
     r1c3.metric("Activity window", f"{user_tests['created_at'].min().date()} → {user_tests['created_at'].max().date()}")
 else:
     r1c3.metric("Activity window", "N/A")
+# ---------------------------
+# KPI Row 4: tests passed, tests failed, pass rate (%)
+# ---------------------------
+tests_passed = int(sel.get("tests_passed", 0) or 0)
+tests_failed = int(sel.get("tests_failed", 0) or 0)
+pass_rate_pct = sel.get("pass_rate_pct", np.nan)
 
+r4c1, r4c2, r4c3 = st.columns(3)
+r4c1.metric("Tests passed", f"{tests_passed}")
+r4c2.metric("Tests failed", f"{tests_failed}")
+r4c3.metric("Pass rate (%)", f"{float(pass_rate_pct):.1f}%" if pd.notna(pass_rate_pct) else "N/A")
 # ---------------------------
 # KPI Row 2: highest/lowest/avg score (marks)
 # ---------------------------
@@ -200,20 +210,6 @@ elif eff_pm_val is not None:
     r3c3.metric("Learner efficiency", f"{eff_pm_val:.2f} score/min")
 else:
     r3c3.metric("Learner efficiency", "N/A")
-
-# ---------------------------
-# KPI Row 4: tests passed, tests failed, pass rate (%)
-# ---------------------------
-tests_passed = int(sel.get("tests_passed", 0) or 0)
-tests_failed = int(sel.get("tests_failed", 0) or 0)
-pass_rate_pct = sel.get("pass_rate_pct", np.nan)
-
-r4c1, r4c2, r4c3 = st.columns(3)
-r4c1.metric("Tests passed", f"{tests_passed}")
-r4c2.metric("Tests failed", f"{tests_failed}")
-r4c3.metric("Pass rate (%)", f"{float(pass_rate_pct):.1f}%" if pd.notna(pass_rate_pct) else "N/A")
-
-
 
 
 # ---------------------------
@@ -299,10 +295,9 @@ st.divider()
 # ---------------------------
 # Pass ratio by test (use test name labels)
 # ---------------------------
-st.subheader("✅ Pass ratio by test")
 
 # Build test label mapping: test_id -> name
-st.subheader("✅ Pass rate by test")
+st.subheader("Pass rate by test")
 
 test_name_col = None
 for cand in ["name", "test_name", "title"]:
@@ -338,7 +333,7 @@ else:
     st.info("pass_mark is missing/empty for this learner, so pass rate by test can't be computed.")
 
 
-st.subheader("📊 Learner vs peers (marks distribution by test)")
+st.subheader("Learner vs peers (marks distribution by test)")
 
 # Build test name map
 test_name_col = None

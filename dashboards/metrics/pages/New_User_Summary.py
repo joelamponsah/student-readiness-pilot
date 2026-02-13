@@ -90,7 +90,9 @@ st.divider()
 col1, col2, col3 = st.columns(3)
 col1.metric("Avg Score Rate (marks/q)", f"{user_tests['accuracy_total'].mean():.2f}")
 col2.metric("Avg Correct Speed (correct/time)", f"{user_tests['adj_speed'].mean():.2f}")
-col3.metric("Avg Efficiency (score/time)", f"{user_tests['efficiency_ratio'].mean():.2f}")
+eff = user_tests['efficiency_ratio']
+eff_val = float(eff.mean()) if eff.notna().any() else None
+col3.metric("Avg Efficiency (score/time)", f"{eff_val:.2f}" if eff_val is not None else "N/A")
 
 st.divider()
 

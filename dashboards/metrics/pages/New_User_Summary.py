@@ -239,6 +239,9 @@ else:
     else:
         st.warning(msg)
 
+    if bool(r.get("is_blocked", False)):
+    st.warning(f"**Why not eligible:** {r.get('blocking_reason','')}  \n(Insight code: `{r.get('insight_code','')}`)")
+
     st.info("📘 Instructor / Stakeholder Summary")
     st.write(str(r.get("stakeholder_insight", "")))
 

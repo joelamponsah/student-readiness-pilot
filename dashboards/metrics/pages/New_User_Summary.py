@@ -127,23 +127,17 @@ else:
 u = u.head(int(show_n)).copy()
 
 # selector label
-u["selector_label"] = u.apply(
-    lambda r: (
-        f"{r['username']}"
-        + (f" | {r['institute']}" if pd.notna(r.get("institute")) else "")
-        + f" | attempts={int(r.get('test_count', 0) or 0)}"
-        + f" | pass={0 if pd.isna(r.get('pass_rate_pct')) else float(r.get('pass_rate_pct')):.1f}%"
-        + f" | SAB={float(r.get('robust_SAB_scaled', 0)):.1f}"
-    ),
-    axis=1
-)
-
 if u.empty:
     st.warning("No learners match the current filters.")
     st.stop()
 
-selected_label = st.selectbox("Choose learner", u["selector_label"].tolist())
-sel = u[u["selector_label"] == selected_label].iloc[0]
+# Dropdown shows ONLY username, but u is still filtered/sorted behind the scenes
+u = u.drop_duplicates(subset=["username"]).copy()
+
+username_options = u["username"].tolist()
+selected_username = st.selectbox("Choose learner", username_options)
+
+sel = u[u["username"] == selected_username].iloc[0]
 user_id = sel["user_id"]
 username = sel["username"]
 
@@ -207,9 +201,19 @@ elif eff_pm_val is not None:
 else:
     r3c3.metric("Learner efficiency", "N/A")
 
-#-------
-#row 4
-#---------
+# ---------------------------
+# KPI Row 4: tests passed, tests failed, pass ratio (%)
+# ---------------------------
+tests_passed = int(sel.get("tests_passed", 0) or 0)
+tests_failed = int(sel.get("tests_failed", 0) or 0)
+
+# avg_pass_ratio_pct already computed in compute_user_pass_features
+pass_ratio_pct = sel.get("avg_pass_ratio_pct", np.nan)
+
+r4c1, r4c2, r4c3 = st.columns(3)
+r4c1.metric("Tests passed", f"{tests_passed}")
+r4c2.metric("Tests failed", f"{tests_failed}")
+r4c3.metric("Pass ratio (%)", f"{float(pass_ratio_pct):.1f}%" if pd.notna(pass_ratio_pct) else "N/A")
 
 
 
@@ -248,7 +252,10 @@ else:
     st.caption(f"Insight code: {str(r.get('insight_code',''))}")
 
     if "redemption_plan" in user_sab.columns:
-        st.subheader("🛠️ Redemption Arc Plan")
+        plan_title = "Staying on Track" if str(r.get("exam_status", "")).lower() == "eligible" else "Redemption Arc Plan"
+        
+        st.subheader(f"🛠️ {plan_title}")
+
         plan = r.get("redemption_plan", [])
         if isinstance(plan, list) and plan:
             for i, step in enumerate(plan, 1):
@@ -391,30 +398,45 @@ st.divider()
 # ---------------------------
 # Difficulty summary: how many easy/moderate/hard + stability
 # ---------------------------
-st.subheader("📚 Test difficulty summary (counts + stability)")
+st.subheader("📚 Test difficulty summary")
 
 user_diff = user_tests[['test_id']].drop_duplicates().merge(diff_df, on="test_id", how="left")
 
 if user_diff.empty or user_diff.get("difficulty_label", pd.Series(dtype=object)).isna().all():
     st.info("No difficulty classification available for this learner's tests.")
 else:
-    # counts by difficulty label
-    counts = user_diff["difficulty_label"].value_counts(dropna=True).rename_axis("difficulty").reset_index(name="tests")
-    st.dataframe(counts, use_container_width=True)
+    # Map test_id -> test name (same mapping logic as pass ratio chart)
+    test_name_col = None
+    for cand in ["name", "test_name", "title"]:
+        if cand in df.columns:
+            test_name_col = cand
+            break
 
-    # stability summary by difficulty label (if stability exists)
-    if "stability" in user_diff.columns and user_diff["stability"].notna().any():
-        stab = user_diff.groupby("difficulty_label").agg(
-            avg_stability=("stability", "mean"),
-            n_tests=("test_id", "nunique")
-        ).reset_index().sort_values("difficulty_label")
-        st.caption("Stability interpretation: higher stability = more consistent cohort performance on that test.")
-        st.dataframe(stab, use_container_width=True)
+    if test_name_col:
+        name_map = df[["test_id", test_name_col]].dropna().drop_duplicates("test_id").rename(columns={test_name_col: "test_name"})
+        user_diff = user_diff.merge(name_map, on="test_id", how="left")
+        user_diff["label"] = user_diff["test_name"].fillna(user_diff["test_id"].astype(str))
+    else:
+        user_diff["label"] = user_diff["test_id"].astype(str)
 
-    # Optional: keep the existing graphs
-    fig_diff = px.bar(user_diff, x="test_id", y="difficulty", title="Difficulty score per test", text_auto=True)
-    st.plotly_chart(fig_diff, use_container_width=True)
-
+    # Difficulty table with stability label included
+    cols_to_show = ["label", "difficulty_label"]
+    if "test_stability" in user_diff.columns:
+        cols_to_show.append("test_stability")
+    if "difficulty" in user_diff.columns:
+        cols_to_show.append("difficulty")
     if "stability" in user_diff.columns:
-        fig_stable = px.bar(user_diff, x="test_id", y="stability", title="Stability score per test", text_auto=True)
-        st.plotly_chart(fig_stable, use_container_width=True)
+        cols_to_show.append("stability")
+
+    st.dataframe(user_diff[cols_to_show].sort_values("difficulty_label"), use_container_width=True)
+
+    # Difficulty distribution (counts)
+    counts = user_diff["difficulty_label"].value_counts(dropna=True).rename_axis("difficulty").reset_index(name="tests")
+    fig_counts = px.bar(counts, x="difficulty", y="tests", title="Difficulty distribution (count of tests)", text_auto=True)
+    st.plotly_chart(fig_counts, use_container_width=True)
+
+    # Difficulty score per test (use names)
+    if "difficulty" in user_diff.columns and user_diff["difficulty"].notna().any():
+        fig_diff = px.bar(user_diff, x="label", y="difficulty", title="Difficulty score per test", text_auto=True)
+        fig_diff.update_layout(xaxis_title="Test", xaxis_tickangle=-30)
+        st.plotly_chart(fig_diff, use_container_width=True)

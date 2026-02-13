@@ -84,24 +84,24 @@ else:
 
 st.divider()
 
-st.write("DEBUG — efficiency inputs for selected user")
-st.write({
-    "rows": len(user_tests),
-    "accuracy_total_notna": int(user_tests["accuracy_total"].notna().sum()) if "accuracy_total" in user_tests.columns else None,
-    "time_consumed_notna": int(user_tests["time_consumed"].notna().sum()) if "time_consumed" in user_tests.columns else None,
-    "time_consumed_zero": int((pd.to_numeric(user_tests["time_consumed"], errors="coerce") == 0).sum()) if "time_consumed" in user_tests.columns else None,
-    "efficiency_notna": int(user_tests["efficiency_ratio"].notna().sum()) if "efficiency_ratio" in user_tests.columns else None,
-    "duration_notna": int(user_tests["duration"].notna().sum()) if "duration" in user_tests.columns else None,
-    "time_taken_notna": int(user_tests["time_taken"].notna().sum()) if "time_taken" in user_tests.columns else None,
-})
-st.dataframe(user_tests[["time_taken","duration","time_consumed","accuracy_total","efficiency_ratio"]].head(15), use_container_width=True)
+#st.write("DEBUG — efficiency inputs for selected user")
+#st.write({
+ #   "rows": len(user_tests),
+ #   "accuracy_total_notna": int(user_tests["accuracy_total"].notna().sum()) if "accuracy_total" in user_tests.columns else None,
+ #   "time_consumed_notna": int(user_tests["time_consumed"].notna().sum()) if "time_consumed" in user_tests.columns else None,
+    #"time_consumed_zero": int((pd.to_numeric(user_tests["time_consumed"], errors="coerce") == 0).sum()) if "time_consumed" in user_tests.columns else None,
+#    "efficiency_notna": int(user_tests["efficiency_ratio"].notna().sum()) if "efficiency_ratio" in user_tests.columns else None,
+ #   "duration_notna": int(user_tests["duration"].notna().sum()) if "duration" in user_tests.columns else None,
+ #   "time_taken_notna": int(user_tests["time_taken"].notna().sum()) if "time_taken" in user_tests.columns else None,
+#})
+#st.dataframe(user_tests[["time_taken","duration","time_consumed","accuracy_total","efficiency_ratio"]].head(15), use_container_width=True)
 
 # ---------------------------
 # Basic Stats
 # ---------------------------
 col1, col2, col3 = st.columns(3)
-col1.metric("Avg Score Rate (marks/q)", f"{user_tests['accuracy_total'].mean():.2f}")
-col2.metric("Avg Correct Speed (correct/time)", f"{user_tests['adj_speed'].mean():.2f}")
+col1.metric("Avg Accuracy (marks/q)", f"{user_tests['accuracy_total'].mean():.2f}")
+col2.metric("Avg Speed (correct answers per min )", f"{user_tests['adj_speed'].mean():.2f}")
 eff_ratio = user_tests['efficiency_ratio']
 eff_per_min = user_tests['efficiency_per_min']
 

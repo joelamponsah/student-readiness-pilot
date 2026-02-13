@@ -207,6 +207,22 @@ elif eff_pm_val is not None:
 else:
     r3c3.metric("Learner efficiency", "N/A")
 
+#-------
+#row 4
+#---------
+
+# Pass stats (from merged pass_df if available)
+tests_passed = float(selected_row.get("tests_passed", 0) or 0)
+tests_failed = float(selected_row.get("tests_failed", 0) or 0)
+pass_rate_pct = selected_row.get("pass_rate_pct", np.nan)
+pass_ratio_pct = selected_row.get("avg_pass_ratio_pct", np.nan)
+
+colB, colC, colD = st.columns(3)
+
+colB.metric("Tests passed", f"{int(tests_passed)}")
+colC.metric("Tests failed", f"{int(tests_failed)}")
+colD.metric("Pass rate (%)", f"{pass_rate_pct:.1f}%" if pd.notna(pass_rate_pct) else "N/A")
+
 st.divider()
 
 # ---------------------------

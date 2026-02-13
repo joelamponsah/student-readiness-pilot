@@ -59,10 +59,10 @@ def compute_basic_metrics2(df):
     df['adj_speed'] = df['correct_answers'] / df['time_taken']          # correct/sec
 
     # Requested: speed_acc_raw as questions per minute (attempted/min)
-    df['speed_acc_raw'] = df['speed_raw'] * 60.0
+    df['speed_acc_raw'] = df['speed_raw']
 
     # Optional: correct per minute (kept)
-    df['correct_per_min'] = df['adj_speed'] * 60.0
+    df['correct_per_min'] = df['adj_speed']
 
     # Time ratios (duration dependent)
     df['speed_rel_time'] = ((df['duration'] - df['time_taken']) / df['duration']).clip(lower=0)
@@ -85,7 +85,7 @@ def compute_basic_metrics2(df):
     # Fallback efficiency (no duration needed): score per minute
     df['efficiency_per_min'] = np.where(
         df['time_taken'].notna() & (df['time_taken'] > 0),
-        (df['accuracy_total'] / df['time_taken']) * 60.0,
+        df['accuracy_total'] / df['time_taken'],
         np.nan
     )
 

@@ -334,9 +334,6 @@ if "pass_mark" in user_tests.columns and user_tests["pass_mark"].notna().any():
 else:
     st.info("pass_mark is missing/empty for this learner, so pass rate by test can't be computed.")
 
-
-st.subheader("Learner vs peers (marks distribution by test)")
-
 # Build test name map
 st.subheader("📊 Learner vs peers (accuracy distribution by test)")
 
@@ -394,6 +391,7 @@ else:
         pct = float((peer_vals < learner_med).mean() * 100)
         st.caption(f"Learner median accuracy is approximately at the {pct:.1f}th percentile among peers for this test.")
 
+st.subheader("Accuracy & Speed by test)")
 # Build test name map
 test_name_col = None
 for cand in ["name", "test_name", "title"]:

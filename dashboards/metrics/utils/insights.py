@@ -98,6 +98,13 @@ def apply_insight_engine(sab_df):
     
     sab_df["stakeholder_insight"] = sab_df.apply(stakeholder_summary, axis=1)
     sab_df["coach_feedback"] = sab_df.apply(coach_feedback, axis=1)
+    
+    
+    #NEW
+    sab_df = add_risk_band(sab_df)
+    sab_df = add_readiness_probability(sab_df)
+    sab_df["redemption_plan"] = sab_df.apply(redemption_plan, axis=1)
+
 
     return sab_df
 

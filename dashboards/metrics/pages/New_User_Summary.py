@@ -223,7 +223,9 @@ else:
     r = user_sab.iloc[0]
     a, b, c = st.columns(3)
     a.metric("Exam status", str(r.get("exam_status", "Unknown")))
-    b.metric("Robust SAB (0–100)", f"{float(r.get('robust_SAB_scaled', 0)):.1f}")
+    b.metric("Work Habits Score (0–100)", f"{float(r.get('robust_SAB_scaled', 0)):.1f}")
+    st.caption("Work Habits Score reflects consistency of accuracy + pace across attempts (more evidence = more reliable).")
+
     if "readiness_probability_pct" in user_sab.columns:
         c.metric("Readiness probability", f"{float(r.get('readiness_probability_pct', 0)):.1f}%")
     else:

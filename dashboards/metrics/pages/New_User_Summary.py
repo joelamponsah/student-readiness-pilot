@@ -336,22 +336,20 @@ else:
 st.subheader("Learner vs peers (marks distribution by test)")
 
 # Build test name map
+st.subheader("📊 Learner vs peers (accuracy distribution by test)")
+
+# Build test name map
 test_name_col = None
 for cand in ["name", "test_name", "title"]:
     if cand in df.columns:
         test_name_col = cand
         break
 
-# Learner's tests list
 learner_test_ids = user_tests["test_id"].dropna().unique().tolist()
 if not learner_test_ids:
     st.info("No tests found for this learner.")
 else:
-    # If more than 10 tests, require selecting one
-    if len(learner_test_ids) > 10:
-        selected_test_id = st.selectbox("Select a test to compare", learner_test_ids)
-    else:
-        selected_test_id = st.selectbox("Select a test to compare", learner_test_ids)
+    selected_test_id = st.selectbox("Select a test to compare (accuracy)", learner_test_ids)
 
     # Label
     test_label = str(selected_test_id)
@@ -360,84 +358,146 @@ else:
         if not nm.empty:
             test_label = nm.iloc[0]
 
-    # Peer comparison cohort: default whole dataset for that test
-    # (Optionally restrict to same activity window later)
+    # Peers for that test
     peers = df[df["test_id"] == selected_test_id].copy()
-    peers["marks"] = pd.to_numeric(peers["marks"], errors="coerce")
+    # Ensure accuracy exists (in case df wasn’t recomputed)
+    if "accuracy_total" not in peers.columns:
+        peers = compute_basic_metrics2(peers)
 
-    learner_marks = user_tests[user_tests["test_id"] == selected_test_id]["marks"]
-    learner_marks = pd.to_numeric(learner_marks, errors="coerce").dropna()
+    peers_acc = pd.to_numeric(peers["accuracy_total"], errors="coerce").dropna()
 
-    if peers["marks"].dropna().shape[0] < 5 or learner_marks.empty:
-        st.info("Not enough peer data or learner mark available for this test.")
+    # Learner accuracy for that test (could be multiple attempts)
+    learner_acc = user_tests[user_tests["test_id"] == selected_test_id]["accuracy_total"]
+    learner_acc = pd.to_numeric(learner_acc, errors="coerce").dropna()
+
+    if peers_acc.shape[0] < 5 or learner_acc.empty:
+        st.info("Not enough peer data or learner accuracy available for this test.")
     else:
-        # Histogram of peer marks
         fig_hist = px.histogram(
-            peers.dropna(subset=["marks"]),
-            x="marks",
+            peers_acc.to_frame(name="accuracy_total"),
+            x="accuracy_total",
             nbins=15,
-            title=f"Marks distribution for '{test_label}' (peers) with learner overlay"
+            title=f"Accuracy distribution for '{test_label}' (peers) with learner overlay"
         )
 
-        # Overlay learner mark(s) as vertical lines
-        for m in learner_marks.tolist():
-            fig_hist.add_vline(x=float(m), line_width=3)
+        # Overlay learner attempt(s) as vertical lines
+        for a in learner_acc.tolist():
+            fig_hist.add_vline(x=float(a), line_width=3)
 
         st.plotly_chart(fig_hist, use_container_width=True)
 
-        # Simple percentile within this test
-        peer_marks = peers["marks"].dropna().values
-        learner_median = float(np.median(learner_marks.values))
-        pct = float((peer_marks < learner_median).mean() * 100)
-        st.caption(f"Learner is approximately at the {pct:.1f}th percentile for marks on this test.")
+        # Percentile for learner median accuracy vs peers
+        peer_vals = peers_acc.values
+        learner_med = float(np.median(learner_acc.values))
+        pct = float((peer_vals < learner_med).mean() * 100)
+        st.caption(f"Learner median accuracy is approximately at the {pct:.1f}th percentile among peers for this test.")
 
+# Build test name map
+test_name_col = None
+for cand in ["name", "test_name", "title"]:
+    if cand in df.columns:
+        test_name_col = cand
+        break
+
+per_test = user_tests.groupby("test_id").agg(
+    avg_accuracy=("accuracy_total", "mean"),
+    avg_speed_qpm=("speed_acc_raw", "mean"),
+    attempts=("test_id", "count")
+).reset_index()
+
+# Add test labels (names)
+if test_name_col:
+    name_map = df[["test_id", test_name_col]].dropna().drop_duplicates("test_id").rename(columns={test_name_col: "test_name"})
+    per_test = per_test.merge(name_map, on="test_id", how="left")
+    per_test["label"] = per_test["test_name"].fillna(per_test["test_id"].astype(str))
+else:
+    per_test["label"] = per_test["test_id"].astype(str)
+
+# Show table (percent formatting for accuracy)
+table_df = per_test.copy()
+table_df["avg_accuracy_pct"] = (table_df["avg_accuracy"] * 100).round(1)
+table_df["avg_speed_qpm"] = table_df["avg_speed_qpm"].round(1)
+st.dataframe(
+    table_df[["label", "attempts", "avg_accuracy_pct", "avg_speed_qpm"]].rename(columns={
+        "label": "Test",
+        "attempts": "Attempts",
+        "avg_accuracy_pct": "Avg accuracy (%)",
+        "avg_speed_qpm": "Avg speed (q/min)"
+    }),
+    use_container_width=True
+)
+
+# Charts
+fig_acc_test = px.bar(
+    table_df,
+    x="label",
+    y="avg_accuracy_pct",
+    title="Avg accuracy (%) by test",
+    text_auto=True
+)
+fig_acc_test.update_layout(xaxis_title="Test", xaxis_tickangle=-30)
+st.plotly_chart(fig_acc_test, use_container_width=True)
+
+fig_speed_test = px.bar(
+    table_df,
+    x="label",
+    y="avg_speed_qpm",
+    title="Avg speed (q/min) by test",
+    text_auto=True
+)
+fig_speed_test.update_layout(xaxis_title="Test", xaxis_tickangle=-30)
+st.plotly_chart(fig_speed_test, use_container_width=True)
+
+
+
+    
 st.divider()
 
 # ---------------------------
 # Standing among peers: add plain-English interpretation
 # ---------------------------
-st.subheader("🏅 Standing among peers (same activity window)")
+#st.subheader("🏅 Standing among peers (same activity window)")
 
-st.caption(
-    "Interpretation: We compare this learner to all other learners who attempted tests in the SAME date window. "
-    "Percentile answers: 'What percentage of peers is this learner performing better than?' "
-    "Example: 80th percentile = better than ~80% of peers in that window."
-)
+#st.caption(
+ #   "Interpretation: We compare this learner to all other learners who attempted tests in the SAME date window. "
+  #  "Percentile answers: 'What percentage of peers is this learner performing better than?' "
+   # "Example: 80th percentile = better than ~80% of peers in that window."
+#)
 
-if "created_at" in df.columns and df["created_at"].notna().any() and "created_at" in user_tests.columns and user_tests["created_at"].notna().any():
-    start = user_tests["created_at"].min()
-    end = user_tests["created_at"].max()
+#if "created_at" in df.columns and df["created_at"].notna().any() and "created_at" in user_tests.columns and user_tests["created_at"].notna().any():
+ #   start = user_tests["created_at"].min()
+  #  end = user_tests["created_at"].max()
 
-    cohort = df[(df["created_at"] >= start) & (df["created_at"] <= end)].copy()
-    cohort = compute_basic_metrics2(cohort)
+#    cohort = df[(df["created_at"] >= start) & (df["created_at"] <= end)].copy()
+ #   cohort = compute_basic_metrics2(cohort)
 
-    cohort_pass = compute_user_pass_features(cohort)
-    cohort_sab = compute_sab_behavioral(cohort).merge(cohort_pass, on="user_id", how="left")
+#   cohort_pass = compute_user_pass_features(cohort)
+ #   cohort_sab = compute_sab_behavioral(cohort).merge(cohort_pass, on="user_id", how="left")
 
     # Use robust_SAB_index for percentile calculation (more faithful)
-    cohort_sab["sab_percentile"] = cohort_sab["robust_SAB_index"].rank(pct=True) * 100
-    cohort_sab["sab_percentile"] = cohort_sab["sab_percentile"].clip(upper=99.9)
+  #  cohort_sab["sab_percentile"] = cohort_sab["robust_SAB_index"].rank(pct=True) * 100
+   # cohort_sab["sab_percentile"] = cohort_sab["sab_percentile"].clip(upper=99.9)
 
-    cohort_sab["pass_rate_percentile"] = cohort_sab["pass_rate"].rank(pct=True) * 100
+    #cohort_sab["pass_rate_percentile"] = cohort_sab["pass_rate"].rank(pct=True) * 100
 
-    row = cohort_sab[cohort_sab["user_id"] == user_id]
-    if not row.empty:
-        row = row.iloc[0]
-        p1, p2, p3 = st.columns(3)
-        p1.metric("SAB percentile", f"{float(row.get('sab_percentile', 0)):.1f}%")
-        p2.metric("Pass-rate percentile", f"{float(row.get('pass_rate_percentile', 0)):.1f}%")
-        p3.metric("Comparison window", f"{start.date()} → {end.date()}")
+#    row = cohort_sab[cohort_sab["user_id"] == user_id]
+ #   if not row.empty:
+  #      row = row.iloc[0]
+   #     p1, p2, p3 = st.columns(3)
+    #    p1.metric("SAB percentile", f"{float(row.get('sab_percentile', 0)):.1f}%")
+     #   p2.metric("Pass-rate percentile", f"{float(row.get('pass_rate_percentile', 0)):.1f}%")
+      #  p3.metric("Comparison window", f"{start.date()} → {end.date()}")
 
-        st.info(
-            f"In this window, {username} is at the **{float(row.get('sab_percentile', 0)):.1f}th percentile** for readiness behavior (SAB) "
-            f"and **{float(row.get('pass_rate_percentile', 0)):.1f}th percentile** for pass outcomes."
-        )
-    else:
-        st.info("Unable to compute peer standing for this learner in the selected window.")
-else:
-    st.info("Peer standing requires valid created_at timestamps for both the learner and the cohort.")
+       # st.info(
+        #    f"In this window, {username} is at the **{float(row.get('sab_percentile', 0)):.1f}th percentile** for readiness behavior (SAB) "
+         #   f"and **{float(row.get('pass_rate_percentile', 0)):.1f}th percentile** for pass outcomes."
+       # )
+  #  else:
+   #     st.info("Unable to compute peer standing for this learner in the selected window.")
+#else:
+ #   st.info("Peer standing requires valid created_at timestamps for both the learner and the cohort.")
 
-st.divider()
+#st.divider()
 
 # ---------------------------
 # Speed vs Accuracy scatter only (no heatmap)

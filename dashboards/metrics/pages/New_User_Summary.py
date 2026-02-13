@@ -202,18 +202,17 @@ else:
     r3c3.metric("Learner efficiency", "N/A")
 
 # ---------------------------
-# KPI Row 4: tests passed, tests failed, pass ratio (%)
+# KPI Row 4: tests passed, tests failed, pass rate (%)
 # ---------------------------
 tests_passed = int(sel.get("tests_passed", 0) or 0)
 tests_failed = int(sel.get("tests_failed", 0) or 0)
-
-# avg_pass_ratio_pct already computed in compute_user_pass_features
-pass_ratio_pct = sel.get("avg_pass_ratio_pct", np.nan)
+pass_rate_pct = sel.get("pass_rate_pct", np.nan)
 
 r4c1, r4c2, r4c3 = st.columns(3)
 r4c1.metric("Tests passed", f"{tests_passed}")
 r4c2.metric("Tests failed", f"{tests_failed}")
-r4c3.metric("Pass ratio (%)", f"{float(pass_ratio_pct):.1f}%" if pd.notna(pass_ratio_pct) else "N/A")
+r4c3.metric("Pass rate (%)", f"{float(pass_rate_pct):.1f}%" if pd.notna(pass_rate_pct) else "N/A")
+
 
 
 
@@ -303,6 +302,8 @@ st.divider()
 st.subheader("✅ Pass ratio by test")
 
 # Build test label mapping: test_id -> name
+st.subheader("✅ Pass rate by test")
+
 test_name_col = None
 for cand in ["name", "test_name", "title"]:
     if cand in df.columns:
@@ -310,13 +311,18 @@ for cand in ["name", "test_name", "title"]:
         break
 
 if "pass_mark" in user_tests.columns and user_tests["pass_mark"].notna().any():
-    user_tests["pass_ratio"] = (pd.to_numeric(user_tests["marks"], errors="coerce") / pd.to_numeric(user_tests["pass_mark"], errors="coerce")).replace([np.inf, -np.inf], np.nan)
-    user_tests["pass_ratio_pct"] = (user_tests["pass_ratio"] * 100).clip(0, 200)
+    user_tests["passed"] = np.where(
+        pd.to_numeric(user_tests["pass_mark"], errors="coerce").notna(),
+        (pd.to_numeric(user_tests["marks"], errors="coerce") >= pd.to_numeric(user_tests["pass_mark"], errors="coerce")).astype(int),
+        np.nan
+    )
 
     pr_test = user_tests.groupby("test_id").agg(
-        pass_ratio_pct=("pass_ratio_pct", "mean"),
+        pass_rate=("passed", "mean"),
         attempts=("test_id", "count")
     ).reset_index()
+
+    pr_test["pass_rate_pct"] = (pr_test["pass_rate"] * 100).round(1)
 
     if test_name_col:
         name_map = df[["test_id", test_name_col]].dropna().drop_duplicates("test_id").rename(columns={test_name_col: "test_name"})
@@ -325,11 +331,70 @@ if "pass_mark" in user_tests.columns and user_tests["pass_mark"].notna().any():
     else:
         pr_test["label"] = pr_test["test_id"].astype(str)
 
-    fig_pr = px.bar(pr_test, x="label", y="pass_ratio_pct", title="Pass ratio (%) by test", text_auto=True)
+    fig_pr = px.bar(pr_test, x="label", y="pass_rate_pct", title="Pass rate (%) by test", text_auto=True)
     fig_pr.update_layout(xaxis_title="Test", xaxis_tickangle=-30)
     st.plotly_chart(fig_pr, use_container_width=True)
 else:
-    st.info("pass_mark is missing/empty for this learner, so pass ratio by test can't be computed.")
+    st.info("pass_mark is missing/empty for this learner, so pass rate by test can't be computed.")
+
+
+st.subheader("📊 Learner vs peers (marks distribution by test)")
+
+# Build test name map
+test_name_col = None
+for cand in ["name", "test_name", "title"]:
+    if cand in df.columns:
+        test_name_col = cand
+        break
+
+# Learner's tests list
+learner_test_ids = user_tests["test_id"].dropna().unique().tolist()
+if not learner_test_ids:
+    st.info("No tests found for this learner.")
+else:
+    # If more than 10 tests, require selecting one
+    if len(learner_test_ids) > 10:
+        selected_test_id = st.selectbox("Select a test to compare", learner_test_ids)
+    else:
+        selected_test_id = st.selectbox("Select a test to compare", learner_test_ids)
+
+    # Label
+    test_label = str(selected_test_id)
+    if test_name_col:
+        nm = df.loc[df["test_id"] == selected_test_id, test_name_col].dropna()
+        if not nm.empty:
+            test_label = nm.iloc[0]
+
+    # Peer comparison cohort: default whole dataset for that test
+    # (Optionally restrict to same activity window later)
+    peers = df[df["test_id"] == selected_test_id].copy()
+    peers["marks"] = pd.to_numeric(peers["marks"], errors="coerce")
+
+    learner_marks = user_tests[user_tests["test_id"] == selected_test_id]["marks"]
+    learner_marks = pd.to_numeric(learner_marks, errors="coerce").dropna()
+
+    if peers["marks"].dropna().shape[0] < 5 or learner_marks.empty:
+        st.info("Not enough peer data or learner mark available for this test.")
+    else:
+        # Histogram of peer marks
+        fig_hist = px.histogram(
+            peers.dropna(subset=["marks"]),
+            x="marks",
+            nbins=15,
+            title=f"Marks distribution for '{test_label}' (peers) with learner overlay"
+        )
+
+        # Overlay learner mark(s) as vertical lines
+        for m in learner_marks.tolist():
+            fig_hist.add_vline(x=float(m), line_width=3)
+
+        st.plotly_chart(fig_hist, use_container_width=True)
+
+        # Simple percentile within this test
+        peer_marks = peers["marks"].dropna().values
+        learner_median = float(np.median(learner_marks.values))
+        pct = float((peer_marks < learner_median).mean() * 100)
+        st.caption(f"Learner is approximately at the {pct:.1f}th percentile for marks on this test.")
 
 st.divider()
 
@@ -354,7 +419,10 @@ if "created_at" in df.columns and df["created_at"].notna().any() and "created_at
     cohort_pass = compute_user_pass_features(cohort)
     cohort_sab = compute_sab_behavioral(cohort).merge(cohort_pass, on="user_id", how="left")
 
-    cohort_sab["sab_percentile"] = cohort_sab["robust_SAB_scaled"].rank(pct=True) * 100
+    # Use robust_SAB_index for percentile calculation (more faithful)
+    cohort_sab["sab_percentile"] = cohort_sab["robust_SAB_index"].rank(pct=True) * 100
+    cohort_sab["sab_percentile"] = cohort_sab["sab_percentile"].clip(upper=99.9)
+
     cohort_sab["pass_rate_percentile"] = cohort_sab["pass_rate"].rank(pct=True) * 100
 
     row = cohort_sab[cohort_sab["user_id"] == user_id]

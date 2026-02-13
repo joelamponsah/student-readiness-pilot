@@ -41,6 +41,16 @@ INSIGHT_TEXT = {
     }
 }
 
+BLOCK_REASON_TEXT = {
+    "LOW_EVIDENCE": "Insufficient evidence (needs more attempts)",
+    "FAST_GUESSING": "Rushing/guessing risk (high speed, low accuracy)",
+    "INCONSISTENT": "Unstable performance (high variability)",
+    "ACCURACY_RISK": "Accuracy below threshold",
+    "SPEED_RISK": "Speed/pacing instability",
+    "NEAR_READY": "Almost ready (minor gaps remain)",
+    "READY": "Ready"
+}
+
 # -------------------------
 # Rule Engine
 # -------------------------
@@ -55,6 +65,12 @@ def blocking_insight(row, cohort_median_speed):
         return "INCONSISTENT"
 
     return None
+
+def add_blocking_reason(sab_df):
+    sab_df = sab_df.copy()
+    sab_df["blocking_reason"] = sab_df["insight_code"].map(lambda c: BLOCK_REASON_TEXT.get(c, str(c)))
+    sab_df["is_blocked"] = sab_df["exam_status"].map(lambda s: str(s).lower() != "eligible")
+    return sab_df
 
 
 def gap_insight(row):
@@ -104,6 +120,9 @@ def apply_insight_engine(sab_df):
     sab_df = add_risk_band(sab_df)
     sab_df = add_readiness_probability(sab_df)
     sab_df["redemption_plan"] = sab_df.apply(redemption_plan, axis=1)
+        
+    sab_df = add_blocking_reason(sab_df)          # optional but fine
+    sab_df = add_readiness_probability(sab_df)    # must come after insight_code/exam_status
 
 
     return sab_df
@@ -112,37 +131,67 @@ def apply_insight_engine(sab_df):
 def _sigmoid(x: float) -> float:
     return 1 / (1 + np.exp(-x))
 
+
+def _sigmoid(x: float) -> float:
+    return 1 / (1 + np.exp(-x))
+
 def add_readiness_probability(sab_df):
     """
-    Produces an interpretable probability-like score (0..1) based on current pilot signals.
-    Requires (recommended) columns:
-      robust_SAB_scaled (0..100), user_pass_rate (0..1), avg_pass_ratio, test_count, std_acc
+    Readiness Probability (0..1) aligned with eligibility rules.
+    - Base score uses Work Habits (robust_SAB_scaled), pass outcomes, and evidence.
+    - Then apply rule-based caps/penalties so "Not Eligible" doesn't show high probability.
     """
     sab_df = sab_df.copy()
 
-    for c in ["robust_SAB_scaled", "user_pass_rate", "avg_pass_ratio", "test_count", "std_acc", "mean_accuracy"]:
+    # Ensure required columns exist
+    for c in ["robust_SAB_scaled", "pass_rate", "avg_pass_ratio", "test_count", "std_acc", "insight_code", "exam_status"]:
         if c not in sab_df.columns:
             sab_df[c] = np.nan
 
-    sab_norm = (sab_df["robust_SAB_scaled"].fillna(0).clip(0, 100)) / 100.0
-    pass_norm = sab_df["user_pass_rate"].fillna(0).clip(0, 1)
-    ratio_norm = (sab_df["avg_pass_ratio"].fillna(0).clip(0, 1.5)) / 1.5
+    # Normalize components
+    wh = (sab_df["robust_SAB_scaled"].fillna(0).clip(0, 100)) / 100.0       # 0..1
+    pr = sab_df["pass_rate"].fillna(0).clip(0, 1)                          # 0..1
+    # avg_pass_ratio is optional, keep weak influence; if missing it won't dominate
+    ar = (sab_df["avg_pass_ratio"].fillna(0).clip(0, 2.0)) / 2.0           # 0..1
     evidence = (sab_df["test_count"].fillna(0) / (sab_df["test_count"].fillna(0) + 10)).clip(0, 1)
 
-    inconsistent_penalty = (sab_df["std_acc"].fillna(0) > 0.35).astype(int) * 0.15
+    # Inconsistency penalty
+    inconsistent = (sab_df["std_acc"].fillna(0) > 0.35).astype(int)
 
-    # Weighted score -> sigmoid -> probability
-    # Conservative bias keeps probabilities from inflating too early in pilot
+    # Base score (conservative)
     score = (
-        1.4 * sab_norm +
-        1.0 * pass_norm +
-        0.6 * ratio_norm +
+        1.6 * wh +
+        1.2 * pr +
+        0.4 * ar +
         0.6 * evidence
-        - inconsistent_penalty
-        - 1.0
+        - 0.4 * inconsistent
+        - 1.1
     )
-
     prob = _sigmoid(score)
+
+    # --------- Rule-alignment layer (the important fix) ---------
+    code = sab_df["insight_code"].astype(str)
+
+    # Hard caps for “blocking” reasons
+    # These ensure Not Eligible doesn’t show high probability.
+    cap = np.full(len(sab_df), np.nan, dtype=float)
+
+    cap[code == "LOW_EVIDENCE"] = 0.25          # not enough attempts
+    cap[code == "FAST_GUESSING"] = 0.35         # risky behavior
+    cap[code == "INCONSISTENT"] = 0.40          # unstable performance
+    cap[code == "ACCURACY_RISK"] = 0.45
+    cap[code == "SPEED_RISK"] = 0.50            # could be borderline
+    cap[code == "NEAR_READY"] = 0.75            # allow higher but not “certain”
+    cap[code == "READY"] = 0.95
+
+    # Apply cap where defined
+    prob = np.where(np.isnan(cap), prob, np.minimum(prob, cap))
+
+    # Additional safety: if exam_status explicitly not eligible, cap at 0.50
+    # (keeps the story consistent for stakeholders)
+    status = sab_df["exam_status"].astype(str).str.lower()
+    prob = np.where(status == "not eligible", np.minimum(prob, 0.50), prob)
+
     sab_df["readiness_probability"] = prob
     sab_df["readiness_probability_pct"] = (prob * 100).round(1)
 

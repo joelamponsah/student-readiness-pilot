@@ -27,36 +27,10 @@ def load_data_from_disk_or_session(default_path="data/verify_df_fixed.csv"):
             return None
     return None
 # basic metrics ------------------------------------------------
-def compute_basic_metrics1(df: pd.DataFrame) -> pd.DataFrame:
-    df = df.copy()
-    # ensure numeric columns exist
-    for c in ['attempted_questions','correct_answers','marks','time_taken','duration','no_of_questions','pass_mark']:
-        if c not in df.columns:
-            df[c] = np.nan
-    # guard time
-    df['time_taken'] = pd.to_numeric(df['time_taken'], errors='coerce')
-    df['time_taken'] = df['time_taken'].replace(0, np.nan)
-    # speeds
-    df['speed_raw'] = df['attempted_questions'] / df['time_taken']
-    df['speed_acc_raw'] = df['correct_answers'] / df['time_taken']
-    df['speed_marks'] = df['marks'] / df['time_taken']
-    # accuracy
-    df['accuracy_total'] = (df['correct_answers'] / df['attempted_questions']).fillna(0)
-    # relative time
-    df['time_consumed'] = (df['time_taken'] / df['duration']).clip(0,1)
-    df['speed_rel_time'] = ((df['duration'] - df['time_taken']) / df['duration']).clip(lower=0)
-    # efficiency (guard divide-by-zero)
-    df['efficiency_ratio'] = df['accuracy_total'] / df['time_consumed'].replace(0, np.nan)
-    # basic cleaning
-    df.replace([np.inf, -np.inf], np.nan, inplace=True)
-    return df
 
 
 
 # --- Speed & accuracy base features (idempotent) ---
-import numpy as np
-import pandas as pd
-from sklearn.preprocessing import MinMaxScaler
 
 def compute_basic_metrics2(df):
     df = df.copy()
@@ -66,47 +40,49 @@ def compute_basic_metrics2(df):
         if c not in df.columns:
             df[c] = np.nan
 
-    # numeric coercion
+    # Coerce numeric
     for c in ['attempted_questions','correct_answers','marks','time_taken','duration','no_of_questions','pass_mark']:
         df[c] = pd.to_numeric(df[c], errors='coerce')
 
-    # Avoid divide-by-zero
+    # Guard zeros
     df['time_taken'] = df['time_taken'].replace(0, np.nan)
     df['duration'] = df['duration'].replace(0, np.nan)
     df['attempted_questions'] = df['attempted_questions'].replace(0, np.nan)
     df['no_of_questions'] = df['no_of_questions'].replace(0, np.nan)
 
-    # Speed
-    df['speed_raw'] = df['attempted_questions'] / df['time_taken']
-    df['adj_speed'] = df['correct_answers'] / df['time_taken']
-    df['speed_marks'] = df['marks'] / df['time_taken']
-
-    # Time ratios
-    df['speed_rel_time'] = ((df['duration'] - df['time_taken']) / df['duration']).clip(lower=0)
-    df['time_consumed'] = (df['time_taken'] / df['duration']).clip(0, 1)
-
-    # Accuracy variants
+    # Accuracy
     df['accuracy_attempt'] = (df['correct_answers'] / df['attempted_questions']).fillna(0)
     df['accuracy_total'] = (df['marks'] / df['no_of_questions']).fillna(0)
 
-    # normalized speed (safe)
+    # Speed per second
+    df['speed_raw'] = df['attempted_questions'] / df['time_taken']      # attempted/sec
+    df['adj_speed'] = df['correct_answers'] / df['time_taken']          # correct/sec
+
+    # Requested: speed_acc_raw as questions per minute (attempted/min)
+    df['speed_acc_raw'] = df['speed_raw'] * 60.0
+
+    # Optional: correct per minute (kept)
+    df['correct_per_min'] = df['adj_speed'] * 60.0
+
+    # Time ratios (duration dependent)
+    df['speed_rel_time'] = ((df['duration'] - df['time_taken']) / df['duration']).clip(lower=0)
+    df['time_consumed'] = (df['time_taken'] / df['duration']).clip(0, 1)
+
+    # Normalized speed
     df['speed_norm'] = 0.0
     if df['speed_raw'].notna().sum() >= 2:
         scaler = MinMaxScaler()
         df['speed_norm'] = scaler.fit_transform(df[['speed_raw']].fillna(0))
 
-    # Efficiency (duration-based) -> can be NaN if duration missing
+    # Efficiency (duration-based) and % version
     df['efficiency_ratio'] = np.where(
         df['time_consumed'].notna() & (df['time_consumed'] > 0),
         df['accuracy_total'] / df['time_consumed'],
         np.nan
     )
-
-    # Efficiency shown as % (requested)
-    # NOTE: Can exceed 100 depending on your definitions; we cap at 300 for display sanity.
     df['efficiency_pct'] = (df['efficiency_ratio'] * 100).clip(lower=0, upper=300)
 
-    # Fallback efficiency (does NOT need duration): score per minute
+    # Fallback efficiency (no duration needed): score per minute
     df['efficiency_per_min'] = np.where(
         df['time_taken'].notna() & (df['time_taken'] > 0),
         (df['accuracy_total'] / df['time_taken']) * 60.0,

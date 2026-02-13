@@ -206,49 +206,106 @@ def compute_difficulty_df(df):
     return test_pass
 
 # --- SAB behavioral computations (per-user) ---
+import numpy as np
+import pandas as pd
+
 def compute_sab_behavioral(df):
     df = df.copy()
     df = df[df['time_taken'] > 0]
+
+    # core attempt-level metrics
     df['speed'] = df['correct_answers'] / df['time_taken']
     df['accuracy_total'] = (df['marks'] / df['no_of_questions']).fillna(0)
+
     sab = df.groupby('user_id').agg(
-        mean_speed=('speed','mean'),
-        std_speed=('speed','std'),
-        mean_accuracy=('accuracy_total','mean'),
-        std_acc=('accuracy_total','std'),
-        test_count=('test_id','count')
+        mean_speed=('speed', 'mean'),
+        std_speed=('speed', 'std'),
+        mean_accuracy=('accuracy_total', 'mean'),
+        std_acc=('accuracy_total', 'std'),
+        test_count=('test_id', 'count')
     ).reset_index()
-    sab[['std_speed','std_acc']] = sab[['std_speed','std_acc']].fillna(0)
-    # dampened consistency penalizing low counts
+
+    sab[['std_speed', 'std_acc']] = sab[['std_speed', 'std_acc']].fillna(0)
+
+    # dampened consistency (numerically stable)
+    eps = 1e-6
     sab['speed_consistency'] = sab.apply(
-        lambda r: r['test_count'] / (r['test_count'] + (r['std_speed'] / r['mean_speed'] if r['mean_speed']>0 else 1) + 5),
+        lambda r: r['test_count'] / (r['test_count'] + (r['std_speed'] / max(r['mean_speed'], eps)) + 5),
         axis=1
     )
     sab['accuracy_consistency'] = sab.apply(
-        lambda r: r['test_count'] / (r['test_count'] + (r['std_acc'] / r['mean_accuracy'] if r['mean_accuracy']>0 else 1) + 5),
+        lambda r: r['test_count'] / (r['test_count'] + (r['std_acc'] / max(r['mean_accuracy'], eps)) + 5),
         axis=1
     )
+
     sab['SAB_index'] = sab['mean_accuracy'] * sab['speed_consistency']
+
     # robust normalization (winsorize mean_speed)
-    Q1 = sab['mean_speed'].quantile(0.25); Q3 = sab['mean_speed'].quantile(0.75)
+    Q1 = sab['mean_speed'].quantile(0.25)
+    Q3 = sab['mean_speed'].quantile(0.75)
     IQR = max(Q3 - Q1, 1e-6)
-    lower = Q1 - 1.5*IQR; upper = Q3 + 1.5*IQR
+    lower = Q1 - 1.5 * IQR
+    upper = Q3 + 1.5 * IQR
+
     sab['mean_speed_w'] = sab['mean_speed'].clip(lower, upper)
-    mu_s = sab['mean_speed_w'].mean(); sd_s = sab['mean_speed_w'].std(ddof=0)
-    sab['normalized_speed'] = (sab['mean_speed_w'] - mu_s) / (sd_s if sd_s>0 else 1)
-    mu_a = sab['mean_accuracy'].mean(); sd_a = sab['mean_accuracy'].std(ddof=0)
-    sab['normalized_accuracy'] = (sab['mean_accuracy'] - mu_a) / (sd_a if sd_a>0 else 1)
+
+    mu_s = sab['mean_speed_w'].mean()
+    sd_s = sab['mean_speed_w'].std(ddof=0)
+    sab['normalized_speed'] = (sab['mean_speed_w'] - mu_s) / (sd_s if sd_s > 0 else 1)
+
+    mu_a = sab['mean_accuracy'].mean()
+    sd_a = sab['mean_accuracy'].std(ddof=0)
+    sab['normalized_accuracy'] = (sab['mean_accuracy'] - mu_a) / (sd_a if sd_a > 0 else 1)
+
+    # evidence weight
     sab['weight'] = sab['test_count'] / (sab['test_count'] + 20)
+
     sab['robust_SAB_index'] = (
-        ((sab['normalized_speed'] + sab['normalized_accuracy'])/2)
+        ((sab['normalized_speed'] + sab['normalized_accuracy']) / 2)
         * sab['speed_consistency']
         * sab['accuracy_consistency']
         * sab['weight']
     )
-    sab['rank'] = sab['robust_SAB_index'].rank(ascending=False)
-    maxv = sab['robust_SAB_index'].max()
-    sab['robust_SAB_scaled'] = (sab['robust_SAB_index'] / maxv * 100) if maxv and not np.isnan(maxv) else 0
+
+    # FIXED: percentile scaling 0–100 (never negative)
+    sab['robust_SAB_scaled'] = sab['robust_SAB_index'].rank(pct=True) * 100
+
+    # rank: 1 = best
+    sab['rank'] = sab['robust_SAB_index'].rank(ascending=False, method='average')
+
     return sab
+
+def compute_user_pass_features(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Returns per-user:
+      - user_pass_rate: mean(passed) where passed = marks >= pass_mark
+      - avg_pass_ratio: mean(marks / pass_mark) clipped
+      - graded_attempts: rows where pass_mark was available
+    """
+    df = df.copy()
+
+    for c in ['user_id', 'marks', 'pass_mark']:
+        if c not in df.columns:
+            df[c] = np.nan
+
+    df['marks'] = pd.to_numeric(df['marks'], errors='coerce')
+    df['pass_mark'] = pd.to_numeric(df['pass_mark'], errors='coerce')
+
+    # binary passed only where pass_mark exists
+    df['passed'] = np.where(df['pass_mark'].notna(), (df['marks'] >= df['pass_mark']).astype(int), np.nan)
+
+    # continuous ratio (how close to pass mark)
+    df['pass_ratio'] = (df['marks'] / df['pass_mark']).replace([np.inf, -np.inf], np.nan)
+    df['pass_ratio'] = df['pass_ratio'].clip(lower=0, upper=1.5)
+
+    out = df.groupby('user_id').agg(
+        user_pass_rate=('passed', 'mean'),
+        avg_pass_ratio=('pass_ratio', 'mean'),
+        graded_attempts=('passed', lambda x: int(x.notna().sum()))
+    ).reset_index()
+
+    return out
+
 
 
 def compute_SAB(df):

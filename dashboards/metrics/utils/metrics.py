@@ -26,29 +26,6 @@ def load_data_from_disk_or_session(default_path="data/verify_df_fixed.csv"):
         except Exception:
             return None
     return None
-
-# utils/metrics.py
-#import pandas as pd
-#import numpy as np
-#from sklearn.preprocessing import MinMaxScaler
-#import streamlit as st
-
-#@st.cache_data
-#def load_data_default(path):
-  #  df = pd.read_csv(path, parse_dates=True, low_memory=False)
- #   return df
-
-#def load_data_with_upload(default_path="data/verify_df_fixed.csv"):
-    #uploaded = st.sidebar.file_uploader("Upload verify_df_fixed.csv (optional)", type=["csv"])
-   # if uploaded is not None:
-  #      df = pd.read_csv(uploaded, low_memory=False)
-  #      return df
-    # fallback to repo file if exists
-   # try:
-      #  df = load_data_default(default_path)
-       # return df
-   # except Exception:
-       # return None
 # basic metrics ------------------------------------------------
 def compute_basic_metrics1(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
@@ -84,10 +61,13 @@ def compute_basic_metrics2(df):
         if c not in df.columns:
             df[c] = np.nan
     # avoid zero time issues
-    df['time_taken'] = df['time_taken'].replace(0, np.nan)
+    df['time_taken'] = pd.to_numeric(df['time_taken'], errors='coerce').replace(0, np.nan)
+    df['duration'] = pd.to_numeric(df['duration'], errors='coerce').replace(0, np.nan)
+    
     df['speed_raw'] = df['attempted_questions'] / df['time_taken']
     df['adj_speed'] = df['correct_answers'] / df['time_taken']
     df['speed_marks'] = df['marks'] / df['time_taken']
+    
     df['speed_rel_time'] = ((df['duration'] - df['time_taken']) / df['duration']).clip(lower=0)
     df['time_consumed'] = (df['time_taken'] / df['duration']).clip(0,1)
     # accuracy
@@ -97,8 +77,14 @@ def compute_basic_metrics2(df):
     # normalized speed (safe)
     scaler = MinMaxScaler()
     df['speed_norm'] = scaler.fit_transform(df[['speed_raw']].fillna(0))
-    # efficiency ratio
-    df['efficiency_ratio'] = df['accuracy_total'] / df['time_consumed'].replace(0, np.nan)
+
+    # efficiency_ratio: only valid when time_consumed is > 0
+    df['efficiency_ratio'] = np.where(
+    df['time_consumed'].notna() & (df['time_consumed'] > 0),
+    df['accuracy_total'] / df['time_consumed'],
+    np.nan
+    )
+
 
     df.replace([np.inf, -np.inf], np.nan, inplace=True)
     return df

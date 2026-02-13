@@ -88,7 +88,7 @@ def compute_basic_metrics2(df):
     # fallback efficiency that does NOT require duration: score per minute
     df['efficiency_per_min'] = np.where(
     df['time_taken'].notna() & (df['time_taken'] > 0),
-    (df['accuracy_total'] / df['time_taken']),
+    df['accuracy_total'] / df['time_taken'],
     np.nan
     )
 

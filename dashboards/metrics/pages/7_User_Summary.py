@@ -341,18 +341,18 @@ else:
     per_test["test_status"] = per_test.apply(_test_status, axis=1)
 
     # Show table
-    show_cols = ["test_label", "attempts", "avg_accuracy_pct", "avg_speed_qpm", "pass_rate_pct", "test_work_habits_score", "test_status"]
-    table = per_test[show_cols].rename(columns={
-        "test_label": "Test",
-        "attempts": "Attempts",
-        "avg_accuracy_pct": "Avg accuracy (%)",
-        "avg_speed_qpm": "Avg speed (q/min)",
-        "pass_rate_pct": "Pass rate (%)",
-        "test_work_habits_score": "Work Habits Score (test)",
-        "test_status": "Status"
-    }).sort_values(["Pass rate (%)", "Avg accuracy (%)"], ascending=False)
+    #show_cols = ["test_label", "attempts", "avg_accuracy_pct", "avg_speed_qpm", "pass_rate_pct", "test_work_habits_score", "test_status"]
+    #table = per_test[show_cols].rename(columns={
+     #   "test_label": "Test",
+     #   "attempts": "Attempts",
+     #   "avg_accuracy_pct": "Avg accuracy (%)",
+     #   "avg_speed_qpm": "Avg speed (q/min)",
+    #    "pass_rate_pct": "Pass rate (%)",
+     #   "test_work_habits_score": "Work Habits Score (test)",
+    #    "test_status": "Status"
+  #  }).sort_values(["Pass rate (%)", "Avg accuracy (%)"], ascending=False)
 
-    st.dataframe(table, use_container_width=True)
+  #  st.dataframe(table, use_container_width=True)
 
     # Charts
     fig_acc = px.bar(per_test, x="test_label", y="avg_accuracy_pct", title="Avg accuracy (%) by test", text_auto=True)

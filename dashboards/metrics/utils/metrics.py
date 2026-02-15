@@ -294,3 +294,82 @@ def compute_user_pass_features(df: pd.DataFrame) -> pd.DataFrame:
     agg['avg_pass_ratio_pct'] = (agg['avg_pass_ratio'] * 100).round(1)
 
     return agg
+
+
+def compute_user_coverage_features(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Computes coverage-aware features per user:
+    - at_risk_tests_count
+    - low_evidence_tests_count
+    - total_tests_covered
+    - coverage_risk (Low/Medium/High)
+    - coverage_factor (0..1) to penalize readiness probability
+
+    Requires: user_id, test_id, accuracy_total, marks, pass_mark (optional), and attempts per test.
+    """
+    d = df.copy()
+
+    # Ensure required columns exist
+    for c in ["user_id", "test_id", "accuracy_total", "marks", "pass_mark"]:
+        if c not in d.columns:
+            d[c] = np.nan
+
+    # passed flag (if pass_mark exists)
+    if d["pass_mark"].notna().any():
+        d["passed"] = (pd.to_numeric(d["marks"], errors="coerce") >= pd.to_numeric(d["pass_mark"], errors="coerce")).astype(int)
+    else:
+        d["passed"] = np.nan
+
+    per_test = d.groupby(["user_id", "test_id"]).agg(
+        attempts=("test_id", "count"),
+        avg_accuracy=("accuracy_total", "mean"),
+        pass_rate=("passed", "mean"),
+    ).reset_index()
+
+    # Per-test status rule (V1)
+    def _status(row):
+        if row["attempts"] < 2:
+            return "Low evidence"
+        # At risk if poor pass rate OR poor accuracy
+        if pd.notna(row["pass_rate"]) and row["pass_rate"] < 0.5:
+            return "At risk"
+        if pd.notna(row["avg_accuracy"]) and row["avg_accuracy"] < 0.5:
+            return "At risk"
+        return "On track"
+
+    per_test["status"] = per_test.apply(_status, axis=1)
+
+    # Aggregate to user level
+    user_cov = per_test.groupby("user_id").agg(
+        total_tests_covered=("test_id", "nunique"),
+        at_risk_tests_count=("status", lambda x: int((x == "At risk").sum())),
+        low_evidence_tests_count=("status", lambda x: int((x == "Low evidence").sum())),
+    ).reset_index()
+
+    # Coverage risk and coverage factor
+    def _risk_and_factor(row):
+        total = row["total_tests_covered"] if row["total_tests_covered"] else 0
+        at_risk = row["at_risk_tests_count"]
+        low_ev = row["low_evidence_tests_count"]
+        low_ev_rate = (low_ev / total) if total > 0 else 1.0
+
+        # Risk labels
+        if at_risk >= 2 or low_ev_rate >= 0.40:
+            risk = "High"
+        elif at_risk == 1 or low_ev_rate >= 0.20:
+            risk = "Medium"
+        else:
+            risk = "Low"
+
+        # Factor (0..1): penalize risk; keep it simple and explainable
+        # - each at-risk test: -0.20
+        # - each low evidence test: -0.10
+        # + small base, clipped
+        factor = 1.0 - (0.20 * at_risk) - (0.10 * low_ev)
+        factor = float(np.clip(factor, 0.40, 1.0))  # never below 0.40
+
+        return pd.Series({"coverage_risk": risk, "coverage_factor": factor})
+
+    user_cov = pd.concat([user_cov, user_cov.apply(_risk_and_factor, axis=1)], axis=1)
+    return user_cov
+

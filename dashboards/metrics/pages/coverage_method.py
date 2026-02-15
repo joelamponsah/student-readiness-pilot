@@ -233,8 +233,8 @@ else:
         c.metric("Readiness probability", f"{float(r.get('readiness_probability_pct', 0)):.1f}%")
     else:
         c.metric("Readiness probability", "N/A")
-
-    with st.expander("Show calculation details"):
+        
+        with st.expander("Show calculation details"):
     st.write(f"Base readiness: {float(r.get('readiness_probability_base_pct', 0)):.1f}%")
     st.write(f"Coverage factor: {float(r.get('coverage_factor', 1.0)):.2f} ({r.get('coverage_risk','N/A')})")
 

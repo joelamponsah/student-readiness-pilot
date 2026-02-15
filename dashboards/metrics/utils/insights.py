@@ -1,4 +1,6 @@
 import numpy as np
+import pandas as pd
+
 from utils.insight_text import stakeholder_summary
 from utils.coach_feedback import coach_feedback
 

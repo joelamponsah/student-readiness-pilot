@@ -131,34 +131,39 @@ def apply_insight_engine(sab_df):
 def _sigmoid(x: float) -> float:
     return 1 / (1 + np.exp(-x))
 
-
-def _sigmoid(x: float) -> float:
-    return 1 / (1 + np.exp(-x))
-
 def add_readiness_probability(sab_df):
     """
-    Readiness Probability (0..1) aligned with eligibility rules.
-    - Base score uses Work Habits (robust_SAB_scaled), pass outcomes, and evidence.
-    - Then apply rule-based caps/penalties so "Not Eligible" doesn't show high probability.
+    Coverage-aware Readiness Probability (0..1), aligned with eligibility rules.
+    Steps:
+    1) Compute base probability from Work Habits + pass outcomes + evidence.
+    2) Apply rule-based caps (LOW_EVIDENCE, FAST_GUESSING, etc.)
+    3) Apply eligibility-alignment cap for "Not Eligible"
+    4) Apply coverage guardrail via coverage_factor (and optional cap if coverage_risk is High)
+    Produces:
+      - readiness_probability_base(_pct)
+      - readiness_probability(_pct)  [coverage-adjusted headline]
     """
     sab_df = sab_df.copy()
 
     # Ensure required columns exist
-    for c in ["robust_SAB_scaled", "pass_rate", "avg_pass_ratio", "test_count", "std_acc", "insight_code", "exam_status"]:
+    needed = [
+        "robust_SAB_scaled", "pass_rate", "avg_pass_ratio", "test_count", "std_acc",
+        "insight_code", "exam_status",
+        # coverage guardrail inputs (merged from metrics layer)
+        "coverage_factor", "coverage_risk"
+    ]
+    for c in needed:
         if c not in sab_df.columns:
             sab_df[c] = np.nan
 
-    # Normalize components
-    wh = (sab_df["robust_SAB_scaled"].fillna(0).clip(0, 100)) / 100.0       # 0..1
-    pr = sab_df["pass_rate"].fillna(0).clip(0, 1)                          # 0..1
-    # avg_pass_ratio is optional, keep weak influence; if missing it won't dominate
-    ar = (sab_df["avg_pass_ratio"].fillna(0).clip(0, 2.0)) / 2.0           # 0..1
+    # ---- Base components (0..1-ish) ----
+    wh = (sab_df["robust_SAB_scaled"].fillna(0).clip(0, 100)) / 100.0
+    pr = sab_df["pass_rate"].fillna(0).clip(0, 1)
+    ar = (sab_df["avg_pass_ratio"].fillna(0).clip(0, 2.0)) / 2.0
     evidence = (sab_df["test_count"].fillna(0) / (sab_df["test_count"].fillna(0) + 10)).clip(0, 1)
-
-    # Inconsistency penalty
     inconsistent = (sab_df["std_acc"].fillna(0) > 0.35).astype(int)
 
-    # Base score (conservative)
+    # ---- Base score -> probability ----
     score = (
         1.6 * wh +
         1.2 * pr +
@@ -169,31 +174,39 @@ def add_readiness_probability(sab_df):
     )
     prob = _sigmoid(score)
 
-    # --------- Rule-alignment layer (the important fix) ---------
-    code = sab_df["insight_code"].astype(str)
+    # Store base probability BEFORE caps/guards (optional but useful for debugging)
+    sab_df["readiness_probability_base"] = prob
+    sab_df["readiness_probability_base_pct"] = (prob * 100).round(1)
 
-    # Hard caps for “blocking” reasons
-    # These ensure Not Eligible doesn’t show high probability.
+    # ---- Rule-alignment caps by insight_code ----
+    code = sab_df["insight_code"].astype(str)
     cap = np.full(len(sab_df), np.nan, dtype=float)
 
-    cap[code == "LOW_EVIDENCE"] = 0.25          # not enough attempts
-    cap[code == "FAST_GUESSING"] = 0.35         # risky behavior
-    cap[code == "INCONSISTENT"] = 0.40          # unstable performance
+    cap[code == "LOW_EVIDENCE"] = 0.25
+    cap[code == "FAST_GUESSING"] = 0.35
+    cap[code == "INCONSISTENT"] = 0.40
     cap[code == "ACCURACY_RISK"] = 0.45
-    cap[code == "SPEED_RISK"] = 0.50            # could be borderline
-    cap[code == "NEAR_READY"] = 0.75            # allow higher but not “certain”
+    cap[code == "SPEED_RISK"] = 0.50
+    cap[code == "NEAR_READY"] = 0.75
     cap[code == "READY"] = 0.95
 
-    # Apply cap where defined
     prob = np.where(np.isnan(cap), prob, np.minimum(prob, cap))
 
-    # Additional safety: if exam_status explicitly not eligible, cap at 0.50
-    # (keeps the story consistent for stakeholders)
-    status = sab_df["exam_status"].astype(str).str.lower()
+    # ---- Eligibility alignment cap ----
+    status = sab_df["exam_status"].astype(str).str.strip().str.lower()
     prob = np.where(status == "not eligible", np.minimum(prob, 0.50), prob)
 
-    sab_df["readiness_probability"] = prob
-    sab_df["readiness_probability_pct"] = (prob * 100).round(1)
+    # ---- Coverage guardrail (headline probability) ----
+    # coverage_factor is expected in [0.40, 1.00]. If missing, treat as 1.
+    cf = pd.to_numeric(sab_df["coverage_factor"], errors="coerce").fillna(1.0).clip(0.40, 1.0)
+    prob_adj = prob * cf
+
+    # Optional: additional cap when coverage risk is High (prevents very high readiness with gaps)
+    risk = sab_df["coverage_risk"].astype(str).str.strip().str.lower()
+    prob_adj = np.where(risk == "high", np.minimum(prob_adj, 0.70), prob_adj)
+
+    sab_df["readiness_probability"] = prob_adj
+    sab_df["readiness_probability_pct"] = (prob_adj * 100).round(1)
 
     return sab_df
 

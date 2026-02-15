@@ -38,9 +38,14 @@ if "created_at" in df.columns:
 df = compute_basic_metrics2(df)
 
 # Compute pass features (tests passed/failed, pass_rate, pass_ratio)
-sab_df = compute_sab_behavioral(df)
+#sab_df = compute_sab_behavioral(df)
+#pass_df = compute_user_pass_features(df)
+#sab_df = sab_df.merge(pass_df, on="user_id", how="left")
+
 pass_df = compute_user_pass_features(df)
-sab_df = sab_df.merge(pass_df, on="user_id", how="left")
+sab_df = compute_sab_behavioral(df).merge(pass_df, on="user_id", how="left")
+#sab_df = apply_insight_engine(sab_df)
+
 
 sab_df = apply_insight_engine(sab_df)
 

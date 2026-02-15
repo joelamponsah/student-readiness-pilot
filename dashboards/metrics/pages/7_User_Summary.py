@@ -215,7 +215,7 @@ else:
 # ---------------------------
 # Readiness Insight
 # ---------------------------
-st.subheader("🧠 Exam Readiness Insight")
+st.subheader("🧠 Overall Exam Readiness Insight")
 
 if user_sab.empty:
     st.warning("No readiness record available for this learner (likely insufficient valid attempts).")
@@ -227,9 +227,9 @@ else:
     st.caption("Work Habits Score reflects consistency of accuracy + pace across attempts (more evidence = more reliable).")
 
     if "readiness_probability_pct" in user_sab.columns:
-        c.metric("Overall Readiness probability", f"{float(r.get('readiness_probability_pct', 0)):.1f}%")
+        c.metric("Readiness probability", f"{float(r.get('readiness_probability_pct', 0)):.1f}%")
     else:
-        c.metric(" Overall Readiness probability", "N/A")
+        c.metric("Readiness probability", "N/A")
 
     status = str(r.get("exam_status", "Unknown"))
     msg = str(r.get("insight_message", ""))
@@ -264,8 +264,8 @@ else:
                 st.write(f"{i}. {step}")
 
 st.divider()
-st.subheader("🧪 Readiness Breakdown by Test")
-st.info(f"Lets see how {username} is performing by test")
+st.subheader("Readiness Breakdown by Subject / Test")
+st.info(f"Lets see how {username} is performing by Subject / test")
 # Ensure 'name' exists for labeling
 if "name" not in df.columns:
     st.info("No 'name' column found for test labels. Can't build per-test readiness.")
@@ -399,47 +399,44 @@ if "created_at" in user_tests.columns and user_tests["created_at"].notna().any()
 else:
     st.info("No valid timestamps (created_at) available for weekly trend plots.")
 
-st.divider()
-
-# ---------------------------
-# Pass ratio by test (use test name labels)
-# ---------------------------
-
-# Build test label mapping: test_id -> name
-st.subheader("Pass rate by test")
-
+st.subheader("Accuracy & Speed by test")
+# Build test name map
 test_name_col = None
 for cand in ["name", "test_name", "title"]:
     if cand in df.columns:
         test_name_col = cand
         break
 
-if "pass_mark" in user_tests.columns and user_tests["pass_mark"].notna().any():
-    user_tests["passed"] = np.where(
-        pd.to_numeric(user_tests["pass_mark"], errors="coerce").notna(),
-        (pd.to_numeric(user_tests["marks"], errors="coerce") >= pd.to_numeric(user_tests["pass_mark"], errors="coerce")).astype(int),
-        np.nan
-    )
+per_test = user_tests.groupby("test_id").agg(
+    avg_accuracy=("accuracy_total", "mean"),
+    avg_speed_qpm=("speed_acc_raw", "mean"),
+    attempts=("test_id", "count")
+).reset_index()
 
-    pr_test = user_tests.groupby("test_id").agg(
-        pass_rate=("passed", "mean"),
-        attempts=("test_id", "count")
-    ).reset_index()
-
-    pr_test["pass_rate_pct"] = (pr_test["pass_rate"] * 100).round(1)
-
-    if test_name_col:
-        name_map = df[["test_id", test_name_col]].dropna().drop_duplicates("test_id").rename(columns={test_name_col: "test_name"})
-        pr_test = pr_test.merge(name_map, on="test_id", how="left")
-        pr_test["label"] = pr_test["test_name"].fillna(pr_test["test_id"].astype(str))
-    else:
-        pr_test["label"] = pr_test["test_id"].astype(str)
-
-    fig_pr = px.bar(pr_test, x="label", y="pass_rate_pct", title="Pass rate (%) by test", text_auto=True)
-    fig_pr.update_layout(xaxis_title="Test", xaxis_tickangle=-30)
-    st.plotly_chart(fig_pr, use_container_width=True)
+# Add test labels (names)
+if test_name_col:
+    name_map = df[["test_id", test_name_col]].dropna().drop_duplicates("test_id").rename(columns={test_name_col: "test_name"})
+    per_test = per_test.merge(name_map, on="test_id", how="left")
+    per_test["label"] = per_test["test_name"].fillna(per_test["test_id"].astype(str))
 else:
-    st.info("pass_mark is missing/empty for this learner, so pass rate by test can't be computed.")
+    per_test["label"] = per_test["test_id"].astype(str)
+
+# Show table (percent formatting for accuracy)
+table_df = per_test.copy()
+table_df["avg_accuracy_pct"] = (table_df["avg_accuracy"] * 100).round(1)
+table_df["avg_speed_qpm"] = table_df["avg_speed_qpm"].round(1)
+st.dataframe(
+    table_df[["label", "attempts", "avg_accuracy_pct", "avg_speed_qpm"]].rename(columns={
+        "label": "Test",
+        "attempts": "Attempts",
+        "avg_accuracy_pct": "Avg accuracy (%)",
+        "avg_speed_qpm": "Avg speed (q/min)"
+    }),
+    use_container_width=True
+)
+
+
+st.divider()
 
 # Build test name map
 st.subheader("📊 Learner vs peers (accuracy distribution by test)")
@@ -497,65 +494,6 @@ else:
         learner_med = float(np.median(learner_acc.values))
         pct = float((peer_vals < learner_med).mean() * 100)
         st.caption(f"Learner median accuracy is approximately at the {pct:.1f}th percentile among peers for this test.")
-
-st.subheader("Accuracy & Speed by test)")
-# Build test name map
-test_name_col = None
-for cand in ["name", "test_name", "title"]:
-    if cand in df.columns:
-        test_name_col = cand
-        break
-
-per_test = user_tests.groupby("test_id").agg(
-    avg_accuracy=("accuracy_total", "mean"),
-    avg_speed_qpm=("speed_acc_raw", "mean"),
-    attempts=("test_id", "count")
-).reset_index()
-
-# Add test labels (names)
-if test_name_col:
-    name_map = df[["test_id", test_name_col]].dropna().drop_duplicates("test_id").rename(columns={test_name_col: "test_name"})
-    per_test = per_test.merge(name_map, on="test_id", how="left")
-    per_test["label"] = per_test["test_name"].fillna(per_test["test_id"].astype(str))
-else:
-    per_test["label"] = per_test["test_id"].astype(str)
-
-# Show table (percent formatting for accuracy)
-table_df = per_test.copy()
-table_df["avg_accuracy_pct"] = (table_df["avg_accuracy"] * 100).round(1)
-table_df["avg_speed_qpm"] = table_df["avg_speed_qpm"].round(1)
-st.dataframe(
-    table_df[["label", "attempts", "avg_accuracy_pct", "avg_speed_qpm"]].rename(columns={
-        "label": "Test",
-        "attempts": "Attempts",
-        "avg_accuracy_pct": "Avg accuracy (%)",
-        "avg_speed_qpm": "Avg speed (q/min)"
-    }),
-    use_container_width=True
-)
-
-# Charts
-fig_acc_test = px.bar(
-    table_df,
-    x="label",
-    y="avg_accuracy_pct",
-    title="Avg accuracy (%) by test",
-    text_auto=True
-)
-fig_acc_test.update_layout(xaxis_title="Test", xaxis_tickangle=-30)
-st.plotly_chart(fig_acc_test, use_container_width=True)
-
-fig_speed_test = px.bar(
-    table_df,
-    x="label",
-    y="avg_speed_qpm",
-    title="Avg speed (q/min) by test",
-    text_auto=True
-)
-fig_speed_test.update_layout(xaxis_title="Test", xaxis_tickangle=-30)
-st.plotly_chart(fig_speed_test, use_container_width=True)
-
-
 
     
 st.divider()

@@ -235,12 +235,11 @@ else:
         c.metric("Readiness probability", "N/A")
         
     with st.expander("Show calculation details"):
-    st.write(f"Base readiness: {float(r.get('readiness_probability_base_pct', 0)):.1f}%")
-    st.write(
-        f"Coverage factor: {float(r.get('coverage_factor', 1.0)):.2f} ",
-        f"({r.get('coverage_risk','N/A')})"
-    )
-
+        st.write(f"Base readiness: {float(r.get('readiness_probability_base_pct', 0)):.1f}%")
+        st.write(
+            f"Coverage factor: {float(r.get('coverage_factor', 1.0)):.2f} "
+            f"({r.get('coverage_risk','N/A')})"
+        )
 
     status = str(r.get("exam_status", "Unknown"))
     msg = str(r.get("insight_message", ""))

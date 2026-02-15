@@ -203,6 +203,108 @@ else:
                 st.write(f"{i}. {step}")
 
 st.divider()
+st.subheader("🧪 Readiness by Test (using test name)")
+
+# Ensure 'name' exists for labeling
+if "name" not in df.columns:
+    st.info("No 'name' column found for test labels. Can't build per-test readiness.")
+else:
+    # Ensure pass flag exists (pass_mark required)
+    if "pass_mark" in user_tests.columns and user_tests["pass_mark"].notna().any():
+        user_tests["passed"] = np.where(
+            pd.to_numeric(user_tests["pass_mark"], errors="coerce").notna(),
+            (pd.to_numeric(user_tests["marks"], errors="coerce") >= pd.to_numeric(user_tests["pass_mark"], errors="coerce")).astype(int),
+            np.nan
+        )
+    else:
+        user_tests["passed"] = np.nan
+
+    # Aggregate learner performance per test
+    per_test = user_tests.groupby("test_id").agg(
+        attempts=("test_id", "count"),
+        avg_accuracy=("accuracy_total", "mean"),     # marks/no_of_questions (0..1)
+        std_accuracy=("accuracy_total", "std"),
+        avg_speed_qpm=("speed_acc_raw", "mean"),     # questions per min (since time_taken is minutes)
+        pass_rate=("passed", "mean"),
+        avg_marks=("marks", "mean"),
+    ).reset_index()
+
+    per_test["std_accuracy"] = per_test["std_accuracy"].fillna(0)
+    per_test["avg_accuracy_pct"] = (per_test["avg_accuracy"] * 100).round(1)
+    per_test["pass_rate_pct"] = (per_test["pass_rate"] * 100).round(1)
+
+    # Map test_id -> name
+    name_map = df[["test_id", "name"]].dropna().drop_duplicates("test_id")
+    per_test = per_test.merge(name_map, on="test_id", how="left")
+    per_test["test_label"] = per_test["name"].fillna(per_test["test_id"].astype(str))
+
+    # -------- Simple per-test "Work Habits" proxy (within this learner's tests) --------
+    # Idea: accuracy + (stability) + evidence, speed lightly weighted (to avoid speed cheating)
+    # This is NOT the global Work Habits Score; it's "within-learner per-test readiness signal".
+    # Normalize speed within learner tests to avoid huge absolute differences.
+    sp = per_test["avg_speed_qpm"].replace([np.inf, -np.inf], np.nan).fillna(per_test["avg_speed_qpm"].median())
+    sp_min, sp_max = sp.min(), sp.max()
+    sp_norm = (sp - sp_min) / ((sp_max - sp_min) if sp_max > sp_min else 1)
+
+    stability = 1 / (1 + per_test["std_accuracy"])     # higher = more stable
+    evidence = per_test["attempts"] / (per_test["attempts"] + 3)  # saturates quickly
+
+    per_test["test_work_habits_index"] = (
+        (0.65 * per_test["avg_accuracy"].fillna(0)) +
+        (0.15 * sp_norm.fillna(0)) +
+        (0.20 * stability.fillna(0))
+    ) * evidence.fillna(0)
+
+    # Scale to 0–100 within the learner's tests
+    per_test["test_work_habits_score"] = (per_test["test_work_habits_index"].rank(pct=True) * 100).round(1)
+
+    # -------- Simple per-test status (V1) --------
+    # Low evidence -> needs more attempts
+    # Otherwise: use pass rate + accuracy as primary gates
+    def _test_status(row):
+        if row["attempts"] < 2:
+            return "Low evidence"
+        if pd.notna(row["pass_rate"]) and row["pass_rate"] >= 0.7 and row["avg_accuracy"] >= 0.6:
+            return "On track"
+        if pd.notna(row["pass_rate"]) and row["pass_rate"] < 0.5:
+            return "At risk"
+        if row["avg_accuracy"] < 0.5:
+            return "At risk"
+        return "Improving"
+
+    per_test["test_status"] = per_test.apply(_test_status, axis=1)
+
+    # Show table
+    show_cols = ["test_label", "attempts", "avg_accuracy_pct", "avg_speed_qpm", "pass_rate_pct", "test_work_habits_score", "test_status"]
+    table = per_test[show_cols].rename(columns={
+        "test_label": "Test",
+        "attempts": "Attempts",
+        "avg_accuracy_pct": "Avg accuracy (%)",
+        "avg_speed_qpm": "Avg speed (q/min)",
+        "pass_rate_pct": "Pass rate (%)",
+        "test_work_habits_score": "Work Habits Score (test)",
+        "test_status": "Status"
+    }).sort_values(["Pass rate (%)", "Avg accuracy (%)"], ascending=False)
+
+    st.dataframe(table, use_container_width=True)
+
+    # Charts
+    fig_acc = px.bar(per_test, x="test_label", y="avg_accuracy_pct", title="Avg accuracy (%) by test", text_auto=True)
+    fig_acc.update_layout(xaxis_title="Test", xaxis_tickangle=-30)
+    st.plotly_chart(fig_acc, use_container_width=True)
+
+    fig_speed = px.bar(per_test, x="test_label", y="avg_speed_qpm", title="Avg speed (q/min) by test", text_auto=True)
+    fig_speed.update_layout(xaxis_title="Test", xaxis_tickangle=-30)
+    st.plotly_chart(fig_speed, use_container_width=True)
+
+    fig_pass = px.bar(per_test, x="test_label", y="pass_rate_pct", title="Pass rate (%) by test", text_auto=True)
+    fig_pass.update_layout(xaxis_title="Test", xaxis_tickangle=-30)
+    st.plotly_chart(fig_pass, use_container_width=True)
+
+    st.caption(
+        "Note: This is readiness *per test*. It highlights where a learner is strong/weak across different tests. "
+        "Low evidence means we need more attempts on that specific test to be confident."
+    )
 
 # ---------------------------
 # Trends: Accuracy by week, Speed by week

@@ -227,9 +227,9 @@ else:
     st.caption("Work Habits Score reflects consistency of accuracy + pace across attempts (more evidence = more reliable).")
 
     if "readiness_probability_pct" in user_sab.columns:
-        c.metric("Readiness probability", f"{float(r.get('readiness_probability_pct', 0)):.1f}%")
+        c.metric("Overall Readiness probability", f"{float(r.get('readiness_probability_pct', 0)):.1f}%")
     else:
-        c.metric("Readiness probability", "N/A")
+        c.metric(" Overall Readiness probability", "N/A")
 
     status = str(r.get("exam_status", "Unknown"))
     msg = str(r.get("insight_message", ""))
@@ -264,8 +264,8 @@ else:
                 st.write(f"{i}. {step}")
 
 st.divider()
-st.subheader("🧪 Readiness by Test (using test name)")
-
+st.subheader("🧪 Readiness Breakdown by Test")
+st.info(f"Lets see how {username} is performing by test")
 # Ensure 'name' exists for labeling
 if "name" not in df.columns:
     st.info("No 'name' column found for test labels. Can't build per-test readiness.")

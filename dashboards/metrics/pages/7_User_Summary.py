@@ -572,7 +572,7 @@ st.divider()
 # Difficulty summary: how many easy/moderate/hard + stability
 # ---------------------------
 st.subheader("📚 Test difficulty summary")
-st.info("easy tests -> difficulty score 0 - 0.59"}
+st.info("easy tests -> difficulty score 0 - 0.59")
 st.info("moderate tests -> difficuty score 0.6 - 0.89")
 st.info("Hard tests -> difficulty score 0.9 - 1")
 

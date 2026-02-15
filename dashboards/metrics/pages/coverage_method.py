@@ -46,7 +46,7 @@ sab_df = compute_sab_behavioral(df)\
     .merge(pass_df, on="user_id", how="left")\
     .merge(cov_df,  on="user_id", how="left")
 
-st.write("DEBUG sab_df cols", sab_df.columns.tolist())
+#st.write("DEBUG sab_df cols", sab_df.columns.tolist())
 
 sab_df = apply_insight_engine(sab_df)
 

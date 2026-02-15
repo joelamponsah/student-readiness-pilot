@@ -125,6 +125,8 @@ def apply_insight_engine(sab_df):
         
     sab_df = add_blocking_reason(sab_df)          # optional but fine
     sab_df = add_readiness_probability(sab_df)    # must come after insight_code/exam_status
+    # ✅ NEW: coverage-consistent status
+    sab_df = apply_coverage_override(sab_df)
 
 
     return sab_df
@@ -284,3 +286,31 @@ def redemption_plan(row):
         "Checkpoint: Keep readiness stable above target threshold."
     ]
 
+def apply_coverage_override(sab_df):
+    """
+    If learner is 'Eligible' by habits but coverage-adjusted readiness is low,
+    downgrade to 'Conditionally Eligible' with a clear explanation.
+    """
+    sab_df = sab_df.copy()
+
+    # Guard columns
+    for c in ["exam_status", "insight_code", "readiness_probability_pct", "coverage_risk", "blocking_reason"]:
+        if c not in sab_df.columns:
+            sab_df[c] = np.nan
+
+    status = sab_df["exam_status"].astype(str).str.lower().str.strip()
+    risk = sab_df["coverage_risk"].astype(str).str.lower().str.strip()
+    p = pd.to_numeric(sab_df["readiness_probability_pct"], errors="coerce").fillna(0)
+
+    # Override condition (tune thresholds as you like)
+    override = (status == "eligible") & ((risk == "high") | (p < 50))
+
+    sab_df.loc[override, "exam_status"] = "Conditionally Eligible"
+    sab_df.loc[override, "insight_code"] = "NEAR_READY"
+    sab_df.loc[override, "insight_message"] = (
+        "Strong work habits, but coverage gaps exist across tests. Improve weak units before final exam."
+    )
+    sab_df.loc[override, "blocking_reason"] = (
+        "Coverage gaps: learner is strong in some tests but has weak/low-evidence areas."
+    )
+    return sab_df

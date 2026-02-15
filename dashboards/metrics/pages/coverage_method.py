@@ -10,7 +10,8 @@ from utils.metrics import (
     compute_sab_behavioral,
     compute_test_analytics,
     compute_difficulty_df,
-    compute_user_pass_features
+    compute_user_pass_features,
+compute_user_coverage_features
 )
 
 st.title("User Performance Profile")

@@ -48,7 +48,6 @@ test_users = df[df["test_id"] == test_id][[
     "accuracy_total",
     "speed_raw",
     "adj_speed",
-    "speed_marks",
     "marks",
     "time_taken",
     "time_consumed"

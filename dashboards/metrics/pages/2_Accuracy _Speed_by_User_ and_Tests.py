@@ -46,7 +46,6 @@ st.subheader("Per-User Basic Metrics")
 user_metrics = df.groupby(["user_id", "l_name"]).agg(
     avg_speed=("speed_raw", "mean"),
     avg_accurate_speed=("adj_speed", "mean"),
-    avg_speed_marks=("speed_marks", "mean"),
     avg_accuracy=("accuracy_total", "mean"),
     avg_efficiency=("efficiency_ratio", "mean"),
     avg_speed_norm=("speed_norm", "mean"),

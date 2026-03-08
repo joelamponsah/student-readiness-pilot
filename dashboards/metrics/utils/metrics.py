@@ -9,20 +9,29 @@ def save_uploaded_df(df: pd.DataFrame, path="data/verify_df_fixed.csv"):
     df.to_csv(path, index=False)
 
 def load_data_from_disk_or_session(default_path="data/verify_df_fixed.csv"):
-    # prefer session state if available (pages will read from it via streamlit)
+    """
+    Loads df from Streamlit session_state if present; otherwise from disk.
+    FIXES:
+      - previously referenced df before assignment
+      - previously returned undeduped session df
+    """
+    # prefer session state if available
     try:
         import streamlit as st
-        if 'df' in st.session_state and st.session_state['df'] is not None:
-            df = df.drop_duplicates(subset=['user_id', 'created_at'])
-            return st.session_state['df']
+        if "df" in st.session_state and st.session_state["df"] is not None:
+            d = st.session_state["df"].copy()
+            # light defensive dedupe to avoid accidental double-loads in session
+            # (DQ gate will do proper attempt-level dedupe later)
+            if set(["user_id", "created_at", "test_id"]).issubset(d.columns):
+                d = d.drop_duplicates(subset=["user_id", "test_id", "created_at"])
+            return d
     except Exception:
         pass
 
-    # else load from disk if present
+    # else load from disk
     if os.path.exists(default_path):
         try:
-            df = pd.read_csv(default_path, low_memory=False)
-            return df
+            return pd.read_csv(default_path, low_memory=False)
         except Exception:
             return None
     return None

@@ -40,25 +40,26 @@ config = DQConfig(
 df_clean, dq_report, df_exclusions = apply_dq_gate(df_raw, config=config)
 
 render_dq_summary(dq_report)
+# IMPORTANT: metrics computed only on df_clean
+df = compute_basic_metrics2(df_clean)
 
-if df_raw is None or df_raw.empty:
+if df is None or df.empty:
     st.warning("Upload data to continue.")
     st.stop()
 
 # Required columns
 req = ["user_id", "username", "test_id", "marks", "time_taken"]
-missing = [c for c in req if c not in df_raw.columns]
+missing = [c for c in req if c not in df.columns]
 if missing:
     st.error(f"Dataset missing required columns: {missing}")
     st.stop()
 
 # Parse created_at if present
-if "created_at" in df_raw.columns:
-    df_raw["created_at"] = pd.to_datetime(df_raw["created_at"], errors="coerce")
+if "created_at" in df.columns:
+    df["created_at"] = pd.to_datetime(df["created_at"], errors="coerce")
 
 # Compute attempt-level metrics (speed_acc_raw, accuracy_total, efficiency, etc.)
-# IMPORTANT: metrics computed only on df_clean
-df = compute_basic_metrics2(df_clean)
+
 
 # Compute pass features (tests passed/failed, pass_rate, pass_ratio)
 #sab_df = compute_sab_behavioral(df)
@@ -164,7 +165,7 @@ if u.empty:
     st.stop()
 
 # Dropdown shows ONLY username, but u is still filtered/sorted behind the scenes
-#u = u.drop_duplicates(subset=["username"]).copy()
+u = u.drop_duplicates(subset=["username"]).copy()
 
 username_options = u["username"].tolist()
 selected_username = st.selectbox("Choose learner", username_options)

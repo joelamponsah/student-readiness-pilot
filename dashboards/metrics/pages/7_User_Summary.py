@@ -164,7 +164,7 @@ if u.empty:
     st.stop()
 
 # Dropdown shows ONLY username, but u is still filtered/sorted behind the scenes
-u = u.drop_duplicates(subset=["username"]).copy()
+#u = u.drop_duplicates(subset=["username"]).copy()
 
 username_options = u["username"].tolist()
 selected_username = st.selectbox("Choose learner", username_options)

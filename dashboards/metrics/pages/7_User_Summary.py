@@ -58,23 +58,14 @@ if missing:
 if "created_at" in df.columns:
     df["created_at"] = pd.to_datetime(df["created_at"], errors="coerce")
 
-# Compute attempt-level metrics (speed_acc_raw, accuracy_total, efficiency, etc.)
-
-
-# Compute pass features (tests passed/failed, pass_rate, pass_ratio)
-#sab_df = compute_sab_behavioral(df)
-#pass_df = compute_user_pass_features(df)
-#sab_df = sab_df.merge(pass_df, on="user_id", how="left")
-
 #pass_df = compute_user_pass_features(df)
 pass_df = df_clean.copy()
 if config.strict_pass_mark and "pass_mark_ambiguous" in pass_df.columns:
     pass_df = pass_df[~pass_df["pass_mark_ambiguous"]].copy()
 # compute pass KPIs on df_pass
 
-sab_df = compute_sab_behavioral(df).merge(pass_df, on="user_id", how="left")
-#sab_df = apply_insight_engine(sab_df)
-
+pass_user = compute_user_pass_features(pass_df)   # <-- user-level
+sab_df = compute_sab_behavioral(df).merge(pass_user, on="user_id", how="left")
 sab_df = apply_insight_engine(sab_df)
 
 # Test and difficulty analytics
@@ -107,6 +98,26 @@ else:
     user_inst = pd.DataFrame({"user_id": [], "institute": []})
 
 user_list = sab_df.merge(user_map, on="user_id", how="left").merge(user_inst, on="user_id", how="left")
+
+# --- Ensure we have a single 'username' column after merges ---
+if "username" not in user_list.columns:
+    # common outcomes after merges
+    if "username_y" in user_list.columns:
+        user_list["username"] = user_list["username_y"]
+    elif "username_x" in user_list.columns:
+        user_list["username"] = user_list["username_x"]
+    else:
+        # last resort: use user_id as label
+        user_list["username"] = user_list["user_id"].astype(str)
+
+# clean up duplicate username columns if they exist
+for c in ["username_x", "username_y"]:
+    if c in user_list.columns:
+        user_list.drop(columns=[c], inplace=True, errors="ignore")
+
+# optional: fill blanks
+user_list["username"] = user_list["username"].astype("string").fillna("").str.strip()
+user_list.loc[user_list["username"] == "", "username"] = user_list["user_id"].astype(str)
 
 # ensure attempts exist
 if "test_count" not in user_list.columns:

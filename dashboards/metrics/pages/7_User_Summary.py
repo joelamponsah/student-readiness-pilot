@@ -41,7 +41,7 @@ df_clean, dq_report, df_exclusions = apply_dq_gate(df_raw, config=config)
 
 render_dq_summary(dq_report)
 
-if df is None or df.empty:
+if df_raw is None or df.empty:
     st.warning("Upload data to continue.")
     st.stop()
 

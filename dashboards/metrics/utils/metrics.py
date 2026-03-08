@@ -64,8 +64,8 @@ def compute_basic_metrics2(df):
     df['accuracy_total'] = (df['marks'] / df['no_of_questions']).fillna(0)
 
     # Speed per second
-    df['speed_raw'] = df['attempted_questions'] / df['time_taken']      # attempted/sec
-    df['adj_speed'] = df['correct_answers'] / df['time_taken']          # correct/sec
+    df['speed_raw'] = df['attempted_questions'] / df['time_taken']      # attempted/min
+    df['adj_speed'] = df['correct_answers'] / df['time_taken']          # correct/min
 
     # Requested: speed_acc_raw as questions per minute (attempted/min)
     df['speed_acc_raw'] = df['speed_raw']

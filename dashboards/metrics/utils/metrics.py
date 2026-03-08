@@ -62,6 +62,13 @@ def compute_basic_metrics2(df):
     # Accuracy
     df['accuracy_attempt'] = (df['correct_answers'] / df['attempted_questions']).fillna(0)
     df['accuracy_total'] = (df['marks'] / df['no_of_questions']).fillna(0)
+    
+    df["accuracy_total_safe"] = np.where(
+        df.get("no_of_questions_suspect", False) == False,
+        (df["marks"] / df["no_of_questions"]).replace([np.inf, -np.inf], np.nan),
+        np.nan
+    )
+
 
     # Speed per second
     df['speed_raw'] = df['attempted_questions'] / df['time_taken']      # attempted/min

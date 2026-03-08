@@ -47,14 +47,14 @@ if df_raw is None or df_raw.empty:
 
 # Required columns
 req = ["user_id", "username", "test_id", "marks", "time_taken"]
-missing = [c for c in req if c not in df.columns]
+missing = [c for c in req if c not in df_raw.columns]
 if missing:
     st.error(f"Dataset missing required columns: {missing}")
     st.stop()
 
 # Parse created_at if present
-if "created_at" in df.columns:
-    df["created_at"] = pd.to_datetime(df["created_at"], errors="coerce")
+if "created_at" in df_raw.columns:
+    df_raw["created_at"] = pd.to_datetime(df_raw["created_at"], errors="coerce")
 
 # Compute attempt-level metrics (speed_acc_raw, accuracy_total, efficiency, etc.)
 # IMPORTANT: metrics computed only on df_clean

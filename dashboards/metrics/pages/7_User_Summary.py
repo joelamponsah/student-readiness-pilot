@@ -12,13 +12,35 @@ from utils.metrics import (
     compute_difficulty_df,
     compute_user_pass_features
 )
+from utils.dq_policy import apply_dq_gate
+from utils.dq_reporting import render_dq_summary
+# optional: sidebar controls
+from utils.dq_policy import DQConfig
+# or use dq_sidebar_controls() snippet from above
+
 
 st.title("User Performance Profile")
 
 # ---------------------------
 # Load Data
 # ---------------------------
-df = load_data_from_disk_or_session()
+df_raw = load_data_from_disk_or_session()
+
+config = DQConfig(
+    completed_only=True,
+    dedupe_best_attempt=True,
+    strict_pass_mark=True,
+    show_incomplete=False,
+    export_artifacts=True,
+)
+
+# if using sidebar snippet:
+# config = dq_sidebar_controls()
+
+df_clean, dq_report, df_exclusions = apply_dq_gate(df_raw, config=config)
+
+render_dq_summary(dq_report)
+
 if df is None or df.empty:
     st.warning("Upload data to continue.")
     st.stop()
@@ -35,17 +57,22 @@ if "created_at" in df.columns:
     df["created_at"] = pd.to_datetime(df["created_at"], errors="coerce")
 
 # Compute attempt-level metrics (speed_acc_raw, accuracy_total, efficiency, etc.)
-df = compute_basic_metrics2(df)
+# IMPORTANT: metrics computed only on df_clean
+df = compute_basic_metrics2(df_clean)
 
 # Compute pass features (tests passed/failed, pass_rate, pass_ratio)
 #sab_df = compute_sab_behavioral(df)
 #pass_df = compute_user_pass_features(df)
 #sab_df = sab_df.merge(pass_df, on="user_id", how="left")
 
-pass_df = compute_user_pass_features(df)
+#pass_df = compute_user_pass_features(df)
+pass_df = df_clean.copy()
+if config.strict_pass_mark and "pass_mark_ambiguous" in pass_df.columns:
+    pass_df = pass_df[~pass_df["pass_mark_ambiguous"]].copy()
+# compute pass KPIs on df_pass
+
 sab_df = compute_sab_behavioral(df).merge(pass_df, on="user_id", how="left")
 #sab_df = apply_insight_engine(sab_df)
-
 
 sab_df = apply_insight_engine(sab_df)
 

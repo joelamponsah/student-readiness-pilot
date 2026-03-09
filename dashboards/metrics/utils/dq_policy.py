@@ -15,6 +15,7 @@ import pandas as pd
 @dataclass
 class DQConfig:
     completed_only: bool = True
+    include_incomplete_if_has_evidence: bool = False  # NEW
     dedupe_best_attempt: bool = True
     strict_pass_mark: bool = True
     show_incomplete: bool = False  # for exploration only; NOT for published KPIs
@@ -188,15 +189,45 @@ def apply_dq_gate(
         pm.isna() | (pm <= 0) | (max_marks_candidate.notna() & (pm > max_marks_candidate))
     ).fillna(True)
 
+    marks = pd.to_numeric(df.get("marks", np.nan), errors="coerce")
+    tt = pd.to_numeric(df.get("time_taken", np.nan), errors="coerce")
+
+    df["has_marks"] = marks.notna() & (marks >= 0)
+    df["has_time_taken"] = tt.notna() & (tt > 0)
+
+    # Incomplete but has usable evidence (marks or time taken)
+    df["incomplete_but_usable"] = df["is_incomplete"] & (df["has_marks"] | df["has_time_taken"])
+
     # -----------------------------
     # Eligibility filters (published KPI base)
     # -----------------------------
     df["_eligible_completed"] = ~df["is_incomplete"] if config.completed_only else True
-    df["_eligible_validity"] = (
-        (pd.to_numeric(df.get("time_taken", np.nan), errors="coerce") > 0) &
-        (pd.to_numeric(df.get("marks", np.nan), errors="coerce") >= 0) &
-        (pd.to_numeric(df.get("no_of_questions", np.nan), errors="coerce") > 0)
-    ).fillna(False)
+   
+    if config.completed_only:
+        # completed required, unless we explicitly allow salvage
+        if config.include_incomplete_if_has_evidence:
+            df["_eligible_completed"] = (~df["is_incomplete"]) | df["incomplete_but_usable"]
+        else:
+            df["_eligible_completed"] = ~df["is_incomplete"]
+    else:
+        df["_eligible_completed"] = True
+   
+    tt = pd.to_numeric(df.get("time_taken", np.nan), errors="coerce")
+    mk = pd.to_numeric(df.get("marks", np.nan), errors="coerce")
+    noq = pd.to_numeric(df.get("no_of_questions", np.nan), errors="coerce")
+
+    valid_marks = mk.notna() & (mk >= 0)
+    valid_noq = noq.notna() & (noq > 0)
+    valid_time = tt.notna() & (tt > 0)
+
+    # Base validity for any row we keep in any KPI family
+    # - marks must be valid always
+    # - no_of_questions must be >0 (but we will still flag suspect separately)
+    # - time_taken only required when computing speed-based metrics; do not exclude marks-only salvage rows
+    df["_eligible_validity"] = (valid_marks & valid_noq).fillna(False)
+
+    # Separate "speed eligible" flag used by speed KPIs
+    df["speed_eligible"] = valid_time.fillna(False)
 
     df["_eligible_base"] = df["_eligible_completed"] & df["_eligible_validity"]
 
@@ -239,7 +270,7 @@ def apply_dq_gate(
     if config.show_incomplete and not config.completed_only:
         # show_incomplete only affects visibility, not published KPI eligibility.
         pass
-
+    
     # -----------------------------
     # Build exclusions with reasons
     # -----------------------------
@@ -247,7 +278,8 @@ def apply_dq_gate(
 
     # priority-ordered reasons (first match wins)
     reasons = [
-        ("incomplete_attempt", df["is_incomplete"]),
+        ("incomplete_no_evidence", df["is_incomplete"] & ~df["incomplete_but_usable"]),
+        ("incomplete_attempt", df["is_incomplete"] & df["incomplete_but_usable"] & ~pd.Series(df["_eligible_completed"], index=df.index)),
         ("invalid_time_taken", ~(pd.to_numeric(df.get("time_taken", np.nan), errors="coerce") > 0)),
         ("invalid_marks", ~(pd.to_numeric(df.get("marks", np.nan), errors="coerce") >= 0)),
         ("invalid_no_of_questions", ~(pd.to_numeric(df.get("no_of_questions", np.nan), errors="coerce") > 0)),

@@ -301,6 +301,23 @@ avg_accuracy_pct = float(user_tests["accuracy_safe"].mean() * 100) if user_tests
 
 st.caption(f"Accuracy coverage (safe): {acc_cov:.1f}% of eligible attempts.")
 
+# Detect suspicious rollups: correct_answers == attempted_questions but marks not consistent
+if {"attempted_questions","correct_answers","marks"}.issubset(user_tests.columns):
+    aq = pd.to_numeric(user_tests["attempted_questions"], errors="coerce")
+    ca = pd.to_numeric(user_tests["correct_answers"], errors="coerce")
+    mk = pd.to_numeric(user_tests["marks"], errors="coerce")
+
+    # rollup says "all correct" but marks not close to ca (tolerance)
+    user_tests["q_rollup_suspect"] = (aq > 0) & (ca == aq) & (mk.notna()) & (mk < (ca * 0.9))
+
+    # If rollup suspect, do NOT use accuracy_attempt
+    user_tests.loc[user_tests["q_rollup_suspect"], "accuracy_safe"] = np.nan
+
+    # fallback to marks/noq only where noq is not suspect
+    if {"accuracy_total","no_of_questions_suspect"}.issubset(user_tests.columns):
+        mask = (~user_tests["no_of_questions_suspect"]) & user_tests["accuracy_total"].notna()
+        user_tests.loc[mask & user_tests["accuracy_safe"].isna(), "accuracy_safe"] = user_tests.loc[mask, "accuracy_total"]
+
 # Activity window (eligible, based on created_at if available)
 activity_window = "N/A"
 if "created_at" in user_tests.columns and user_tests["created_at"].notna().any():

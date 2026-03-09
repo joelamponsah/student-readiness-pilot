@@ -35,7 +35,7 @@ config = DQConfig(
 )
 
 # if using sidebar snippet:
-# config = dq_sidebar_controls()
+config = dq_sidebar_controls()
 
 df_clean, dq_report, df_exclusions = apply_dq_gate(df_raw, config=config)
 

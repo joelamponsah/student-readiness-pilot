@@ -325,7 +325,11 @@ def apply_dq_gate(
             "city_placeholder_rate": float(df_clean["city_placeholder"].mean()) if rows_included else 0.0,
         },
     }
-
+    dq_report["salvage_stats"] = {
+    "incomplete_rate_raw": float(df["is_incomplete"].mean()),
+    "incomplete_usable_rate_raw": float(df["incomplete_but_usable"].mean()),
+    "incomplete_usable_count_raw": int(df["incomplete_but_usable"].sum()),
+    }
     # -----------------------------
     # Artifact-first exports
     # -----------------------------

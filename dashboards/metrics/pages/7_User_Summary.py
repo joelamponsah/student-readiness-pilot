@@ -29,7 +29,7 @@ df_raw = load_data_from_disk_or_session()
 
 config = DQConfig(
     completed_only=True,
-    include_incomplete_if_has_evidence=True,
+    #include_incomplete_if_has_evidence=True,
     dedupe_best_attempt=False,
     strict_pass_mark=True,
     show_incomplete=False,

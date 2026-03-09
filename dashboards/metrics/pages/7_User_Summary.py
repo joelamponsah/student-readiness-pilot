@@ -41,7 +41,6 @@ if config is None:
     )
 
 df_clean, dq_report, df_exclusions = apply_dq_gate(df_raw, config=config)
-st.caption("DQ summary shown for the selected learner only. Dataset-wide DQ is available on the Data Quality page.")
 
 # Compute metrics only on gated data
 df = compute_basic_metrics2(df_clean)
@@ -207,8 +206,8 @@ username = sel["username"]
 user_tests = df[df["user_id"] == user_id].copy()
 user_sab = sab_df[sab_df["user_id"] == user_id].copy()
 
-st.subheader("🧪 Data Quality for this learner")
-
+st.subheader("Data Quality for this learner")
+st.caption("DQ summary shown for the selected learner only. Dataset-wide DQ is available on the Data Quality page.")
 # Raw slice for learner (use df_raw)
 raw_user = (
     df_raw[df_raw["user_id"] == user_id].copy()

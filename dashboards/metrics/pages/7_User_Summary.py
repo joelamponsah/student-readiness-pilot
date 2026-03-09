@@ -227,9 +227,9 @@ else:
     user_tests["accuracy_safe"] = np.nan
 
 if "accuracy_total" in user_tests.columns and "no_of_questions_suspect" in user_tests.columns:
-    user_tests["accuracy_safe"] = user_tests["accuracy_safe"].fillna(
-        np.where(~user_tests["no_of_questions_suspect"], user_tests["accuracy_total"], np.nan)
-    )
+    # fill accuracy_safe from accuracy_total only where no_of_questions is NOT suspect
+    mask = (~user_tests["no_of_questions_suspect"]) & user_tests["accuracy_total"].notna()
+    user_tests.loc[mask & user_tests["accuracy_safe"].isna(), "accuracy_safe"] = user_tests.loc[mask, "accuracy_total"]
 else:
     user_tests["accuracy_safe"] = user_tests["accuracy_safe"].fillna(user_tests.get("accuracy_total", np.nan))
 

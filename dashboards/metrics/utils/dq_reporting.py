@@ -39,6 +39,12 @@ def render_dq_summary(dq_report: Dict):
     k3.metric("time_taken outliers", f"{flag_rates.get('time_taken_outlier_rate', 0)*100:.1f}%")
     k4.metric("no_of_questions suspect", f"{flag_rates.get('no_of_questions_suspect_rate', 0)*100:.1f}%")
 
+    salv = dq_report.get("salvage_stats", {})
+    if salv:
+        s1, s2, s3 = st.columns(3)
+        s1.metric("Incomplete (raw)", f"{salv.get('incomplete_rate_raw',0)*100:.1f}%")
+        s2.metric("Incomplete but usable (raw)", f"{salv.get('incomplete_usable_rate_raw',0)*100:.1f}%")
+        s3.metric("Usable incomplete rows", f"{salv.get('incomplete_usable_count_raw',0):,}")
     # Exclusion breakdown
     reasons = dq_report.get("exclusion_reasons", {})
     if reasons:

@@ -31,7 +31,7 @@ df_clean, dq_report, df_exclusions = apply_dq_gate(df_raw, config=config)
 render_dq_summary(dq_report)
 
 # IMPORTANT: metrics computed only on df_clean
-
+df = compute_basic_metrics2(df_clean)
 if df is None:
     st.warning("No dataset loaded. Upload in sidebar or add data/verify_df_fixed.csv.")
 else:

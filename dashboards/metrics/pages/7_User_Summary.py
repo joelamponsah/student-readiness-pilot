@@ -141,10 +141,10 @@ user_list["username"] = user_list.get("username", user_list["user_id"].astype(st
 user_list["username"] = user_list["username"].astype("string").fillna("").str.strip()
 user_list.loc[user_list["username"] == "", "username"] = user_list["user_id"].astype(str)
 
-# Ensure attempts exist and aligned
-tc = df.groupby("user_id")["test_id"].count().rename("test_count").reset_index()
-user_list = user_list.merge(tc, on="user_id", how="left")
-user_list["test_count"] = user_list["test_count"].fillna(0)
+# Ensure attempts exist (use SAB's test_count)
+if "test_count" not in user_list.columns:
+    user_list["test_count"] = 0
+user_list["test_count"] = pd.to_numeric(user_list["test_count"], errors="coerce").fillna(0)
 
 st.subheader("Select Learner")
 

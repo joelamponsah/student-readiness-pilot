@@ -29,7 +29,8 @@ df_raw = load_data_from_disk_or_session()
 
 config = DQConfig(
     completed_only=True,
-    dedupe_best_attempt=True,
+    include_incomplete_if_has_evidence=True,
+    dedupe_best_attempt=False,
     strict_pass_mark=True,
     show_incomplete=False,
     export_artifacts=True,
@@ -59,8 +60,24 @@ if missing:
 if "created_at" in df.columns:
     df["created_at"] = pd.to_datetime(df["created_at"], errors="coerce")
 
+# --- Build username map from RAW data to avoid merge collisions and missing usernames ---
+if df_raw is not None and not df_raw.empty and "user_id" in df_raw.columns:
+    umap = df_raw[["user_id", "username"]].copy() if "username" in df_raw.columns else df_raw[["user_id"]].assign(username=np.nan)
+    umap["username"] = umap.get("username", np.nan)
+    umap["username"] = umap["username"].astype("string").fillna("").str.strip()
+    # most frequent username per user_id
+    user_map = (
+        umap.groupby("user_id")["username"]
+        .agg(lambda x: x[x != ""].value_counts().index[0] if (x != "").any() else "")
+        .reset_index()
+    )
+else:
+    user_map = df[["user_id"]].drop_duplicates().assign(username="")
+
+user_map.loc[user_map["username"] == "", "username"] = user_map["user_id"].astype(str)    
 #pass_df = compute_user_pass_features(df)
 pass_df = df_clean.copy()
+
 if config.strict_pass_mark and "pass_mark_ambiguous" in pass_df.columns:
     pass_df = pass_df[~pass_df["pass_mark_ambiguous"]].copy()
 # compute pass KPIs on df_pass
@@ -122,7 +139,9 @@ user_list.loc[user_list["username"] == "", "username"] = user_list["user_id"].as
 
 # ensure attempts exist
 if "test_count" not in user_list.columns:
-    user_list["test_count"] = df.groupby("user_id")["test_id"].count().values
+    tc = df.groupby("user_id")["test_id"].count().rename("test_count").reset_index()
+    user_list = user_list.merge(tc, on="user_id", how="left")
+    user_list["test_count"] = user_list["test_count"].fillna(0)
 
 st.subheader("Select Learner")
 
@@ -180,6 +199,26 @@ if u.empty:
 u = u.drop_duplicates(subset=["username"]).copy()
 
 username_options = u["username"].tolist()
+
+# Ensure usernames exist
+u["username"] = u.get("username", "").astype("string").fillna("").str.strip()
+u.loc[u["username"] == "", "username"] = u["user_id"].astype(str)
+
+# Username dropdown (as requested)
+username_options = sorted(u["username"].unique().tolist())
+selected_username = st.selectbox("Choose learner (username)", username_options)
+
+cand = u[u["username"] == selected_username].copy()
+
+# If multiple user_ids share same username, auto-pick most active; optionally allow manual pick
+if cand["user_id"].nunique() > 1:
+    # auto-pick most attempts (eligible) for that username
+    cand = cand.sort_values(["test_count", "robust_SAB_scaled"], ascending=[False, False])
+    st.info(f"Multiple learners share username '{selected_username}'. Showing the most active record.")
+sel = cand.iloc[0]
+user_id = sel["user_id"]
+username = sel["username"]
+
 selected_username = st.selectbox("Choose learner", username_options)
 
 sel = u[u["username"] == selected_username].iloc[0]
@@ -196,31 +235,58 @@ if user_tests.empty:
     st.info("No performance records found for this learner.")
     st.stop()
 
-# ---------------------------
-# KPI Row 1: attempts, unique tests, activity window
-# ---------------------------
-attempts = len(user_tests)
-unique_tests = user_tests["test_id"].nunique()
+# --- Safe accuracy (prefer question-level, else reliable marks/noq) ---
+if "accuracy_attempt" in user_tests.columns and "missing_question_level_support" in user_tests.columns:
+    user_tests["accuracy_safe"] = np.where(
+        ~user_tests["missing_question_level_support"],
+        user_tests["accuracy_attempt"],
+        np.nan
+    )
+else:
+    user_tests["accuracy_safe"] = np.nan
+
+if "accuracy_total" in user_tests.columns and "no_of_questions_suspect" in user_tests.columns:
+    user_tests["accuracy_safe"] = user_tests["accuracy_safe"].fillna(
+        np.where(~user_tests["no_of_questions_suspect"], user_tests["accuracy_total"], np.nan)
+    )
+else:
+    user_tests["accuracy_safe"] = user_tests["accuracy_safe"].fillna(user_tests.get("accuracy_total", np.nan))
+
+acc_cov = float(user_tests["accuracy_safe"].notna().mean() * 100) if len(user_tests) else 0
+avg_accuracy_pct = float(user_tests["accuracy_safe"].mean() * 100) if user_tests["accuracy_safe"].notna().any() else None
+st.caption(f"Accuracy coverage (safe): {acc_cov:.1f}% of eligible attempts.")
+
+# --- KPI Row 1: raw vs eligible attempts + unique tests
+raw_user = df_raw[df_raw["user_id"] == user_id].copy() if df_raw is not None and "user_id" in df_raw.columns else pd.DataFrame()
+raw_attempts = int(len(raw_user)) if not raw_user.empty else 0
+raw_completed = int(raw_user["finished_at"].notna().sum()) if ("finished_at" in raw_user.columns and not raw_user.empty) else np.nan
+
+eligible_attempts = int(len(user_tests))  # this is deduped eligible attempts (1 per user_id/test_id)
+eligible_unique_tests = int(user_tests["test_id"].nunique())
 
 r1c1, r1c2, r1c3 = st.columns(3)
-r1c1.metric("Total attempts", f"{attempts:,}")
-r1c2.metric("Unique tests", f"{unique_tests:,}")
+r1c1.metric("Attempts (raw)", f"{raw_attempts:,}")
+r1c2.metric("Attempts (eligible, deduped)", f"{eligible_attempts:,}")
+r1c3.metric("Unique tests (eligible)", f"{eligible_unique_tests:,}")
 
-if "created_at" in user_tests.columns and user_tests["created_at"].notna().any():
-    r1c3.metric("Activity window", f"{user_tests['created_at'].min().date()} → {user_tests['created_at'].max().date()}")
-else:
-    r1c3.metric("Activity window", "N/A")
+if not np.isnan(raw_completed):
+    st.caption(f"Completed attempts (raw): {raw_completed:,}")
 # ---------------------------
 # KPI Row 4: tests passed, tests failed, pass rate (%)
 # ---------------------------
 tests_passed = int(sel.get("tests_passed", 0) or 0)
 tests_failed = int(sel.get("tests_failed", 0) or 0)
+graded_attempts = int(sel.get("graded_attempts", 0) or 0)
 pass_rate_pct = sel.get("pass_rate_pct", np.nan)
 
-r4c1, r4c2, r4c3 = st.columns(3)
+r4c1, r4c2, r4c3, r4c4 = st.columns(4)
 r4c1.metric("Tests passed", f"{tests_passed}")
 r4c2.metric("Tests failed", f"{tests_failed}")
 r4c3.metric("Pass rate (%)", f"{float(pass_rate_pct):.1f}%" if pd.notna(pass_rate_pct) else "N/A")
+
+coverage = (graded_attempts / eligible_attempts * 100) if eligible_attempts > 0 else np.nan
+r4c4.metric("Pass-mark coverage", f"{coverage:.1f}%" if pd.notna(coverage) else "N/A")
+st.caption(f"Pass KPIs computed on {graded_attempts} graded attempts (ambiguous pass_mark excluded).")
 # ---------------------------
 # KPI Row 2: highest/lowest/avg score (marks)
 # ---------------------------
@@ -238,21 +304,31 @@ r2c3.metric("Avg score", f"{avg_score:.2f}" if pd.notna(avg_score) else "N/A")
 # KPI Row 3: avg accuracy %, avg speed (q/min via speed_acc_raw), efficiency
 # ---------------------------
 avg_accuracy_pct = float(user_tests["accuracy_total"].mean() * 100) if user_tests["accuracy_total"].notna().any() else None
-avg_speed_qpm = float(user_tests["speed_acc_raw"].mean()) if "speed_acc_raw" in user_tests.columns and user_tests["speed_acc_raw"].notna().any() else None
+#avg_speed_qpm = float(user_tests["speed_acc_raw"].mean()) if "speed_acc_raw" in user_tests.columns and user_tests["speed_acc_raw"].notna().any() else None
+speed_base = user_tests[user_tests.get("speed_eligible", True)].copy()
+avg_speed_qpm = float(speed_base["speed_acc_raw"].mean()) if speed_base["speed_acc_raw"].notna().any() else None
 
 eff_pct = user_tests["efficiency_pct"] if "efficiency_pct" in user_tests.columns else pd.Series(dtype=float)
 eff_pct_val = float(eff_pct.mean()) if eff_pct.notna().any() else None
 eff_pm = user_tests["efficiency_per_min"] if "efficiency_per_min" in user_tests.columns else pd.Series(dtype=float)
 eff_pm_val = float(eff_pm.mean()) if eff_pm.notna().any() else None
 
+# score per minute (true)
+marks_per_min = None
+if user_tests["time_taken"].notna().any():
+    m = pd.to_numeric(user_tests["marks"], errors="coerce")
+    t = pd.to_numeric(user_tests["time_taken"], errors="coerce")
+    mp = (m / t).replace([np.inf, -np.inf], np.nan)
+    marks_per_min = float(mp.mean()) if mp.notna().any() else None
+    
 r3c1, r3c2, r3c3 = st.columns(3)
 r3c1.metric("Avg accuracy", f"{avg_accuracy_pct:.1f}%" if avg_accuracy_pct is not None else "N/A")
 r3c2.metric("Avg speed", f"{avg_speed_qpm:.1f} q/min" if avg_speed_qpm is not None else "N/A")
 
 if eff_pct_val is not None:
     r3c3.metric("Learner efficiency", f"{eff_pct_val:.1f}%")
-elif eff_pm_val is not None:
-    r3c3.metric("Learner efficiency", f"{eff_pm_val:.2f} score/min")
+elif marks_per_min is not None:
+    r3c3.metric("Learner efficiency", f"{marks_per_min:.2f} marks/min")
 else:
     r3c3.metric("Learner efficiency", "N/A")
 
@@ -324,7 +400,7 @@ else:
         )
     else:
         user_tests["passed"] = np.nan
-
+    
     # Aggregate learner performance per test
     per_test = user_tests.groupby("test_id").agg(
         attempts=("test_id", "count"),
@@ -379,20 +455,6 @@ else:
         return "Improving"
 
     per_test["test_status"] = per_test.apply(_test_status, axis=1)
-
-    # Show table
-    #show_cols = ["test_label", "attempts", "avg_accuracy_pct", "avg_speed_qpm", "pass_rate_pct", "test_work_habits_score", "test_status"]
-    #table = per_test[show_cols].rename(columns={
-     #   "test_label": "Test",
-     #   "attempts": "Attempts",
-     #   "avg_accuracy_pct": "Avg accuracy (%)",
-     #   "avg_speed_qpm": "Avg speed (q/min)",
-    #    "pass_rate_pct": "Pass rate (%)",
-     #   "test_work_habits_score": "Work Habits Score (test)",
-    #    "test_status": "Status"
-  #  }).sort_values(["Pass rate (%)", "Avg accuracy (%)"], ascending=False)
-
-  #  st.dataframe(table, use_container_width=True)
 
     # Charts
     fig_acc = px.bar(per_test, x="test_label", y="avg_accuracy_pct", title="Avg accuracy (%) by test", text_auto=True)
@@ -594,10 +656,10 @@ st.divider()
 # ---------------------------
 st.subheader("🎯 Speed vs Accuracy (each attempt)")
 
-if "adj_speed" in user_tests.columns and "accuracy_total" in user_tests.columns and user_tests[["adj_speed","accuracy_total"]].dropna().shape[0] >= 2:
+if "speed_acc_raw" in user_tests.columns and "accuracy_total" in user_tests.columns and user_tests[["speed_acc_raw","accuracy_total"]].dropna().shape[0] >= 2:
     fig_scatter = px.scatter(
         user_tests,
-        x="adj_speed",
+        x="speed_acc_raw",
         y="accuracy_total",
         title="Speed vs Accuracy (each attempt)",
         hover_data=["test_id"] if "test_id" in user_tests.columns else None

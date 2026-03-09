@@ -16,6 +16,7 @@ from utils.dq_policy import apply_dq_gate
 from utils.dq_reporting import render_dq_summary
 # optional: sidebar controls
 from utils.dq_policy import DQConfig
+from utils.dq_controls import dq_sidebar_controls
 # or use dq_sidebar_controls() snippet from above
 
 

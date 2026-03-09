@@ -41,7 +41,7 @@ if config is None:
     )
 
 df_clean, dq_report, df_exclusions = apply_dq_gate(df_raw, config=config)
-render_dq_summary(dq_report)
+st.caption("DQ summary shown for the selected learner only. Dataset-wide DQ is available on the Data Quality page.")
 
 # Compute metrics only on gated data
 df = compute_basic_metrics2(df_clean)
@@ -207,6 +207,70 @@ username = sel["username"]
 user_tests = df[df["user_id"] == user_id].copy()
 user_sab = sab_df[sab_df["user_id"] == user_id].copy()
 
+st.subheader("🧪 Data Quality for this learner")
+
+# Raw slice for learner (use df_raw)
+raw_user = (
+    df_raw[df_raw["user_id"] == user_id].copy()
+    if df_raw is not None and "user_id" in df_raw.columns
+    else pd.DataFrame()
+)
+
+# Exclusions slice for learner (use df_exclusions)
+ex_user = (
+    df_exclusions[df_exclusions["user_id"] == user_id].copy()
+    if df_exclusions is not None and not df_exclusions.empty and "user_id" in df_exclusions.columns
+    else pd.DataFrame()
+)
+
+eligible_user = user_tests.copy()
+
+raw_n = len(raw_user)
+eligible_n = len(eligible_user)
+excluded_n = len(ex_user)
+
+c1, c2, c3 = st.columns(3)
+c1.metric("Attempts (raw)", f"{raw_n:,}")
+c2.metric("Eligible attempts", f"{eligible_n:,}")
+c3.metric("Excluded attempts", f"{excluded_n:,}")
+
+# Key learner-level DQ rates
+def _rate(series_bool):
+    return float(series_bool.mean() * 100) if series_bool is not None and len(series_bool) else 0.0
+
+dq1, dq2, dq3, dq4 = st.columns(4)
+
+if "is_incomplete" in raw_user.columns:
+    dq1.metric("Incomplete (raw)", f"{_rate(raw_user['is_incomplete']):.1f}%")
+elif "finished_at" in raw_user.columns:
+    dq1.metric("Incomplete (raw)", f"{_rate(raw_user['finished_at'].isna()):.1f}%")
+else:
+    dq1.metric("Incomplete (raw)", "N/A")
+
+if "incomplete_but_usable" in raw_user.columns:
+    dq2.metric("Incomplete but usable", f"{_rate(raw_user['incomplete_but_usable']):.1f}%")
+else:
+    # fallback heuristic: finished_at missing AND (marks or time_taken present)
+    if "finished_at" in raw_user.columns:
+        mk = pd.to_numeric(raw_user.get("marks", np.nan), errors="coerce")
+        tt = pd.to_numeric(raw_user.get("time_taken", np.nan), errors="coerce")
+        usable = raw_user["finished_at"].isna() & (mk.notna() | (tt.notna() & (tt > 0)))
+        dq2.metric("Incomplete but usable", f"{_rate(usable):.1f}%")
+    else:
+        dq2.metric("Incomplete but usable", "N/A")
+
+dq3.metric("Pass mark ambiguous (eligible)", f"{_rate(eligible_user.get('pass_mark_ambiguous', pd.Series([], dtype=bool))):.1f}%")
+dq4.metric("Missing Q-level support (eligible)", f"{_rate(eligible_user.get('missing_question_level_support', pd.Series([], dtype=bool))):.1f}%")
+
+# Exclusion reasons for this learner
+if not ex_user.empty and "exclusion_reason" in ex_user.columns:
+    st.markdown("**Exclusions for this learner (reasons)**")
+    reason_tbl = (
+        ex_user["exclusion_reason"].value_counts()
+        .rename_axis("reason").reset_index(name="count")
+    )
+    reason_tbl["pct_of_raw"] = (reason_tbl["count"] / raw_n * 100).round(1) if raw_n else 0
+    st.dataframe(reason_tbl, use_container_width=True)
 st.divider()
 st.subheader(f"Profile Summary: {username}")
 
@@ -238,6 +302,11 @@ avg_accuracy_pct = float(user_tests["accuracy_safe"].mean() * 100) if user_tests
 
 st.caption(f"Accuracy coverage (safe): {acc_cov:.1f}% of eligible attempts.")
 
+# Activity window (eligible, based on created_at if available)
+activity_window = "N/A"
+if "created_at" in user_tests.columns and user_tests["created_at"].notna().any():
+    activity_window = f"{user_tests['created_at'].min().date()} → {user_tests['created_at'].max().date()}"
+    
 # ---------------------------
 # KPI Row 1: raw vs eligible attempts + unique tests
 # ---------------------------
@@ -256,11 +325,12 @@ raw_completed = (
 eligible_attempts = int(len(user_tests))
 eligible_unique_tests = int(user_tests["test_id"].nunique())
 
-r1c1, r1c2, r1c3 = st.columns(3)
+r1c1, r1c2, r1c3, r1c4 = st.columns(4)
 r1c1.metric("Attempts (raw)", f"{raw_attempts:,}")
 eligible_label = "Attempts (eligible, deduped)" if config.dedupe_best_attempt else "Attempts (eligible)"
 r1c2.metric(eligible_label, f"{eligible_attempts:,}")
 r1c3.metric("Unique tests (eligible)", f"{eligible_unique_tests:,}")
+r1c4.metric("Activity window", activity_window)
 
 if not np.isnan(raw_completed):
     st.caption(f"Completed attempts (raw): {raw_completed:,}")
@@ -471,6 +541,94 @@ else:
         "Note: This is readiness per test. Low evidence means we need more attempts on that specific test to be confident. "
         "Pass rate excludes ambiguous pass_mark tests when strict pass_mark is ON."
     )
+
+st.subheader("📋 Per-test performance table")
+
+# Base table uses all eligible attempts for this user
+ut = user_tests.copy()
+
+# Preferred test label
+label_col = "name" if "name" in df.columns else None
+if label_col:
+    name_map = df[["test_id", label_col]].dropna().drop_duplicates("test_id").rename(columns={label_col: "test_name"})
+    ut = ut.merge(name_map, on="test_id", how="left")
+else:
+    ut["test_name"] = ut["test_id"].astype(str)
+ut["test_name"] = ut.get("test_name", ut["test_id"].astype(str)).fillna(ut["test_id"].astype(str))
+
+# Total marks candidate per test (best effort)
+# Prefer total_questions; fallback to no_of_questions
+if "total_questions" in ut.columns:
+    ut["total_marks_candidate"] = pd.to_numeric(ut["total_questions"], errors="coerce")
+else:
+    ut["total_marks_candidate"] = np.nan
+if "no_of_questions" in ut.columns:
+    ut["total_marks_candidate"] = ut["total_marks_candidate"].fillna(pd.to_numeric(ut["no_of_questions"], errors="coerce"))
+
+# Pass/fail only on non-ambiguous pass marks (when strict)
+ut_pass = ut.copy()
+if config.strict_pass_mark and "pass_mark_ambiguous" in ut_pass.columns:
+    ut_pass = ut_pass[~ut_pass["pass_mark_ambiguous"]].copy()
+
+if "pass_mark" in ut_pass.columns and ut_pass["pass_mark"].notna().any():
+    ut_pass["passed"] = (
+        pd.to_numeric(ut_pass["marks"], errors="coerce") >= pd.to_numeric(ut_pass["pass_mark"], errors="coerce")
+    ).astype(int)
+else:
+    ut_pass["passed"] = np.nan
+
+# Speed only where speed_eligible
+ut_speed = ut.copy()
+if "speed_eligible" in ut_speed.columns:
+    ut_speed = ut_speed[ut_speed["speed_eligible"]].copy()
+
+# Aggregate core table
+per_test = ut.groupby("test_id").agg(
+    Test=("test_name", "first"),
+    Attempts=("test_id", "count"),
+    Avg_Accuracy=("accuracy_safe", "mean"),
+    Avg_Speed_qpm=("speed_acc_raw", "mean"),
+    Highest_Score=("marks", "max"),
+    Lowest_Score=("marks", "min"),
+    Avg_Score=("marks", "mean"),
+    Total_Test_Mark=("total_marks_candidate", "max"),
+).reset_index(drop=True)
+
+# Replace Avg_Speed_qpm with speed-only aggregation if you want strict speed eligibility
+spd = ut_speed.groupby("test_id").agg(Avg_Speed_qpm=("speed_acc_raw", "mean")).reset_index()
+per_test = per_test.merge(spd, on="test_id", how="left", suffixes=("", "_spd"))
+per_test["Avg_Speed_qpm"] = per_test["Avg_Speed_qpm_spd"].fillna(per_test["Avg_Speed_qpm"])
+per_test.drop(columns=["Avg_Speed_qpm_spd"], inplace=True, errors="ignore")
+
+# Pass/fail counts
+pf = ut_pass.groupby("test_id").agg(
+    Passes=("passed", lambda x: int((x == 1).sum()) if x.notna().any() else 0),
+    Fails=("passed", lambda x: int((x == 0).sum()) if x.notna().any() else 0),
+    Graded_Attempts=("passed", lambda x: int(x.notna().sum())),
+).reset_index()
+per_test = per_test.merge(pf, on="test_id", how="left")
+
+per_test["Passes"] = per_test["Passes"].fillna(0).astype(int)
+per_test["Fails"] = per_test["Fails"].fillna(0).astype(int)
+per_test["Graded_Attempts"] = per_test["Graded_Attempts"].fillna(0).astype(int)
+
+# Formatting
+per_test["Avg_Accuracy_%"] = (per_test["Avg_Accuracy"] * 100).round(1)
+per_test["Avg_Speed_qpm"] = per_test["Avg_Speed_qpm"].round(2)
+per_test["Avg_Score"] = per_test["Avg_Score"].round(2)
+
+# Coverage note
+coverage = (per_test["Graded_Attempts"].sum() / per_test["Attempts"].sum() * 100) if per_test["Attempts"].sum() else 0
+st.caption(f"Pass/Fail computed on {coverage:.1f}% of attempts (ambiguous pass_mark excluded when strict).")
+
+show_cols = [
+    "Test", "Attempts",
+    "Avg_Accuracy_%", "Avg_Speed_qpm",
+    "Highest_Score", "Lowest_Score", "Avg_Score",
+    "Total_Test_Mark",
+    "Passes", "Fails",
+]
+st.dataframe(per_test[show_cols].sort_values(["Avg_Accuracy_%", "Attempts"], ascending=[False, False]), use_container_width=True)
 
 # ---------------------------
 # Weekly trends

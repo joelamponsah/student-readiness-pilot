@@ -591,10 +591,10 @@ per_test = ut.groupby("test_id").agg(
     Lowest_Score=("marks", "min"),
     Avg_Score=("marks", "mean"),
     Total_Test_Mark=("total_marks_candidate", "max"),
-).reset_index(drop=True)
+).reset_index()
 
 # Replace Avg_Speed_qpm with speed-only aggregation if you want strict speed eligibility
-spd = ut_speed.groupby("test_id").agg(Avg_Speed_qpm=("speed_acc_raw", "mean")).reset_index()
+spd = ut_speed.groupby("test_id").agg(Avg_Speed_qpm=("speed_acc_raw", "mean"))
 per_test = per_test.merge(spd, on="test_id", how="left", suffixes=("", "_spd"))
 per_test["Avg_Speed_qpm"] = per_test["Avg_Speed_qpm_spd"].fillna(per_test["Avg_Speed_qpm"])
 per_test.drop(columns=["Avg_Speed_qpm_spd"], inplace=True, errors="ignore")

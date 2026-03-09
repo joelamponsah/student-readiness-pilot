@@ -5,7 +5,8 @@ def dq_sidebar_controls() -> DQConfig:
     st.sidebar.markdown("## DQ Controls")
 
     completed_only = st.sidebar.toggle("Completed-only", value=True)
-    dedupe = st.sidebar.toggle("Dedupe best attempt per user/test", value=True)
+    include_incomplete_if_has_evidence = st.sidebar.toggle("Incomplete-with-evidence", value=True)
+    dedupe = st.sidebar.toggle("Dedupe best attempt per user/test", value=False)
     strict_pass_mark = st.sidebar.toggle("Strict pass_mark (exclude ambiguous in pass KPIs)", value=True)
 
     st.sidebar.markdown("---")
@@ -14,6 +15,7 @@ def dq_sidebar_controls() -> DQConfig:
 
     return DQConfig(
         completed_only=completed_only,
+        include_incomplete_if_has_evidence=include_incomplete_if_has_evidence,
         dedupe_best_attempt=dedupe,
         strict_pass_mark=strict_pass_mark,
         show_incomplete=show_incomplete,

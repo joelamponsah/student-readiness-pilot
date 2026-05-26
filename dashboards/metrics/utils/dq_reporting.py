@@ -23,6 +23,10 @@ def render_dq_summary(dq_report: Dict):
 
     st.subheader("Data Quality Gate (DQ)")
 
+    schema_warnings = dq_report.get("schema_warnings", {})
+    if schema_warnings.get("missing_finished_at_column"):
+        st.error("Missing `finished_at` column. Completed-only DQ policy treats all rows as ineligible for published KPIs.")
+
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("Rows (raw)", f"{rows_raw:,}")
     c2.metric("Rows (eligible)", f"{rows_included:,}", f"{included_rate*100:.1f}%")

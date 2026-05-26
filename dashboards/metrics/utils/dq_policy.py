@@ -78,6 +78,23 @@ def _compute_max_marks_candidate(df: pd.DataFrame) -> pd.Series:
     return max_marks
 
 
+def _compute_pass_mark_effective(pass_mark: pd.Series, max_marks: pd.Series) -> pd.Series:
+    """
+    Convert pass_mark into an explicit attempt-level threshold.
+    Values above max marks are treated as percent-like and flagged as ambiguous.
+    """
+    pm = pd.to_numeric(pass_mark, errors="coerce")
+    mx = pd.to_numeric(max_marks, errors="coerce")
+    effective = pd.Series(np.nan, index=pm.index)
+
+    absolute = pm.notna() & mx.notna() & (pm > 0) & (pm <= mx)
+    percent_like = pm.notna() & mx.notna() & (pm > mx)
+
+    effective.loc[absolute] = pm.loc[absolute]
+    effective.loc[percent_like] = np.ceil((pm.loc[percent_like] / 100.0) * mx.loc[percent_like])
+    return effective
+
+
 def export_dq_artifacts(
     df_raw: pd.DataFrame,
     df_eligible: pd.DataFrame,
@@ -129,6 +146,10 @@ def apply_dq_gate(
         return empty, report, empty
 
     df = df_raw.copy()
+
+    missing_finished_at_column = "finished_at" not in df.columns
+    if missing_finished_at_column:
+        df["finished_at"] = pd.NaT
 
     # Coerce types
     df = _to_datetime(df, ["created_at", "updated_at", "finished_at"])
@@ -185,9 +206,12 @@ def apply_dq_gate(
     # Pass mark ambiguity
     pm = pd.to_numeric(df.get("pass_mark", np.nan), errors="coerce")
     max_marks_candidate = _compute_max_marks_candidate(df)
+    df["max_marks_effective"] = max_marks_candidate
+    df["pass_mark_effective"] = _compute_pass_mark_effective(pm, max_marks_candidate)
     df["pass_mark_ambiguous"] = (
         pm.isna() | (pm <= 0) | (max_marks_candidate.notna() & (pm > max_marks_candidate))
     ).fillna(True)
+    df["pass_mark_usable"] = df["pass_mark_effective"].notna() & ~df["pass_mark_ambiguous"]
 
     marks = pd.to_numeric(df.get("marks", np.nan), errors="coerce")
     tt = pd.to_numeric(df.get("time_taken", np.nan), errors="coerce")
@@ -310,6 +334,9 @@ def apply_dq_gate(
 
     dq_report = {
         "policy": config.__dict__,
+        "schema_warnings": {
+            "missing_finished_at_column": bool(missing_finished_at_column),
+        },
         "rows_raw": int(rows_raw),
         "rows_included": int(rows_included),
         "rows_excluded": int(rows_excluded),
@@ -323,6 +350,13 @@ def apply_dq_gate(
             "institute_missing_rate": float(df_clean["institute_missing"].mean()) if rows_included else 0.0,
             "country_missing_rate": float(df_clean["country_missing"].mean()) if rows_included else 0.0,
             "city_placeholder_rate": float(df_clean["city_placeholder"].mean()) if rows_included else 0.0,
+        },
+        "coverage_rates_on_included": {
+            "institute_coverage_rate": float((~df_clean["institute_missing"]).mean()) if rows_included else 0.0,
+            "city_coverage_rate": float((~df_clean["city_placeholder"]).mean()) if rows_included else 0.0,
+            "country_coverage_rate": float((~df_clean["country_missing"]).mean()) if rows_included else 0.0,
+            "question_level_support_rate": float((~df_clean["missing_question_level_support"]).mean()) if rows_included else 0.0,
+            "strict_pass_mark_coverage_rate": float(df_clean["pass_mark_usable"].mean()) if rows_included else 0.0,
         },
     }
     dq_report["salvage_stats"] = {

@@ -12,6 +12,8 @@ from utils.metrics import (
 )
 
 from utils.institute_standardization import standardize_institute  # ensure exists
+from utils.dq_policy import apply_dq_gate, DQConfig
+from utils.dq_reporting import render_dq_summary
 
 # ----------------------------
 # Page Config
@@ -133,9 +135,24 @@ def compute_pass_fields(df_attempts: pd.DataFrame,
 # ----------------------------
 # Load
 # ----------------------------
-df = load_data_from_disk_or_session()
-if df is None or df.empty:
+df_raw = load_data_from_disk_or_session()
+if df_raw is None or df_raw.empty:
     st.warning("Upload data to continue.")
+    st.stop()
+
+config = DQConfig(
+    completed_only=True,
+    include_incomplete_if_has_evidence=False,
+    dedupe_best_attempt=True,
+    strict_pass_mark=True,
+    show_incomplete=False,
+    export_artifacts=True,
+)
+df, dq_report, df_exclusions = apply_dq_gate(df_raw, config=config)
+render_dq_summary(dq_report)
+st.caption("Institute views use eligible attempts only and must be read with the coverage disclosures above.")
+if df.empty:
+    st.warning("No eligible rows remain after DQ gating, so institute rollups are withheld.")
     st.stop()
 
 # ----------------------------
@@ -697,4 +714,3 @@ if "test_id" in df_inst_attempts.columns and "test_id" in test_df.columns:
         st.info("No test analytics records found for this institute.")
 else:
     st.info("Missing test_id in attempts or test analytics; cannot show assessment quality.")
-

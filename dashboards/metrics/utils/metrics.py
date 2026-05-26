@@ -45,12 +45,12 @@ def compute_basic_metrics2(df):
     df = df.copy()
 
     # Ensure numeric columns exist
-    for c in ['attempted_questions','correct_answers','marks','time_taken','duration','no_of_questions','pass_mark']:
+    for c in ['attempted_questions','correct_answers','marks','time_taken','duration','no_of_questions','pass_mark','total_questions','max_marks_effective']:
         if c not in df.columns:
             df[c] = np.nan
 
     # Coerce numeric
-    for c in ['attempted_questions','correct_answers','marks','time_taken','duration','no_of_questions','pass_mark']:
+    for c in ['attempted_questions','correct_answers','marks','time_taken','duration','no_of_questions','pass_mark','total_questions','max_marks_effective']:
         df[c] = pd.to_numeric(df[c], errors='coerce')
 
     # Guard zeros
@@ -58,14 +58,17 @@ def compute_basic_metrics2(df):
     df['duration'] = df['duration'].replace(0, np.nan)
     df['attempted_questions'] = df['attempted_questions'].replace(0, np.nan)
     df['no_of_questions'] = df['no_of_questions'].replace(0, np.nan)
+    df['total_questions'] = df['total_questions'].replace(0, np.nan)
+    df['max_marks_effective'] = df['max_marks_effective'].fillna(df['total_questions']).fillna(df['no_of_questions'])
+    df['max_marks_effective'] = df['max_marks_effective'].replace(0, np.nan)
 
     # Accuracy
     df['accuracy_attempt'] = (df['correct_answers'] / df['attempted_questions']).fillna(0)
-    df['accuracy_total'] = (df['marks'] / df['no_of_questions']).fillna(0)
+    df['accuracy_total'] = (df['marks'] / df['max_marks_effective']).fillna(0)
     
     df["accuracy_total_safe"] = np.where(
         df.get("no_of_questions_suspect", False) == False,
-        (df["marks"] / df["no_of_questions"]).replace([np.inf, -np.inf], np.nan),
+        (df["marks"] / df["max_marks_effective"]).replace([np.inf, -np.inf], np.nan),
         np.nan
     )
 
@@ -113,8 +116,12 @@ def compute_test_analytics(df):
     df = compute_basic_metrics2(df)
     df = df[df['time_taken'] > 0]
     df['speed_marks'] = df['marks'] / df['time_taken']
-    df['accuracy_total'] = (df['marks'] / df['no_of_questions']).fillna(0)
+    df['accuracy_total'] = (df['marks'] / df['max_marks_effective']).fillna(0)
     df['efficiency_ratio'] = df['accuracy_total'] / df['time_consumed'].replace(0, np.nan)
+    pass_col = 'pass_mark_effective' if 'pass_mark_effective' in df.columns else 'pass_mark'
+    pass_source = df.loc[df.index, pass_col] if pass_col in df.columns else pd.Series(np.nan, index=df.index)
+    if 'pass_mark_ambiguous' in df.columns:
+        pass_source = pass_source.mask(df['pass_mark_ambiguous'])
     agg = df.groupby('test_id').agg(
         mean_time=('time_taken','mean'),
         std_time=('time_taken','std'),
@@ -122,7 +129,7 @@ def compute_test_analytics(df):
         std_speed=('speed_marks','std'),
         mean_efficiency=('efficiency_ratio','mean'),
         mean_accuracy=('accuracy_total','mean'),
-        pass_count=('marks', lambda x: (x >= df.loc[x.index,'pass_mark']).sum() if 'pass_mark' in df.columns else np.nan),
+        pass_count=('marks', lambda x: (x >= pass_source.loc[x.index]).sum() if pass_col in df.columns else np.nan),
         taker_count=('test_taker_id','count')
     ).reset_index()
     # consistency (damped)
@@ -154,15 +161,17 @@ def compute_topic_analytics(df, topic_col='topic'):
 def compute_difficulty_df(df):
     df = compute_basic_metrics2(df)
     # pass_flag per row
-    if 'pass_mark' in df.columns:
-        df['passed'] = (df['marks'] >= df['pass_mark']).astype(int)
+    pass_col = 'pass_mark_effective' if 'pass_mark_effective' in df.columns else 'pass_mark'
+    if pass_col in df.columns:
+        df['passed'] = (df['marks'] >= df[pass_col]).astype(int)
     else:
-        df['passed'] = (df['marks'] >= df['no_of_questions']).astype(int)
+        df['passed'] = (df['marks'] >= df['max_marks_effective']).astype(int)
         
      # --- Handle inactive (no attempts) users ---
     df['inactive'] = (df['attempted_questions'] == 0).astype(int)
     df.loc[df['inactive'] == 1, ['marks', 'accuracy_total', 'accuracy_attempt', 'accuracy_norm']] = 0
-    df['passed'] = np.where(df['marks'] >= df['pass_mark'], 1, 0)
+    if 'pass_mark_ambiguous' in df.columns:
+        df.loc[df['pass_mark_ambiguous'], 'passed'] = np.nan
     
         
     test_pass = df.groupby('test_id').agg(
@@ -282,18 +291,20 @@ def compute_sab_behavioral(df):
 
 def compute_user_pass_features(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
-    for c in ['user_id','marks','pass_mark']:
+    for c in ['user_id','marks','pass_mark','pass_mark_effective']:
         if c not in df.columns:
             df[c] = np.nan
 
     df['marks'] = pd.to_numeric(df['marks'], errors='coerce')
-    df['pass_mark'] = pd.to_numeric(df['pass_mark'], errors='coerce')
+    pass_source = pd.to_numeric(df['pass_mark_effective'], errors='coerce').fillna(pd.to_numeric(df['pass_mark'], errors='coerce'))
+    if 'pass_mark_ambiguous' in df.columns:
+        pass_source = pass_source.mask(df['pass_mark_ambiguous'])
 
-    # passed defined as marks >= pass_mark (policy)
-    df['passed'] = np.where(df['pass_mark'].notna(), (df['marks'] >= df['pass_mark']).astype(int), np.nan)
+    # passed defined only where pass_mark is usable under current DQ policy
+    df['passed'] = np.where(pass_source.notna(), (df['marks'] >= pass_source).astype(int), np.nan)
 
-    # pass ratio requested: marks / pass_mark
-    df['pass_ratio'] = (df['marks'] / df['pass_mark']).replace([np.inf, -np.inf], np.nan)
+    # pass ratio requested: marks / effective pass_mark
+    df['pass_ratio'] = (df['marks'] / pass_source).replace([np.inf, -np.inf], np.nan)
     df['pass_ratio'] = df['pass_ratio'].clip(lower=0, upper=2.0)
 
     agg = df.groupby('user_id').agg(
@@ -326,13 +337,16 @@ def compute_user_coverage_features(df: pd.DataFrame) -> pd.DataFrame:
     d = df.copy()
 
     # Ensure required columns exist
-    for c in ["user_id", "test_id", "accuracy_total", "marks", "pass_mark"]:
+    for c in ["user_id", "test_id", "accuracy_total", "marks", "pass_mark", "pass_mark_effective"]:
         if c not in d.columns:
             d[c] = np.nan
 
     # passed flag (if pass_mark exists)
-    if d["pass_mark"].notna().any():
-        d["passed"] = (pd.to_numeric(d["marks"], errors="coerce") >= pd.to_numeric(d["pass_mark"], errors="coerce")).astype(int)
+    pass_source = pd.to_numeric(d["pass_mark_effective"], errors="coerce").fillna(pd.to_numeric(d["pass_mark"], errors="coerce"))
+    if "pass_mark_ambiguous" in d.columns:
+        pass_source = pass_source.mask(d["pass_mark_ambiguous"])
+    if pass_source.notna().any():
+        d["passed"] = (pd.to_numeric(d["marks"], errors="coerce") >= pass_source).astype(int)
     else:
         d["passed"] = np.nan
 
@@ -388,4 +402,3 @@ def compute_user_coverage_features(df: pd.DataFrame) -> pd.DataFrame:
 
     user_cov = pd.concat([user_cov, user_cov.apply(_risk_and_factor, axis=1)], axis=1)
     return user_cov
-

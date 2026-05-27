@@ -80,9 +80,11 @@ print(mapped[[
     "user_id",
     "test_id",
     "v13_score_pct",
-    "bls_proxy_score_pct",
-    "als_proxy_score_pct",
-    "cas_test_avg_score_pct",
+    "inferred_bls_proxy_score_pct",
+    "current_als_proxy_score_pct",
+    "potential_als_proxy_score_pct",
+    "cas_proxy_test_avg_score_pct",
+    "proxy_evidence_band",
     "learn_smarter_mapping_status",
 ]].head())
 PY
@@ -90,9 +92,11 @@ PY
 
 Expected behavior:
 
-- BLS proxy appears only on the first eligible learner/test attempt.
-- ALS proxy appears only when there is a later repeated eligible learner/test attempt.
-- CAS proxy is a cohort/test average, not a true class average.
+- Inferred BLS Proxy appears only on the first eligible learner/test attempt.
+- Current ALS Proxy appears only on the latest later eligible learner/test attempt.
+- Potential ALS Proxy reflects the best later eligible learner/test attempt.
+- CAS Proxy is based on the selected ALS proxy and is not a true class average.
+- Evidence band is low when repeated attempts or question coverage are weak.
 - Mapping status remains partial.
 
 ## Common Failure Modes
@@ -104,6 +108,7 @@ Expected behavior:
 | Pass rate changes unexpectedly | Pass-mark ambiguity handling changed | Inspect `strict_pass_mark` |
 | BLS/ALS appears complete | Proxy labels are being overclaimed | Check mapping status and docs |
 | CAS is interpreted as class average | No class identifier exists | Use cohort/test average wording |
+| Learning gain looks too strong | Random question-pool variation may be driving score change | Check `question_pool_comparability` and `proxy_evidence_band` |
 | Institution search misses known school/bank | Override mapping not loaded | Check `data/mapping_overrides.csv` |
 
 ## Dashboard Disagreements

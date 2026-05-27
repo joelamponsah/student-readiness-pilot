@@ -1,4 +1,3 @@
-# utils/dq_policy.py
 from __future__ import annotations
 
 import os
@@ -236,19 +235,40 @@ def apply_dq_gate(
         | df["has_correct_answers"]
         | df["has_positive_marks"]
     )
-    df["incomplete_but_usable"] = df["is_incomplete"] & df["has_partial_activity_evidence"]
+    # Completion status is source-aware:
+    # - with finished_at present, completion is verified directly
+    # - without finished_at, we fall back to activity evidence and label it unknown-but-usable
+    if missing_finished_at_column:
+        df["completion_source"] = "fallback_activity_evidence"
+        df["completion_status"] = np.where(
+            df["has_partial_activity_evidence"],
+            "unknown_but_usable",
+            "incomplete",
+        )
+    else:
+        df["completion_source"] = "finished_at"
+        df["completion_status"] = np.where(
+            df["finished_at"].notna(),
+            "verified_complete",
+            np.where(df["has_partial_activity_evidence"], "unknown_but_usable", "incomplete"),
+        )
+
+    df["is_incomplete"] = df["completion_status"].eq("incomplete")
+    df["incomplete_but_usable"] = df["completion_status"].eq("unknown_but_usable")
 
     # -----------------------------
     # Eligibility filters (published KPI base)
     # -----------------------------
-    df["_eligible_completed"] = ~df["is_incomplete"] if config.completed_only else True
-   
     if config.completed_only:
-        # completed required, unless we explicitly allow salvage
-        if config.include_incomplete_if_has_evidence:
-            df["_eligible_completed"] = (~df["is_incomplete"]) | df["incomplete_but_usable"]
+        if missing_finished_at_column:
+            # Conservative fallback: include verified rows and unknown-but-usable rows so
+            # published mode can still run on datasets that never recorded finished_at.
+            df["_eligible_completed"] = df["completion_status"].isin(["verified_complete", "unknown_but_usable"])
         else:
-            df["_eligible_completed"] = ~df["is_incomplete"]
+            df["_eligible_completed"] = (
+                df["completion_status"].eq("verified_complete")
+                | (config.include_incomplete_if_has_evidence & df["completion_status"].eq("unknown_but_usable"))
+            )
     else:
         df["_eligible_completed"] = True
    
@@ -334,8 +354,8 @@ def apply_dq_gate(
 
     # priority-ordered reasons (first match wins)
     reasons = [
-        ("incomplete_no_evidence", df["is_incomplete"] & ~df["incomplete_but_usable"]),
-        ("incomplete_attempt", df["is_incomplete"] & df["incomplete_but_usable"] & ~pd.Series(df["_eligible_completed"], index=df.index)),
+        ("incomplete_no_evidence", df["completion_status"].eq("incomplete")),
+        ("incomplete_attempt", df["completion_status"].eq("unknown_but_usable") & ~pd.Series(df["_eligible_completed"], index=df.index)),
         ("invalid_time_taken", (~valid_time) if config.require_valid_time else False),
         ("invalid_marks", (~valid_marks) if config.require_valid_marks else False),
         ("invalid_no_of_questions", (~valid_noq) if config.require_valid_no_of_questions else False),
@@ -372,6 +392,8 @@ def apply_dq_gate(
         "schema_warnings": {
             "missing_finished_at_column": bool(missing_finished_at_column),
         },
+        "completion_source_counts": df["completion_source"].value_counts(dropna=False).to_dict(),
+        "completion_status_counts": df["completion_status"].value_counts(dropna=False).to_dict(),
         "rows_raw": int(rows_raw),
         "rows_included": int(rows_included),
         "rows_excluded": int(rows_excluded),

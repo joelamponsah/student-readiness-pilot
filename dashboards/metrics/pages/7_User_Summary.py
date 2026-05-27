@@ -14,7 +14,8 @@ from utils.metrics import (
     compute_difficulty_df,
     compute_user_pass_features,
 )
-from utils.dq_policy import apply_dq_gate, DQConfig
+from utils.dq_policy import apply_dq_gate
+from utils.dq_profiles import learner_diagnostic_config
 from utils.dq_reporting import render_dq_summary
 from utils.dq_controls import dq_sidebar_controls
 
@@ -30,17 +31,16 @@ df_raw = load_data_from_disk_or_session()
 # Sidebar controls (authoritative)
 config = dq_sidebar_controls()
 if config is None:
-    # fallback defaults (user-summary friendly)
-    config = DQConfig(
-        completed_only=True,
-        include_incomplete_if_has_evidence=True,
-        dedupe_best_attempt=False,
-        strict_pass_mark=True,
-        show_incomplete=False,
-        export_artifacts=True,
-    )
+    config = learner_diagnostic_config()
 
 df_clean, dq_report, df_exclusions = apply_dq_gate(df_raw, config=config)
+
+if config.include_incomplete_if_has_evidence:
+    salvage = dq_report.get("salvage_stats", {})
+    st.caption(
+        "Diagnostic mode: incomplete attempts with positive activity evidence may be included. "
+        f"Partial-evidence attempts in raw data: {salvage.get('incomplete_usable_count_raw', 0):,}."
+    )
 
 # Compute metrics only on gated data
 df = compute_basic_metrics2(df_clean)

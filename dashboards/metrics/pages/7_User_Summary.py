@@ -19,6 +19,7 @@ from utils.dq_profiles import learner_diagnostic_config
 from utils.dq_reporting import render_dq_summary
 from utils.dq_controls import dq_sidebar_controls
 from utils.institute_standardization import standardize_institute
+from utils.learn_smarter_v13 import add_test_exercise_readiness_fields
 
 
 st.set_page_config(page_title="User Performance Profile", layout="wide")

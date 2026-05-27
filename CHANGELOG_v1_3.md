@@ -44,3 +44,22 @@
   - Core maintained pages remain available.
   - Removed pages were legacy, experimental, non-`.py` remnants, or raw-data views that conflicted with v1.3 DQ discipline.
   - Earlier exploratory alias columns remain in `learn_smarter_v13.py`, but product language should use explicit proxy names.
+
+## 2026-05-27 - Add landing hub and v1.3 basic metrics proxy summary
+
+- Affected files / modules:
+  - `dashboards/metrics/app.py`
+  - `dashboards/metrics/pages/1_Basic_Metrics.py`
+- Reason:
+  - Turn the Streamlit entry point into a proper navigation hub.
+  - Update `Basic Metrics` to show DQ-gated core metrics plus the proxy metrics used by v1.3.
+- Category:
+  - DQ-related: yes, `Basic Metrics` continues to run on the selected DQ policy before metrics are computed.
+  - Metric-related: yes, `Basic Metrics` now surfaces Inferred BLS Proxy, Current ALS Proxy, Potential ALS Proxy, CAS Proxy coverage, and gain proxies.
+  - Framework-related: yes, the landing hub now routes users through the maintained v1.3 page set.
+  - UI-related: yes, replaced the old upload-first landing page with page navigation and dataset stats.
+  - Documentation-related: yes, this change is reflected in the build and diagnostics guides.
+- Backward compatibility / migration note:
+  - Page paths are unchanged.
+  - The landing page now connects the maintained pages explicitly.
+  - Diagnostic preview in `Basic Metrics` is additive and does not alter the published default.

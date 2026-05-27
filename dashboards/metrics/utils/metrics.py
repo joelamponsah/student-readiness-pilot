@@ -55,6 +55,37 @@ def _canonical_accuracy_denominator(df: pd.DataFrame) -> pd.Series:
     return denom.replace(0, np.nan)
 
 
+def safe_accuracy_series(df: pd.DataFrame) -> pd.Series:
+    """
+    Canonical display-ready accuracy series.
+
+    Preference order:
+      1) accuracy_total_safe
+      2) accuracy_total
+      3) accuracy_attempt
+
+    Zero-attempt rows are excluded from the display series using the preserved
+    attempted_questions_raw field when available, because they are inactive rows
+    rather than real attempts.
+    """
+    series = pd.Series(np.nan, index=df.index)
+    for col in ["accuracy_total_safe", "accuracy_total", "accuracy_attempt"]:
+        if col in df.columns:
+            candidate = pd.to_numeric(df[col], errors="coerce")
+            series = series.fillna(candidate)
+
+    active_mask = None
+    if "attempted_questions_raw" in df.columns:
+        active_mask = pd.to_numeric(df["attempted_questions_raw"], errors="coerce").fillna(0) > 0
+    elif "attempted_questions" in df.columns:
+        active_mask = pd.to_numeric(df["attempted_questions"], errors="coerce").fillna(0) > 0
+
+    if active_mask is not None:
+        series = series.where(active_mask)
+
+    return series.clip(lower=0, upper=1)
+
+
 
 # --- Speed & accuracy base features (idempotent) ---
 

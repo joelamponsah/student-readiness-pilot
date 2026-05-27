@@ -16,6 +16,7 @@ from utils.institute_standardization import standardize_institute  # ensure exis
 from utils.dq_policy import apply_dq_gate
 from utils.dq_profiles import learner_diagnostic_config, published_performance_config
 from utils.dq_reporting import render_dq_summary
+from utils.learn_smarter_v13 import add_test_exercise_readiness_fields
 
 # ----------------------------
 # Page Config

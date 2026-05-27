@@ -28,6 +28,8 @@ The v1.3 page surface is intentionally limited to maintained, DQ-compatible view
 - `7_User_Summary.py`
 - `Institute_Summary.py`
 
+The Streamlit home page is the navigation hub for these pages and also shows a quick dataset snapshot when data is loaded.
+
 ## Local Setup
 
 From the repo root:

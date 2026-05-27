@@ -19,6 +19,12 @@ class DQConfig:
     dedupe_best_attempt: bool = True
     strict_pass_mark: bool = True
     show_incomplete: bool = False  # for exploration only; NOT for published KPIs
+    require_valid_marks: bool = True
+    require_valid_no_of_questions: bool = True
+    require_valid_time: bool = False
+    require_question_level_support: bool = False
+    require_usable_pass_mark: bool = False
+    exclude_time_outliers: bool = False
 
     # Artifact-first mode
     artifact_dir: str = "data/dq_artifacts"
@@ -254,11 +260,27 @@ def apply_dq_gate(
     valid_noq = noq.notna() & (noq > 0)
     valid_time = tt.notna() & (tt > 0)
 
-    # Base validity for any row we keep in any KPI family
-    # - marks must be valid always
-    # - no_of_questions must be >0 (but we will still flag suspect separately)
-    # - time_taken only required when computing speed-based metrics; do not exclude marks-only salvage rows
-    df["_eligible_validity"] = (valid_marks & valid_noq).fillna(False)
+    validity_checks = []
+    if config.require_valid_marks:
+        validity_checks.append(valid_marks)
+    if config.require_valid_no_of_questions:
+        validity_checks.append(valid_noq)
+    if config.require_valid_time:
+        validity_checks.append(valid_time)
+    if config.require_question_level_support:
+        validity_checks.append(~df["missing_question_level_support"])
+    if config.require_usable_pass_mark:
+        validity_checks.append(df["pass_mark_usable"])
+    if config.exclude_time_outliers:
+        validity_checks.append(~df["time_taken_outlier"])
+
+    if validity_checks:
+        df["_eligible_validity"] = pd.concat(
+            [pd.Series(check, index=df.index).fillna(False) for check in validity_checks],
+            axis=1,
+        ).all(axis=1)
+    else:
+        df["_eligible_validity"] = True
 
     # Separate "speed eligible" flag used by speed KPIs
     df["speed_eligible"] = valid_time.fillna(False)
@@ -314,9 +336,12 @@ def apply_dq_gate(
     reasons = [
         ("incomplete_no_evidence", df["is_incomplete"] & ~df["incomplete_but_usable"]),
         ("incomplete_attempt", df["is_incomplete"] & df["incomplete_but_usable"] & ~pd.Series(df["_eligible_completed"], index=df.index)),
-        ("invalid_time_taken", ~(pd.to_numeric(df.get("time_taken", np.nan), errors="coerce") > 0)),
-        ("invalid_marks", ~(pd.to_numeric(df.get("marks", np.nan), errors="coerce") >= 0)),
-        ("invalid_no_of_questions", ~(pd.to_numeric(df.get("no_of_questions", np.nan), errors="coerce") > 0)),
+        ("invalid_time_taken", (~valid_time) if config.require_valid_time else False),
+        ("invalid_marks", (~valid_marks) if config.require_valid_marks else False),
+        ("invalid_no_of_questions", (~valid_noq) if config.require_valid_no_of_questions else False),
+        ("missing_question_level_support", df["missing_question_level_support"] if config.require_question_level_support else False),
+        ("unusable_pass_mark", (~df["pass_mark_usable"]) if config.require_usable_pass_mark else False),
+        ("time_taken_outlier", df["time_taken_outlier"] if config.exclude_time_outliers else False),
         ("duplicate_best_attempt_rule", df["is_duplicate_candidate"] if config.dedupe_best_attempt else False),
     ]
 

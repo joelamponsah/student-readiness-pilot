@@ -30,7 +30,7 @@ v1.3 is not the full Learn Smarter model build.
 - Is there a separate lesson/session/content table that can connect attempts to before-lesson and after-lesson timing?
 - Is `occurrence` a reliable attempt-order or scheduling indicator across all tests?
 - Is there a true class, stream, course, or group identifier outside the current CSV?
-- Should v1.3 expose BLS/ALS/CAS in the UI immediately, or first ship them as documented derived artifacts?
+- Should v1.3 expose proxy fields in the UI immediately, or first ship them as documented derived artifacts?
 
 ## Current Implementation vs v1.3 Scope
 
@@ -41,35 +41,46 @@ v1.3 is not the full Learn Smarter model build.
 | Institute mapping | Uses mapping overrides | Preserve as standardization layer |
 | Old user summary | Present as legacy page | Do not update unless explicitly requested |
 | Dashboard framing | Still says Learner/Exam Readiness in places | Rename landing/framing to Test / Exercise Readiness |
-| BLS | Not explicitly modeled | Add partial attempt-order proxy only, clearly flagged |
-| ALS | Not explicitly modeled | Add partial repeat-attempt proxy only, clearly flagged |
-| CAS | No true class identifier | Add test/cohort average proxy only, clearly flagged |
+| BLS | Not explicitly modeled | Add Inferred BLS Proxy only, clearly flagged |
+| ALS | Not explicitly modeled | Add Current ALS Proxy and Potential ALS Proxy only, clearly flagged |
+| CAS | No true class identifier | Add CAS Proxy based on selected ALS proxy only, clearly flagged |
 
 ## Defensible v1.3 BLS / ALS / CAS Mapping
 
-### BLS: Before Lesson Score
+### Inferred BLS Proxy
 
 Current dataset does not contain a verified lesson boundary. The only defensible v1.3 proxy is:
 
 - first DQ-eligible attempt by `user_id` and `test_id`
-- marked as `bls_proxy_score_pct`
+- marked as `inferred_bls_proxy_score_pct`
 - flagged as partial, because it is attempt-order based, not lesson-event based
 
-### ALS: After Lesson Score
+### Current ALS Proxy
 
 Current dataset does not contain a verified post-lesson marker. The only defensible v1.3 proxy is:
 
 - latest repeated DQ-eligible attempt by `user_id` and `test_id`
-- marked as `als_proxy_score_pct` when there is more than one attempt
+- marked as `current_als_proxy_score_pct` when there is more than one attempt
 - flagged as partial, because it is repeat-attempt based, not lesson-event based
 
-### CAS: Class Average Score
+### Potential ALS Proxy
+
+The learner's best DQ-eligible later attempt within the same grouping may be used as demonstrated potential:
+
+- marked as `potential_als_proxy_score_pct`
+- not used as current readiness, because it can overstate stable performance
+
+### CAS Proxy
 
 Current dataset does not contain a true class identifier. The defensible v1.3 proxy is:
 
-- test-level average score percentage
-- institute/test-level average when standardized institute is available
+- test-level average of the selected ALS proxy
+- institute/test-level average of the selected ALS proxy when standardized institute is available
 - flagged as cohort/test average, not true class average
+
+### Question-Pool Confidence
+
+Current data does not include question IDs or blueprint equivalence. Because tests may draw random questions, direct score changes can reflect question-set variation as well as learning. v1.3 proxy outputs must include evidence/confidence indicators and must not overclaim learning gain.
 
 ## First Implementation Plan
 

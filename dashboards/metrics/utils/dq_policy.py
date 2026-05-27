@@ -217,10 +217,20 @@ def apply_dq_gate(
     tt = pd.to_numeric(df.get("time_taken", np.nan), errors="coerce")
 
     df["has_marks"] = marks.notna() & (marks >= 0)
+    df["has_positive_marks"] = marks.notna() & (marks > 0)
     df["has_time_taken"] = tt.notna() & (tt > 0)
+    df["has_attempted_questions"] = aq.notna() & (aq > 0)
+    df["has_correct_answers"] = ca.notna() & (ca > 0)
 
-    # Incomplete but has usable evidence (marks or time taken)
-    df["incomplete_but_usable"] = df["is_incomplete"] & (df["has_marks"] | df["has_time_taken"])
+    # Incomplete rows are weak diagnostic evidence only when they show positive
+    # learner activity. A present zero mark alone is not enough evidence.
+    df["has_partial_activity_evidence"] = (
+        df["has_time_taken"]
+        | df["has_attempted_questions"]
+        | df["has_correct_answers"]
+        | df["has_positive_marks"]
+    )
+    df["incomplete_but_usable"] = df["is_incomplete"] & df["has_partial_activity_evidence"]
 
     # -----------------------------
     # Eligibility filters (published KPI base)
@@ -360,9 +370,9 @@ def apply_dq_gate(
         },
     }
     dq_report["salvage_stats"] = {
-    "incomplete_rate_raw": float(df["is_incomplete"].mean()),
-    "incomplete_usable_rate_raw": float(df["incomplete_but_usable"].mean()),
-    "incomplete_usable_count_raw": int(df["incomplete_but_usable"].sum()),
+        "incomplete_rate_raw": float(df["is_incomplete"].mean()),
+        "incomplete_usable_rate_raw": float(df["incomplete_but_usable"].mean()),
+        "incomplete_usable_count_raw": int(df["incomplete_but_usable"].sum()),
     }
     # -----------------------------
     # Artifact-first exports

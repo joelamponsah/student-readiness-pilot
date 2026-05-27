@@ -12,7 +12,8 @@ from utils.metrics import (
 )
 
 from utils.institute_standardization import standardize_institute  # ensure exists
-from utils.dq_policy import apply_dq_gate, DQConfig
+from utils.dq_policy import apply_dq_gate
+from utils.dq_profiles import published_performance_config
 from utils.dq_reporting import render_dq_summary
 
 # ----------------------------
@@ -140,14 +141,7 @@ if df_raw is None or df_raw.empty:
     st.warning("Upload data to continue.")
     st.stop()
 
-config = DQConfig(
-    completed_only=True,
-    include_incomplete_if_has_evidence=False,
-    dedupe_best_attempt=True,
-    strict_pass_mark=True,
-    show_incomplete=False,
-    export_artifacts=True,
-)
+config = published_performance_config()
 df, dq_report, df_exclusions = apply_dq_gate(df_raw, config=config)
 render_dq_summary(dq_report)
 st.caption("Institute views use eligible attempts only and must be read with the coverage disclosures above.")

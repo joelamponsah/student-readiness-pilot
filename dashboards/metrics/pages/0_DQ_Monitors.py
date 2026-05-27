@@ -1,7 +1,8 @@
 import pandas as pd
 import streamlit as st
 
-from utils.dq_policy import DQConfig, apply_dq_gate
+from utils.dq_policy import apply_dq_gate
+from utils.dq_profiles import dq_monitor_config
 from utils.dq_reporting import render_dq_summary
 from utils.metrics import load_data_from_disk_or_session
 
@@ -13,14 +14,7 @@ if df_raw is None or df_raw.empty:
     st.warning("No dataset loaded. Upload in sidebar or add data/verify_df_fixed.csv.")
     st.stop()
 
-config = DQConfig(
-    completed_only=True,
-    include_incomplete_if_has_evidence=False,
-    dedupe_best_attempt=True,
-    strict_pass_mark=True,
-    show_incomplete=False,
-    export_artifacts=True,
-)
+config = dq_monitor_config()
 
 df_eligible, dq_report, df_exclusions = apply_dq_gate(df_raw, config=config)
 render_dq_summary(dq_report)

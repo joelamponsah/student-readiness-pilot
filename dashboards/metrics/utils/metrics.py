@@ -19,12 +19,9 @@ def load_data_from_disk_or_session(default_path="data/verify_df_fixed.csv"):
     try:
         import streamlit as st
         if "df" in st.session_state and st.session_state["df"] is not None:
-            d = st.session_state["df"].copy()
-            # light defensive dedupe to avoid accidental double-loads in session
-            # (DQ gate will do proper attempt-level dedupe later)
-            if set(["user_id", "created_at", "test_id"]).issubset(d.columns):
-                d = d.drop_duplicates(subset=["user_id", "test_id", "created_at"])
-            return d
+            # Preserve the session copy exactly. Attempt-level dedupe belongs to
+            # the DQ gate, not the loader.
+            return st.session_state["df"].copy()
     except Exception:
         pass
 
@@ -36,6 +33,26 @@ def load_data_from_disk_or_session(default_path="data/verify_df_fixed.csv"):
             return None
     return None
 # basic metrics ------------------------------------------------
+
+
+
+def _canonical_accuracy_denominator(df: pd.DataFrame) -> pd.Series:
+    """
+    Canonical denominator for score accuracy calculations.
+
+    Preference order:
+      1) max_marks_effective
+      2) total_questions
+      3) no_of_questions
+
+    This keeps accuracy semantics stable across dashboard pages.
+    """
+    denom = pd.Series(np.nan, index=df.index)
+    for col in ["max_marks_effective", "total_questions", "no_of_questions"]:
+        if col in df.columns:
+            candidate = pd.to_numeric(df[col], errors="coerce")
+            denom = denom.fillna(candidate)
+    return denom.replace(0, np.nan)
 
 
 
@@ -56,6 +73,8 @@ def compute_basic_metrics2(df):
     # Guard zeros
     df['time_taken'] = df['time_taken'].replace(0, np.nan)
     df['duration'] = df['duration'].replace(0, np.nan)
+    # Preserve the raw value long enough to flag zero-attempt rows downstream.
+    df['attempted_questions_raw'] = df['attempted_questions']
     df['attempted_questions'] = df['attempted_questions'].replace(0, np.nan)
     df['no_of_questions'] = df['no_of_questions'].replace(0, np.nan)
     df['total_questions'] = df['total_questions'].replace(0, np.nan)
@@ -64,11 +83,15 @@ def compute_basic_metrics2(df):
 
     # Accuracy
     df['accuracy_attempt'] = (df['correct_answers'] / df['attempted_questions']).fillna(0)
-    df['accuracy_total'] = (df['marks'] / df['max_marks_effective']).fillna(0)
+    denom = _canonical_accuracy_denominator(df)
+    df['accuracy_denominator'] = denom
+    # Accuracy is a proportion, so keep it bounded even when the raw marks/denominator
+    # combination is noisy or partially inferred.
+    df['accuracy_total'] = (df['marks'] / denom).clip(lower=0, upper=1).fillna(0)
     
     df["accuracy_total_safe"] = np.where(
         df.get("no_of_questions_suspect", False) == False,
-        (df["marks"] / df["max_marks_effective"]).replace([np.inf, -np.inf], np.nan),
+        (df["marks"] / denom).clip(lower=0, upper=1).replace([np.inf, -np.inf], np.nan),
         np.nan
     )
 
@@ -167,8 +190,10 @@ def compute_difficulty_df(df):
     else:
         df['passed'] = (df['marks'] >= df['max_marks_effective']).astype(int)
         
-     # --- Handle inactive (no attempts) users ---
-    df['inactive'] = (df['attempted_questions'] == 0).astype(int)
+    # --- Handle inactive (no attempts) users ---
+    # `attempted_questions` is normalized above, so use the preserved raw value.
+    attempted_raw = pd.to_numeric(df.get('attempted_questions_raw', df.get('attempted_questions', np.nan)), errors='coerce')
+    df['inactive'] = (attempted_raw == 0).astype(int)
     df.loc[df['inactive'] == 1, ['marks', 'accuracy_total', 'accuracy_attempt', 'accuracy_norm']] = 0
     if 'pass_mark_ambiguous' in df.columns:
         df.loc[df['pass_mark_ambiguous'], 'passed'] = np.nan
@@ -229,7 +254,8 @@ def compute_sab_behavioral(df):
 
     # core attempt-level metrics
     df['speed'] = df['correct_answers'] / df['time_taken']
-    df['accuracy_total'] = (df['marks'] / df['no_of_questions']).fillna(0)
+    denom = _canonical_accuracy_denominator(df)
+    df['accuracy_total'] = (df['marks'] / denom).clip(lower=0, upper=1).fillna(0)
 
     sab = df.groupby('user_id').agg(
         mean_speed=('speed', 'mean'),

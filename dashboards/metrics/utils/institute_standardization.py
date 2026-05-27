@@ -1,5 +1,6 @@
 import pandas as pd
 import re
+from pathlib import Path
 
 UNKNOWN_TOKENS = {'', 'na', 'n/a', 'none', 'null', '-', 'unknown'}
 
@@ -22,6 +23,12 @@ def standardize_institute(df: pd.DataFrame, column: str, mapping_path: str) -> p
 
     mapping = pd.read_csv(mapping_path)
     mapping.columns = mapping.columns.str.strip()
+
+    override_path = Path(mapping_path).with_name("mapping_overrides.csv")
+    if override_path.exists():
+        overrides = pd.read_csv(override_path)
+        overrides.columns = overrides.columns.str.strip()
+        mapping = pd.concat([mapping, overrides], ignore_index=True)
 
     # Allow flexible mapping column names
     possible_norm = ["institute_norm", "norm", "normalized", "institute_normalized"]

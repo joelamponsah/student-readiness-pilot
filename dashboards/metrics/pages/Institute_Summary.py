@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
+import os
 
 from utils.insights import apply_insight_engine
 from utils.metrics import (
@@ -231,6 +232,10 @@ view_mode = st.radio(
 MAPPING_PATH = "data/mapping.csv"
 
 mapping_df = pd.read_csv(MAPPING_PATH)
+override_path = "data/mapping_overrides.csv"
+if os.path.exists(override_path):
+    mapping_overrides_df = pd.read_csv(override_path)
+    mapping_df = pd.concat([mapping_df, mapping_overrides_df], ignore_index=True)
 
 # Canonical mapped institute names from your mapping scheme
 mapped_institutes = (

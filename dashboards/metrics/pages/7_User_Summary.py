@@ -18,6 +18,7 @@ from utils.dq_policy import apply_dq_gate
 from utils.dq_profiles import learner_diagnostic_config
 from utils.dq_reporting import render_dq_summary
 from utils.dq_controls import dq_sidebar_controls
+from utils.institute_standardization import standardize_institute
 
 
 st.set_page_config(page_title="User Performance Profile", layout="wide")
@@ -44,6 +45,9 @@ if config.include_incomplete_if_has_evidence:
 
 # Compute metrics only on gated data
 df = compute_basic_metrics2(df_clean)
+
+if "institute" in df.columns:
+    df = standardize_institute(df=df, column="institute", mapping_path="data/mapping.csv")
 
 if df is None or df.empty:
     st.warning("Upload data to continue.")
@@ -112,7 +116,7 @@ diff_df = compute_difficulty_df(df)
 # ---------------------------
 # Institute mapping (optional)
 institute_col = None
-for cand in ["institute_standardized", "institute_std", "institute", "Institute", "school", "institution"]:
+for cand in ["institute_std", "institute_standardized", "institute", "Institute", "school", "institution"]:
     if cand in df.columns:
         institute_col = cand
         break

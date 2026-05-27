@@ -1,5 +1,24 @@
 # v1.3 Change Log
 
+## 2026-05-27 - Align maintained summary pages with v1.3 proxy metrics
+
+- Affected files / modules:
+  - `dashboards/metrics/pages/7_User_Summary.py`
+  - `dashboards/metrics/pages/Institute_Summary.py`
+  - `CHANGELOG_v1_3.md`
+- Reason:
+  - Bring the maintained learner and institute summary pages into line with the v1.3 Learn Smarter proxy model.
+  - Expose the proxy summary, evidence band, and CAS Proxy caveat directly on the two stakeholder-facing summary pages.
+- Category:
+  - DQ-related: yes, summaries now show proxy outputs only after the active DQ gate.
+  - Metric-related: yes, adds proxy row counts, mean proxy scores, gain proxies, and evidence-band breakdowns.
+  - Framework-related: yes, keeps product language aligned to the partial test/exercise proxy framing.
+  - UI-related: yes, inserts a compact summary block near the top of both maintained summary pages.
+  - Documentation-related: yes, this entry records the maintained-page alignment change.
+- Backward compatibility / migration note:
+  - Existing learner and institute metrics remain in place.
+  - The new proxy summary is additive and does not remove any existing charts or tables.
+
 ## 2026-05-27 - Start v1.3 Test / Exercise Readiness branch
 
 - Affected files / modules:

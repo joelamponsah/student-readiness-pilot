@@ -1,11 +1,30 @@
 # v1.3 Change Log
 
+## 2026-05-27 - Convert Streamlit entry point to Home page
+
+- Affected files / modules:
+  - `dashboards/metrics/Home.py`
+  - `dashboards/metrics/app.py`
+  - `.devcontainer/devcontainer.json`
+  - `PLATFORM_BUILD_GUIDE_v1_3.md`
+- Reason:
+  - Replace the generic landing stub with a real Home page that explains the project scope and loads the dataset used by the dashboard.
+  - Keep `app.py` as a compatibility wrapper so existing launch commands still work.
+- Category:
+  - DQ-related: yes, the loaded dataset remains shared across the DQ-gated page set.
+  - Metric-related: no new metrics, just the home page wiring.
+  - Framework-related: yes, the app now uses a proper Home entry point.
+  - UI-related: yes, the first screen now reads as a home page instead of a generic hub.
+  - Documentation-related: yes, launch references are updated to point to `Home.py`.
+- Backward compatibility / migration note:
+  - Existing `streamlit run dashboards/metrics/app.py` launch commands still work.
+  - The new `Home.py` is the preferred entry point for the v1.3 dashboard.
+
 ## 2026-05-27 - Align maintained summary pages with v1.3 proxy metrics
 
 - Affected files / modules:
   - `dashboards/metrics/pages/7_User_Summary.py`
   - `dashboards/metrics/pages/Institute_Summary.py`
-  - `CHANGELOG_v1_3.md`
 - Reason:
   - Bring the maintained learner and institute summary pages into line with the v1.3 Learn Smarter proxy model.
   - Expose the proxy summary, evidence band, and CAS Proxy caveat directly on the two stakeholder-facing summary pages.

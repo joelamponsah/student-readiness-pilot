@@ -11,7 +11,7 @@ v1.3 is Learn Smarter-aligned, but it is not the full Learn Smarter model build.
 - `data/verify_df_fixed.csv`: default local dataset used by the dashboard.
 - `data/mapping.csv`: base institute mapping.
 - `data/mapping_overrides.csv`: confirmed mapping overrides, including school and B2B bank standardization.
-- `dashboards/metrics/app.py`: Streamlit landing page.
+- `dashboards/metrics/Home.py`: Streamlit home page.
 - `dashboards/metrics/pages/`: dashboard pages.
 - `dashboards/metrics/utils/dq_policy.py`: authoritative DQ gate.
 - `dashboards/metrics/utils/dq_profiles.py`: named DQ policy profiles.
@@ -20,7 +20,7 @@ v1.3 is Learn Smarter-aligned, but it is not the full Learn Smarter model build.
 
 ## Active Dashboard Pages
 
-The v1.3 page surface is intentionally limited to maintained, DQ-compatible views:
+The v1.3 page surface is intentionally limited to maintained views:
 
 - `0_DQ_Monitors.py`
 - `1_Basic_Metrics.py`
@@ -28,23 +28,12 @@ The v1.3 page surface is intentionally limited to maintained, DQ-compatible view
 - `7_User_Summary.py`
 - `Institute_Summary.py`
 
-The Streamlit home page is the navigation hub for these pages and also shows a quick dataset snapshot when data is loaded.
-
-## Local Setup
+## Launch
 
 From the repo root:
 
 ```bash
-python3 -m venv .venv
-.venv/bin/pip install -r dashboards/metrics/requirements.txt
-```
-
-If the root `requirements.txt` is needed for notebooks or scripts, install it separately after confirming dependency versions.
-
-## Running the Dashboard
-
-```bash
-PYTHONPATH=dashboards/metrics .venv/bin/streamlit run dashboards/metrics/app.py
+PYTHONPATH=dashboards/metrics .venv/bin/streamlit run dashboards/metrics/Home.py
 ```
 
 The app loads `data/verify_df_fixed.csv` by default. You may also upload a processed CSV from the Streamlit sidebar.
@@ -78,17 +67,7 @@ The current v1.3 code expects attempt-level test/exercise data with fields such 
 
 ## Core Outputs
 
-The DQ gate can export artifacts under `data/dq_artifacts/`:
-
-- `fact_attempts_raw.csv`
-- `fact_attempts_eligible.csv`
-- `dq_exclusions.csv`
-
-These are runtime artifacts and should be reviewed before committing generated output.
-
-## v1.3 Framework Boundary
-
-Implemented or introduced:
+Implemented in v1.3:
 
 - DQ-gated test/exercise readiness framing.
 - Inferred BLS Proxy from first eligible attempt by learner/test.

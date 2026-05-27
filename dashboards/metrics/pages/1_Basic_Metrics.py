@@ -8,7 +8,7 @@ from utils.metrics import compute_basic_metrics2, load_data_from_disk_or_session
 
 
 st.title("Basic Metrics")
-st.caption("DQ-gated core metrics plus v1.3 Learn Smarter proxy metrics.")
+st.caption("DQ-gated core metrics plus v1.3 Test / Exercise Readiness proxy metrics.")
 
 view_mode = st.sidebar.radio(
     "Metric view",
@@ -16,19 +16,24 @@ view_mode = st.sidebar.radio(
     index=0,
 )
 
-config = published_performance_config() if view_mode == "Published" else learner_diagnostic_config()
-config.export_artifacts = False
+published_config = published_performance_config()
+proxy_config = learner_diagnostic_config()
+proxy_config.dedupe_best_attempt = False
+proxy_config.export_artifacts = False
 
 df_raw = load_data_from_disk_or_session()
-df_clean, dq_report, df_exclusions = apply_dq_gate(df_raw, config=config)
-render_dq_summary(dq_report)
+df_clean, dq_report, df_exclusions = apply_dq_gate(df_raw, config=published_config)
+proxy_df, proxy_dq_report, _ = apply_dq_gate(df_raw, config=proxy_config)
+
+render_dq_summary(dq_report if view_mode == "Published" else proxy_dq_report)
 
 if df_clean is None or df_clean.empty:
     st.warning("No dataset loaded. Upload in sidebar or add data/verify_df_fixed.csv.")
     st.stop()
 
 df = compute_basic_metrics2(df_clean)
-readiness_df = add_test_exercise_readiness_fields(df)
+proxy_metrics = compute_basic_metrics2(proxy_df) if proxy_df is not None and not proxy_df.empty else proxy_df
+readiness_df = add_test_exercise_readiness_fields(proxy_metrics if proxy_metrics is not None else df.copy())
 
 if view_mode == "Diagnostic preview":
     st.caption(

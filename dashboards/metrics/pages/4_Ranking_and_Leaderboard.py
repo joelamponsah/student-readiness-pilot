@@ -2,7 +2,8 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 from utils.metrics import load_data_from_disk_or_session, compute_basic_metrics2
-from utils.dq_policy import apply_dq_gate, DQConfig
+from utils.dq_policy import apply_dq_gate
+from utils.dq_profiles import published_performance_config
 from utils.dq_reporting import render_dq_summary
 
 st.title("Ranking & Leaderboards ")
@@ -23,14 +24,7 @@ if df_raw is None:
     st.warning("No dataset loaded. Upload in sidebar or add data/verify_df_fixed.csv.")
     st.stop()
 
-config = DQConfig(
-    completed_only=True,
-    include_incomplete_if_has_evidence=False,
-    dedupe_best_attempt=True,
-    strict_pass_mark=True,
-    show_incomplete=False,
-    export_artifacts=True,
-)
+config = published_performance_config()
 df_clean, dq_report, df_exclusions = apply_dq_gate(df_raw, config=config)
 render_dq_summary(dq_report)
 st.caption("Leaderboards use eligible attempts only: completed, valid, and deduped per user/test.")
@@ -128,5 +122,3 @@ st.plotly_chart(fig, use_container_width=True)
 st.subheader("Test Rankings")
 
 st.write("We can rank tests based on their difficulty level and the learner pass ratio ")
-
-

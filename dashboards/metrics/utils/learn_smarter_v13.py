@@ -52,15 +52,34 @@ def add_test_exercise_readiness_fields(df: pd.DataFrame) -> pd.DataFrame:
         "test_id"
     ].transform("size")
 
-    out["is_bls_proxy"] = out["v13_attempt_sequence_user_test"].eq(1)
-    out["is_als_proxy"] = (
+    out["is_inferred_bls_proxy"] = out["v13_attempt_sequence_user_test"].eq(1)
+    out["is_current_als_proxy"] = (
         out["v13_attempt_count_user_test"].gt(1)
         & out["v13_attempt_sequence_user_test"].eq(out["v13_attempt_count_user_test"])
     )
-    out["bls_proxy_score_pct"] = out["v13_score_pct"].where(out["is_bls_proxy"])
-    out["als_proxy_score_pct"] = out["v13_score_pct"].where(out["is_als_proxy"])
+    later_attempt = out["v13_attempt_sequence_user_test"].gt(1)
+    later_scores = out["v13_score_pct"].where(later_attempt)
+    out["potential_als_proxy_score_pct"] = later_scores.groupby(
+        [out["user_id"], out["test_id"]]
+    ).transform("max")
+    out["is_potential_als_proxy"] = later_attempt & out["v13_score_pct"].eq(
+        out["potential_als_proxy_score_pct"]
+    )
 
-    out["cas_test_avg_score_pct"] = out.groupby("test_id")["v13_score_pct"].transform("mean")
+    out["inferred_bls_proxy_score_pct"] = out["v13_score_pct"].where(out["is_inferred_bls_proxy"])
+    out["current_als_proxy_score_pct"] = out["v13_score_pct"].where(out["is_current_als_proxy"])
+    out["learning_gain_proxy_pct"] = (
+        out["current_als_proxy_score_pct"]
+        - out.groupby(group_cols)["inferred_bls_proxy_score_pct"].transform("max")
+    )
+    out["potential_gain_proxy_pct"] = (
+        out["potential_als_proxy_score_pct"]
+        - out.groupby(group_cols)["inferred_bls_proxy_score_pct"].transform("max")
+    )
+
+    out["cas_proxy_basis"] = "current_als_proxy"
+    current_als_scores = out["current_als_proxy_score_pct"].where(out["is_current_als_proxy"])
+    out["cas_proxy_test_avg_score_pct"] = current_als_scores.groupby(out["test_id"]).transform("mean")
 
     institute_col = next(
         (
@@ -71,16 +90,60 @@ def add_test_exercise_readiness_fields(df: pd.DataFrame) -> pd.DataFrame:
         None,
     )
     if institute_col:
-        out["cas_institute_test_avg_score_pct"] = out.groupby(
-            [institute_col, "test_id"], dropna=False
-        )["v13_score_pct"].transform("mean")
+        out["cas_proxy_institute_test_avg_score_pct"] = current_als_scores.groupby(
+            [out[institute_col], out["test_id"]], dropna=False
+        ).transform("mean")
     else:
-        out["cas_institute_test_avg_score_pct"] = np.nan
+        out["cas_proxy_institute_test_avg_score_pct"] = np.nan
+
+    question_count = denominator.fillna(0)
+    has_question_support = ~out.get(
+        "missing_question_level_support", pd.Series(True, index=out.index)
+    ).fillna(True)
+    has_pass_support = ~out.get("pass_mark_ambiguous", pd.Series(True, index=out.index)).fillna(True)
+    repeated = out["v13_attempt_count_user_test"].ge(2)
+
+    out["question_pool_comparability"] = "unknown_without_question_ids"
+    out["proxy_evidence_band"] = np.select(
+        [
+            repeated & question_count.ge(30) & has_question_support & has_pass_support,
+            repeated & question_count.ge(10),
+        ],
+        ["high", "medium"],
+        default="low",
+    )
+    out["proxy_evidence_note"] = np.select(
+        [
+            ~repeated,
+            question_count.lt(10),
+            ~has_question_support,
+            ~has_pass_support,
+        ],
+        [
+            "Only one eligible attempt in grouping; ALS and gain proxies are unavailable.",
+            "Question count is small; proxy interpretation is weak.",
+            "Question-level support is missing or weak.",
+            "Pass-mark support is ambiguous.",
+        ],
+        default=(
+            "Proxy is based on repeated eligible attempts, but question-pool comparability "
+            "remains unknown without question IDs or blueprint equivalence."
+        ),
+    )
 
     out["learn_smarter_mapping_status"] = "partial_test_exercise_proxy"
     out["learn_smarter_mapping_note"] = (
-        "BLS/ALS use learner-test attempt order; CAS uses test/cohort averages. "
-        "No verified lesson boundary or true class identifier is present."
+        "Inferred BLS Proxy, Current ALS Proxy, Potential ALS Proxy, and CAS Proxy use "
+        "learner-test attempt order. They are not true BLS/ALS/CAS because historical "
+        "attempts lack explicit assessment-phase labels, true class IDs, and question-pool "
+        "comparability metadata."
     )
+
+    # Backward-compatible aliases for earlier v1.3 exploratory code. Product
+    # labels should use the explicit proxy names above.
+    out["bls_proxy_score_pct"] = out["inferred_bls_proxy_score_pct"]
+    out["als_proxy_score_pct"] = out["current_als_proxy_score_pct"]
+    out["cas_test_avg_score_pct"] = out["cas_proxy_test_avg_score_pct"]
+    out["cas_institute_test_avg_score_pct"] = out["cas_proxy_institute_test_avg_score_pct"]
 
     return out

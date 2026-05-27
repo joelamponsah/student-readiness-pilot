@@ -158,16 +158,23 @@ df_proxy, proxy_dq_report, _ = apply_dq_gate(df_raw, config=proxy_config)
 # ----------------------------
 # Standardize Institute (DO THIS EARLY)
 # ----------------------------
-df = standardize_institute(
-    df=df,
-    column="institute",
-    mapping_path="data/mapping.csv"
-)
-df_proxy = standardize_institute(
-    df=df_proxy,
-    column="institute",
-    mapping_path="data/mapping.csv"
-)
+if "institute" in df.columns:
+    df = standardize_institute(
+        df=df,
+        column="institute",
+        mapping_path="data/mapping.csv"
+    )
+else:
+    df["institute_std"] = "Unknown"
+
+if "institute" in df_proxy.columns:
+    df_proxy = standardize_institute(
+        df=df_proxy,
+        column="institute",
+        mapping_path="data/mapping.csv"
+    )
+else:
+    df_proxy["institute_std"] = "Unknown"
 
 if "institute_std" not in df.columns:
     st.error("Standardization failed: missing `institute_std`.")
@@ -753,7 +760,7 @@ st.divider()
 st.subheader("Assessment quality check (are tests stable and fair?)")
 
 if "test_id" in df_inst_attempts.columns and "test_id" in test_df.columns:
-    inst_tests = test_df[test_df["test_id"].isin(df_inst_attempts["test_id"])] .copy()
+    inst_tests = test_df[test_df["test_id"].isin(df_inst_attempts["test_id"])].copy()
 
     if not inst_tests.empty:
         # Rename axes for clarity if columns exist

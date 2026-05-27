@@ -11,6 +11,8 @@
 7. Confirm `robust_SAB_scaled` stays within 0-100.
 8. Confirm proxy gain stays within -100 to 100.
 9. Confirm Institute Summary loads without a `NameError`.
+10. Confirm the `Metrics` page explains the calculation rules without showing the DQ summary block.
+11. Confirm User Summary average accuracy excludes inactive zero-attempt rows.
 
 ## Manual Proxy Verification
 

@@ -62,6 +62,11 @@ For published outputs, verify that:
 - incomplete attempts are not silently mixed into performance KPIs
 - pass-mark ambiguity is excluded or flagged where pass metrics are shown
 
+For `Basic Metrics`, confirm the sidebar view mode is correct:
+
+- `Published` should be the default for the release baseline.
+- `Diagnostic preview` should only be used when you want to inspect repeated-attempt proxy behavior.
+
 ## Verify BLS / ALS / CAS Proxy Fields
 
 Use the v1.3 helper:

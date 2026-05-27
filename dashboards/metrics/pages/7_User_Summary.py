@@ -13,6 +13,7 @@ from utils.metrics import (
     compute_test_analytics,
     compute_difficulty_df,
     compute_user_pass_features,
+    safe_accuracy_series,
 )
 from utils.dq_policy import apply_dq_gate
 from utils.dq_profiles import learner_diagnostic_config
@@ -288,45 +289,19 @@ if user_tests.empty:
     st.stop()
 
 # ---------------------------
-# Safe accuracy (prefer question-level, else reliable marks/noq)
+# Safe accuracy
 # ---------------------------
-if "accuracy_attempt" in user_tests.columns and "missing_question_level_support" in user_tests.columns:
-    user_tests["accuracy_safe"] = np.where(
-        ~user_tests["missing_question_level_support"],
-        user_tests["accuracy_attempt"],
-        np.nan,
-    )
-else:
-    user_tests["accuracy_safe"] = np.nan
-
-if "accuracy_total" in user_tests.columns and "no_of_questions_suspect" in user_tests.columns:
-    # fill accuracy_safe from accuracy_total only where no_of_questions is NOT suspect
-    mask = (~user_tests["no_of_questions_suspect"]) & user_tests["accuracy_total"].notna()
-    user_tests.loc[mask & user_tests["accuracy_safe"].isna(), "accuracy_safe"] = user_tests.loc[mask, "accuracy_total"]
-else:
-    user_tests["accuracy_safe"] = user_tests["accuracy_safe"].fillna(user_tests.get("accuracy_total", np.nan))
-
+# Exclude inactive rows from the average so zero-attempt records do not drag the
+# learner's accuracy down.
+user_tests["accuracy_safe"] = safe_accuracy_series(user_tests)
 acc_cov = float(user_tests["accuracy_safe"].notna().mean() * 100) if len(user_tests) else 0.0
 avg_accuracy_pct = float(user_tests["accuracy_safe"].mean() * 100) if user_tests["accuracy_safe"].notna().any() else None
 
-st.caption(f"Accuracy coverage (safe): {acc_cov:.1f}% of eligible attempts.")
-
-# Detect suspicious rollups: correct_answers == attempted_questions but marks not consistent
-if {"attempted_questions","correct_answers","marks"}.issubset(user_tests.columns):
-    aq = pd.to_numeric(user_tests["attempted_questions"], errors="coerce")
-    ca = pd.to_numeric(user_tests["correct_answers"], errors="coerce")
-    mk = pd.to_numeric(user_tests["marks"], errors="coerce")
-
-    # rollup says "all correct" but marks not close to ca (tolerance)
-    user_tests["q_rollup_suspect"] = (aq > 0) & (ca == aq) & (mk.notna()) & (mk < (ca * 0.9))
-
-    # If rollup suspect, do NOT use accuracy_attempt
-    user_tests.loc[user_tests["q_rollup_suspect"], "accuracy_safe"] = np.nan
-
-    # fallback to marks/noq only where noq is not suspect
-    if {"accuracy_total","no_of_questions_suspect"}.issubset(user_tests.columns):
-        mask = (~user_tests["no_of_questions_suspect"]) & user_tests["accuracy_total"].notna()
-        user_tests.loc[mask & user_tests["accuracy_safe"].isna(), "accuracy_safe"] = user_tests.loc[mask, "accuracy_total"]
+st.caption(
+    "Accuracy coverage (safe): "
+    f"{acc_cov:.1f}% of eligible attempts. "
+    "Inactive zero-attempt rows are excluded from the average."
+)
 
 # Activity window (eligible, based on created_at if available)
 activity_window = "N/A"

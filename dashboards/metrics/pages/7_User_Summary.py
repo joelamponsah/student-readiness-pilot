@@ -14,7 +14,6 @@ from utils.metrics import (
     compute_difficulty_df,
     compute_user_pass_features,
 )
-from utils.learn_smarter_v13 import add_test_exercise_readiness_fields
 from utils.dq_policy import apply_dq_gate
 from utils.dq_profiles import learner_diagnostic_config
 from utils.dq_reporting import render_dq_summary
@@ -36,6 +35,11 @@ if config is None:
     config = learner_diagnostic_config()
 
 df_clean, dq_report, df_exclusions = apply_dq_gate(df_raw, config=config)
+
+proxy_config = learner_diagnostic_config()
+proxy_config.dedupe_best_attempt = False
+proxy_config.export_artifacts = False
+df_proxy, proxy_dq_report, _ = apply_dq_gate(df_raw, config=proxy_config)
 
 if config.include_incomplete_if_has_evidence:
     salvage = dq_report.get("salvage_stats", {})
@@ -275,65 +279,7 @@ if not ex_user.empty and "exclusion_reason" in ex_user.columns:
     )
     reason_tbl["pct_of_raw"] = (reason_tbl["count"] / raw_n * 100).round(1) if raw_n else 0
     st.dataframe(reason_tbl, use_container_width=True)
-
 st.divider()
-st.subheader("Learn Smarter v1.3 proxy summary")
-
-user_readiness = add_test_exercise_readiness_fields(user_tests.copy())
-
-def _mean_pct(series):
-    values = pd.to_numeric(series, errors="coerce")
-    values = values.dropna()
-    return float(values.mean()) if not values.empty else np.nan
-
-proxy_rows = user_readiness.copy()
-inferred_n = int(proxy_rows["is_inferred_bls_proxy"].sum()) if "is_inferred_bls_proxy" in proxy_rows.columns else 0
-current_n = int(proxy_rows["is_current_als_proxy"].sum()) if "is_current_als_proxy" in proxy_rows.columns else 0
-potential_n = int(proxy_rows["is_potential_als_proxy"].sum()) if "is_potential_als_proxy" in proxy_rows.columns else 0
-repeated_groups = (
-    int(proxy_rows.loc[proxy_rows["v13_attempt_count_user_test"].ge(2), ["user_id", "test_id"]].drop_duplicates().shape[0])
-    if "v13_attempt_count_user_test" in proxy_rows.columns
-    else 0
-)
-high_n = int((proxy_rows["proxy_evidence_band"] == "high").sum()) if "proxy_evidence_band" in proxy_rows.columns else 0
-med_n = int((proxy_rows["proxy_evidence_band"] == "medium").sum()) if "proxy_evidence_band" in proxy_rows.columns else 0
-low_n = int((proxy_rows["proxy_evidence_band"] == "low").sum()) if "proxy_evidence_band" in proxy_rows.columns else 0
-
-c1, c2, c3, c4 = st.columns(4)
-c1.metric("Inferred BLS Proxy rows", f"{inferred_n:,}")
-c2.metric("Current ALS Proxy rows", f"{current_n:,}")
-c3.metric("Potential ALS Proxy rows", f"{potential_n:,}")
-c4.metric("Repeated test groups", f"{repeated_groups:,}")
-
-c5, c6, c7, c8 = st.columns(4)
-c5.metric("High evidence rows", f"{high_n:,}")
-c6.metric("Medium evidence rows", f"{med_n:,}")
-c7.metric("Low evidence rows", f"{low_n:,}")
-c8.metric("CAS Proxy rows", f"{int(proxy_rows['cas_proxy_test_avg_score_pct'].notna().sum()) if 'cas_proxy_test_avg_score_pct' in proxy_rows.columns else 0:,}")
-
-c9, c10, c11, c12 = st.columns(4)
-c9.metric("Mean inferred score", f"{_mean_pct(proxy_rows.get('inferred_bls_proxy_score_pct', pd.Series(dtype=float))):.1f}%" if inferred_n else "N/A")
-c10.metric("Mean current ALS score", f"{_mean_pct(proxy_rows.get('current_als_proxy_score_pct', pd.Series(dtype=float))):.1f}%" if current_n else "N/A")
-c11.metric("Mean potential ALS score", f"{_mean_pct(proxy_rows.get('potential_als_proxy_score_pct', pd.Series(dtype=float))):.1f}%" if potential_n else "N/A")
-c12.metric("Mean gain proxy", f"{_mean_pct(proxy_rows.get('learning_gain_proxy_pct', pd.Series(dtype=float))):.1f}%" if current_n else "N/A")
-
-st.caption(
-    "Proxy-only v1.3 view. Current ALS Proxy and gain metrics depend on repeated eligible attempts; "
-    "question-pool comparability remains unknown without question IDs."
-)
-
-summary_note = proxy_rows.get("learn_smarter_mapping_note")
-if isinstance(summary_note, pd.Series) and not summary_note.empty:
-    st.info(str(summary_note.iloc[0]))
-
-band_tbl = (
-    proxy_rows["proxy_evidence_band"].value_counts(dropna=False).rename_axis("evidence_band").reset_index(name="rows")
-    if "proxy_evidence_band" in proxy_rows.columns
-    else pd.DataFrame()
-)
-if not band_tbl.empty:
-    st.dataframe(band_tbl, use_container_width=True, hide_index=True)
-
 st.subheader(f"Profile Summary: {username}")
 
 if user_tests.empty:
@@ -479,6 +425,67 @@ elif marks_per_min is not None:
     r3c3.metric("Learner efficiency", f"{marks_per_min:.2f} marks/min")
 else:
     r3c3.metric("Learner efficiency", "N/A")
+
+st.divider()
+st.subheader("Learn Smarter v1.3 proxy summary")
+
+proxy_user_tests = df_proxy[df_proxy["user_id"] == user_id].copy()
+user_readiness = add_test_exercise_readiness_fields(proxy_user_tests.copy())
+
+
+def _mean_pct(series):
+    values = pd.to_numeric(series, errors="coerce")
+    values = values.dropna()
+    return float(values.mean()) if not values.empty else np.nan
+
+
+proxy_rows = user_readiness.copy()
+inferred_n = int(proxy_rows["is_inferred_bls_proxy"].sum()) if "is_inferred_bls_proxy" in proxy_rows.columns else 0
+current_n = int(proxy_rows["is_current_als_proxy"].sum()) if "is_current_als_proxy" in proxy_rows.columns else 0
+potential_n = int(proxy_rows["is_potential_als_proxy"].sum()) if "is_potential_als_proxy" in proxy_rows.columns else 0
+repeated_groups = (
+    int(proxy_rows.loc[proxy_rows["v13_attempt_count_user_test"].ge(2), ["user_id", "test_id"]].drop_duplicates().shape[0])
+    if "v13_attempt_count_user_test" in proxy_rows.columns
+    else 0
+)
+high_n = int((proxy_rows["proxy_evidence_band"] == "high").sum()) if "proxy_evidence_band" in proxy_rows.columns else 0
+med_n = int((proxy_rows["proxy_evidence_band"] == "medium").sum()) if "proxy_evidence_band" in proxy_rows.columns else 0
+low_n = int((proxy_rows["proxy_evidence_band"] == "low").sum()) if "proxy_evidence_band" in proxy_rows.columns else 0
+
+c1, c2, c3, c4 = st.columns(4)
+c1.metric("Inferred BLS Proxy rows", f"{inferred_n:,}")
+c2.metric("Current ALS Proxy rows", f"{current_n:,}")
+c3.metric("Potential ALS Proxy rows", f"{potential_n:,}")
+c4.metric("Repeated test groups", f"{repeated_groups:,}")
+
+c5, c6, c7, c8 = st.columns(4)
+c5.metric("High evidence rows", f"{high_n:,}")
+c6.metric("Medium evidence rows", f"{med_n:,}")
+c7.metric("Low evidence rows", f"{low_n:,}")
+c8.metric("CAS Proxy rows", f"{int(proxy_rows['cas_proxy_test_avg_score_pct'].notna().sum()) if 'cas_proxy_test_avg_score_pct' in proxy_rows.columns else 0:,}")
+
+c9, c10, c11, c12 = st.columns(4)
+c9.metric("Mean inferred score", f"{_mean_pct(proxy_rows.get('inferred_bls_proxy_score_pct', pd.Series(dtype=float))):.1f}%" if inferred_n else "N/A")
+c10.metric("Mean current ALS score", f"{_mean_pct(proxy_rows.get('current_als_proxy_score_pct', pd.Series(dtype=float))):.1f}%" if current_n else "N/A")
+c11.metric("Mean potential ALS score", f"{_mean_pct(proxy_rows.get('potential_als_proxy_score_pct', pd.Series(dtype=float))):.1f}%" if potential_n else "N/A")
+c12.metric("Mean gain proxy", f"{_mean_pct(proxy_rows.get('learning_gain_proxy_pct', pd.Series(dtype=float))):.1f}%" if current_n else "N/A")
+
+st.caption(
+    "Proxy-only v1.3 view. Current ALS Proxy and gain metrics depend on repeated eligible attempts; "
+    "question-pool comparability remains unknown without question IDs."
+)
+
+summary_note = proxy_rows.get("learn_smarter_mapping_note")
+if isinstance(summary_note, pd.Series) and not summary_note.empty:
+    st.info(str(summary_note.iloc[0]))
+
+band_tbl = (
+    proxy_rows["proxy_evidence_band"].value_counts(dropna=False).rename_axis("evidence_band").reset_index(name="rows")
+    if "proxy_evidence_band" in proxy_rows.columns
+    else pd.DataFrame()
+)
+if not band_tbl.empty:
+    st.dataframe(band_tbl, use_container_width=True, hide_index=True)
 
 # ---------------------------
 # Readiness Insight

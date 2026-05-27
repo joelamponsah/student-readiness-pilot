@@ -18,6 +18,16 @@ v1.3 is Learn Smarter-aligned, but it is not the full Learn Smarter model build.
 - `dashboards/metrics/utils/learn_smarter_v13.py`: v1.3 BLS/ALS/CAS proxy helper.
 - `docs/`: audit and policy documentation.
 
+## Active Dashboard Pages
+
+The v1.3 page surface is intentionally limited to maintained, DQ-compatible views:
+
+- `0_DQ_Monitors.py`
+- `1_Basic_Metrics.py`
+- `4_Ranking_and_Leaderboard.py`
+- `7_User_Summary.py`
+- `Institute_Summary.py`
+
 ## Local Setup
 
 From the repo root:
@@ -79,9 +89,11 @@ These are runtime artifacts and should be reviewed before committing generated o
 Implemented or introduced:
 
 - DQ-gated test/exercise readiness framing.
-- Partial BLS proxy from first eligible attempt by learner/test.
-- Partial ALS proxy from latest repeated eligible attempt by learner/test.
-- Partial CAS proxy from test or institute/test cohort averages.
+- Inferred BLS Proxy from first eligible attempt by learner/test.
+- Current ALS Proxy from latest repeated eligible attempt by learner/test.
+- Potential ALS Proxy from best repeated eligible attempt by learner/test.
+- CAS Proxy from selected ALS proxy averages.
+- Evidence/confidence indicators for random question-pool comparability limits.
 
 Not implemented in v1.3:
 

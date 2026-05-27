@@ -3,8 +3,8 @@ import streamlit as st
 import pandas as pd
 from utils.metrics import load_data_from_disk_or_session, save_uploaded_df
 
-st.set_page_config(page_title="Learner Readiness Dashboard", layout="wide")
-st.sidebar.title("Learner Readiness")
+st.set_page_config(page_title="Test / Exercise Readiness Dashboard", layout="wide")
+st.sidebar.title("Test / Exercise Readiness")
 
 st.sidebar.markdown("## Data")
 uploaded = st.sidebar.file_uploader("Upload processed verify_df_fixed.csv (optional)", type=["csv"])
@@ -21,8 +21,16 @@ else:
     if df is not None:
         st.session_state['df'] = df
 
-st.title("Learner Readiness Dashboard")
-st.write("To improve interpretability and ensure relevance to the actual student landscape, we refined the key behavioral performance indicators — accuracy, speed, and the derived accuracy–speed ratio (ASR). We will explore more nuanced definitions of accuracy, speed and more advanced metrics like DCI, SAB Index, test their relationships empirically, and evaluate how they influence exam readiness predictions and feature importance outcomes.")
+st.title("v1.3 Test / Exercise Readiness Dashboard")
+st.caption(
+    "Bridge release: Learn Smarter-aligned test/exercise readiness on top of the trusted v1.2 DQ baseline. "
+    "This is not the full Learn Smarter model build."
+)
+st.write(
+    "This version focuses on DQ-gated test and exercise evidence: accuracy, speed, pass outcomes, "
+    "coverage, exclusions, and readiness interpretation. BLS, ALS, and CAS are introduced only as "
+    "documented partial mappings where the available test data can support them."
+)
 st.write("Navigate through pages with the menu on the top-left. Use the sidebar to upload data (optional).")
 
 if 'df' in st.session_state and st.session_state['df'] is not None:

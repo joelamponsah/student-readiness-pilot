@@ -18,7 +18,6 @@ The remaining risk is consistency. Several older/non-DQ pages still exist and ma
 | `4_Ranking_and_Leaderboard.py` | Uses `apply_dq_gate` | Excluded | Yes | Strict | Yes | Low |
 | `7_User_Summary.py` | Uses `apply_dq_gate` | Allowed by sidebar/fallback for diagnostic view | No by fallback | Strict for pass KPIs | Partial | Medium |
 | `Institute_Summary.py` | Uses `apply_dq_gate` | Excluded | Yes | Strict | Yes | Low |
-| `old_User_Summary.py` | Wrapper to `7_User_Summary.py` | Same as `7_User_Summary.py` | Same as `7_User_Summary.py` | Same as `7_User_Summary.py` | Same as `7_User_Summary.py` | Medium |
 | `2_Accuracy _Speed_by_User_ and_Tests.py` | Not yet audited/aligned | Unknown | Unknown | Unknown | Unknown | High |
 | `3_Difficulty_DCI_Stability.py` | Not yet audited/aligned | Unknown | Unknown | Unknown | Unknown | High |
 | `5_Advanced_Metrics.py` | Not yet audited/aligned | Unknown | Unknown | Unknown | Unknown | High |
@@ -29,7 +28,7 @@ The remaining risk is consistency. Several older/non-DQ pages still exist and ma
 
 1. The DQ monitor, basic metrics, ranking, and institute summary pages use the conservative published-performance policy.
 2. The user summary page intentionally supports a diagnostic mode where incomplete-with-evidence can be included, but this needs stronger visible labeling around partial evidence.
-3. The legacy old user summary page no longer contains stale logic; it delegates to the maintained user summary page.
+3. The legacy old user summary page has been removed.
 4. The remaining old/non-DQ pages should not be treated as publication-ready until audited.
 
 ## Recommended Next Changes

@@ -12,6 +12,8 @@ v1.3 is the Test / Exercise Readiness release. It keeps the v1.2 DQ baseline and
 - If `finished_at` is missing, DQ completion must fall back to activity evidence and remain explicitly source-aware.
 - Zero-attempt rows must stay visible long enough to be flagged, then neutralized.
 - Accuracy must use the canonical denominator order: `max_marks_effective -> total_questions -> no_of_questions`.
+- `dashboards/metrics/pages/1_Metrics.py` is the explanatory metrics page; DQ gating remains on `0_DQ_Monitors.py`.
+- User Summary should treat inactive zero-attempt rows as non-attempts when showing average accuracy.
 
 ## Verification
 

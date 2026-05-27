@@ -3,11 +3,8 @@ import streamlit as st
 import pandas as pd
 from utils.metrics import load_data_from_disk_or_session, compute_basic_metrics2
 from utils.dq_policy import apply_dq_gate
+from utils.dq_profiles import published_performance_config
 from utils.dq_reporting import render_dq_summary
-
-# optional: sidebar controls
-from utils.dq_policy import DQConfig
-# or use dq_sidebar_controls() snippet from above
 
 
 st.title("Basic Metrics")
@@ -15,16 +12,7 @@ st.title("Basic Metrics")
 # try to get df from session or disk
 df_raw = load_data_from_disk_or_session()
 
-config = DQConfig(
-    completed_only=True,
-    dedupe_best_attempt=True,
-    strict_pass_mark=True,
-    show_incomplete=False,
-    export_artifacts=True,
-)
-
-# if using sidebar snippet:
-# config = dq_sidebar_controls()
+config = published_performance_config()
 
 df_clean, dq_report, df_exclusions = apply_dq_gate(df_raw, config=config)
 

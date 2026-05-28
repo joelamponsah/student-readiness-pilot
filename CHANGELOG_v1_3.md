@@ -6,6 +6,7 @@
 - Kept DQ gating on `0_DQ_Monitors.py` and removed DQ summary from the metrics page.
 - Clarified the metric math and the published KPI vs proxy-sequence split on the Metrics page.
 - Noted that User Summary should exclude inactive zero-attempt rows from displayed average accuracy.
+- Added the v1.3 schema boundary across the pages: no source `topic_id`, `subject_id`, or `year_group`; use `class_id` and `created_at` for cohort logic; treat `test_name` subject labels as inferred.
 
 ## 2026-05-27 - Fix loader, DQ fallback, and proxy-sequence separation
 

@@ -14,6 +14,9 @@ v1.3 is the Test / Exercise Readiness release. It keeps the v1.2 DQ baseline and
 - Accuracy must use the canonical denominator order: `max_marks_effective -> total_questions -> no_of_questions`.
 - `dashboards/metrics/pages/1_Metrics.py` is the explanatory metrics page; DQ gating remains on `0_DQ_Monitors.py`.
 - User Summary should treat inactive zero-attempt rows as non-attempts when showing average accuracy.
+- The current source does not provide `topic_id`, `subject_id`, or `year_group`.
+- Use `class_id` with `subscriber_id` and `created_at` for cohort logic.
+- `test_name` may be used only as a derived assessment theme or subject-like label when the naming is consistent enough.
 
 ## Verification
 

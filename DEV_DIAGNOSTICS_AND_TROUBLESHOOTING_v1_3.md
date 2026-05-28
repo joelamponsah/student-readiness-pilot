@@ -13,6 +13,8 @@
 9. Confirm Institute Summary loads without a `NameError`.
 10. Confirm the `Metrics` page explains the calculation rules without showing the DQ summary block.
 11. Confirm User Summary average accuracy excludes inactive zero-attempt rows.
+12. Confirm the pages state that `topic_id`, `subject_id`, and `year_group` are not available in the current source.
+13. Confirm `class_id` is used for cohort logic and `test_name`-derived subject labels are clearly marked as inferred.
 
 ## Manual Proxy Verification
 

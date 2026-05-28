@@ -46,7 +46,7 @@ with right:
     st.subheader("Open pages")
     page_links = [
         ("DQ Monitors", "pages/0_DQ_Monitors.py"),
-        ("Basic Metrics", "pages/1_Basic_Metrics.py"),
+        ("Basic Metrics", "pages/1_Metrics.py"),
         ("Ranking & Leaderboard", "pages/4_Ranking_and_Leaderboard.py"),
         ("User Summary", "pages/7_User_Summary.py"),
         ("Institute Summary", "pages/Institute_Summary.py"),

@@ -1,11 +1,9 @@
 import streamlit as st
-import pandas as pd
 
 from utils.dq_policy import apply_dq_gate
 from utils.dq_profiles import learner_diagnostic_config, published_performance_config
-from utils.dq_reporting import render_dq_summary
 from utils.learn_smarter_v13 import add_test_exercise_readiness_fields
-from utils.metrics import compute_basic_metrics2, load_data_from_disk_or_session
+from utils.metrics import compute_basic_metrics2, load_data_from_disk_or_session, safe_accuracy_series
 
 
 st.set_page_config(page_title="Metrics", layout="wide")
@@ -18,6 +16,12 @@ st.markdown(
 This page shows the metrics used in the v1.3 Test / Exercise Readiness analysis.
 It does not define DQ policy. DQ policy is applied on the DQ Monitors page; this page
 shows the resulting published KPI data and the proxy-sequence preview.
+
+### Schema boundary
+- The current dataset does not provide `topic_id`, `subject_id`, or `year_group`.
+- `class_id` is available and is the preferred cohort key alongside `subscriber_id` and `created_at`.
+- `test_name` may be used only as a derived assessment theme or subject label when the naming is consistent enough.
+- Any inferred subject label must remain explicit and lower-confidence than a real source field.
 
 ### Math used in the analysis
 - `accuracy_total = marks / max_marks_effective`
@@ -55,16 +59,7 @@ if df_clean is None or df_clean.empty:
 
 dataset = proxy_df if view_mode == "Proxy sequence data" and proxy_df is not None and not proxy_df.empty else df_clean
 df = compute_basic_metrics2(dataset)
-
-active_mask = None
-if "attempted_questions_raw" in df.columns:
-    active_mask = pd.to_numeric(df["attempted_questions_raw"], errors="coerce").fillna(0) > 0
-elif "attempted_questions" in df.columns:
-    active_mask = pd.to_numeric(df["attempted_questions"], errors="coerce").fillna(0) > 0
-else:
-    active_mask = pd.Series(True, index=df.index)
-
-df["accuracy_safe"] = df["accuracy_total"].where(active_mask)
+df["accuracy_safe"] = safe_accuracy_series(df)
 
 proxy_source = proxy_df if proxy_df is not None and not proxy_df.empty else df
 proxy_metrics = compute_basic_metrics2(proxy_source)
@@ -80,6 +75,10 @@ else:
     )
 
 st.subheader("Core Metrics")
+st.caption(
+    "Current v1.3 schema note: `class_id` is available for cohort grouping; `topic_id`, `subject_id`, and `year_group` are not present in the source. "
+    "`test_name` can support a derived assessment theme only."
+)
 top = st.columns(5)
 top[0].metric("Rows", f"{len(df):,}")
 top[1].metric("Users", f"{df['user_id'].nunique():,}" if "user_id" in df.columns else "N/A")

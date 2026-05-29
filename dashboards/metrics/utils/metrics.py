@@ -38,17 +38,20 @@ def load_data_from_disk_or_session(default_path="data/verify_df_fixed.csv"):
 
 def _canonical_accuracy_denominator(df: pd.DataFrame) -> pd.Series:
     """
-    Canonical denominator for score accuracy calculations.
+    Canonical denominator for full-test score accuracy calculations.
 
     Preference order:
-      1) max_marks_effective
-      2) total_questions
-      3) no_of_questions
+      1) accuracy_denominator, when already annotated by DQ/notebook logic
+      2) max_marks_db, COUNT(test_questions) from the audit-backed source
+      3) max_marks_effective, when already derived from max_marks_db/legacy total_questions
+      4) total_questions, legacy name for the same DB question count in older exports
+      5) question_limit, fallback only when DB question count is unavailable
 
-    This keeps accuracy semantics stable across dashboard pages.
+    no_of_questions is intentionally excluded. The full audit found corrupted
+    no_of_questions values, so it is a DQ field, not a trusted denominator.
     """
     denom = pd.Series(np.nan, index=df.index)
-    for col in ["max_marks_effective", "total_questions", "no_of_questions"]:
+    for col in ["accuracy_denominator", "max_marks_db", "max_marks_effective", "total_questions", "question_limit"]:
         if col in df.columns:
             candidate = pd.to_numeric(df[col], errors="coerce")
             denom = denom.fillna(candidate)
@@ -93,12 +96,12 @@ def compute_basic_metrics2(df):
     df = df.copy()
 
     # Ensure numeric columns exist
-    for c in ['attempted_questions','correct_answers','marks','time_taken','duration','no_of_questions','pass_mark','total_questions','max_marks_effective']:
+    for c in ['attempted_questions','correct_answers','marks','time_taken','duration','no_of_questions','pass_mark','total_questions','question_limit','max_marks_db','max_marks_effective']:
         if c not in df.columns:
             df[c] = np.nan
 
     # Coerce numeric
-    for c in ['attempted_questions','correct_answers','marks','time_taken','duration','no_of_questions','pass_mark','total_questions','max_marks_effective']:
+    for c in ['attempted_questions','correct_answers','marks','time_taken','duration','no_of_questions','pass_mark','total_questions','question_limit','max_marks_db','max_marks_effective']:
         df[c] = pd.to_numeric(df[c], errors='coerce')
 
     # Guard zeros
@@ -109,7 +112,11 @@ def compute_basic_metrics2(df):
     df['attempted_questions'] = df['attempted_questions'].replace(0, np.nan)
     df['no_of_questions'] = df['no_of_questions'].replace(0, np.nan)
     df['total_questions'] = df['total_questions'].replace(0, np.nan)
-    df['max_marks_effective'] = df['max_marks_effective'].fillna(df['total_questions']).fillna(df['no_of_questions'])
+    df['question_limit'] = df['question_limit'].replace(0, np.nan)
+    df['max_marks_db'] = df['max_marks_db'].replace(0, np.nan)
+    # Full-test accuracy uses DB question count. no_of_questions is retained for
+    # DQ checks only because the audit found impossible no_of_questions values.
+    df['max_marks_effective'] = df['max_marks_effective'].fillna(df['max_marks_db']).fillna(df['total_questions']).fillna(df['question_limit'])
     df['max_marks_effective'] = df['max_marks_effective'].replace(0, np.nan)
 
     # Accuracy
@@ -121,7 +128,7 @@ def compute_basic_metrics2(df):
     df['accuracy_total'] = (df['marks'] / denom).clip(lower=0, upper=1).fillna(0)
     
     df["accuracy_total_safe"] = np.where(
-        df.get("no_of_questions_suspect", False) == False,
+        denom.notna(),
         (df["marks"] / denom).clip(lower=0, upper=1).replace([np.inf, -np.inf], np.nan),
         np.nan
     )

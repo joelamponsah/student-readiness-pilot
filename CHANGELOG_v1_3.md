@@ -1,13 +1,14 @@
 # v1.3 Change Log
 
-## 2026-05-29 - Align accuracy denominator with full audit
+## 2026-05-29 - Correct delivered-attempt denominator handling
 
-- Added `test_takers.no_of_questions` to the v1.3 dataset builder as a raw DQ field, not as a trusted denominator.
-- Standardized full-test accuracy to use `max_marks_db = COUNT(test_questions WHERE test_id = X)`.
+- Corrected the denominator policy after reconciling the audit with randomized question-pool behavior.
+- Separated `question_bank_count` / `max_marks_db` from the delivered scoring denominator.
+- Standardized full-test accuracy to use `delivered_denominator`, selected from delivered result evidence, consistent `no_of_questions`, or consistent `question_limit`.
 - Added separate attempted-question normalization using `correct_answers / attempted_questions` from the test-results rollup.
-- Kept `question_limit` only as a fallback when DB question counts are unavailable.
-- Flagged `no_of_questions` as suspect when it is missing, non-positive, less than attempted questions, or greater than `max_marks_db`.
-- Updated dashboard readiness helpers and User Summary totals to avoid using raw `no_of_questions` as the default denominator.
+- Kept `max_marks_db = COUNT(test_questions WHERE test_id = X)` as question-bank context and a low-confidence last resort only.
+- Added denominator flags: `delivered_denominator_source`, `denominator_confidence`, `max_marks_db_is_bank_count`, `no_of_questions_consistent`, `question_limit_consistent`, and `denominator_conflict_flag`.
+- Updated dashboard readiness helpers and User Summary totals to avoid diluting marks with full question-bank counts.
 
 ## 2026-05-27 - Rename Metrics page and tighten summary interpretation
 

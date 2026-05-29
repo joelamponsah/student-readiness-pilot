@@ -1,103 +1,80 @@
 # DQ Eligibility V1
 
-Status: working v1 policy  
-Scope: test-based Learner Readiness foundation inside Learn Smarter
+This document defines the conservative eligibility policy used by the v1 dashboard layer.
 
-## Purpose
+## Eligibility Principles
 
-This policy defines which attempt rows may be used for published dashboard metrics in the current test-based readiness layer. It exists because the source data has known integrity risks: missing completion timestamps, duplicate attempts, unreliable question counts, pass-mark ambiguity, question-result coverage gaps, and messy segmentation values.
+- Keep raw rows until they have been annotated.
+- Explain exclusions with explicit flags.
+- Do not remove repeated attempts in the loader.
+- Published summaries may dedupe to the best eligible attempt.
+- Diagnostic and proxy-sequence views must preserve repeated eligible attempts.
 
-The default rule is conservative: published performance, rankings, institute rollups, and pass metrics must use trusted eligible attempts. Partial or ambiguous evidence may be useful for diagnosis, but it must not silently enter published KPI bases.
+## Completed Attempt Rule
 
-## Attempt Classes
+An attempt is completed when:
 
-### Completed Eligible Attempt
+- `finished_at` exists in the source and is populated; or
+- `finished_at` is missing from the source, but activity evidence is present and the row is marked as fallback/unknown usable.
 
-An attempt is completed eligible when:
+The fallback must not be described as verified completion.
 
-- `finished_at` is present.
-- `marks` is present and non-negative.
-- `no_of_questions` is present and greater than zero.
-- Required identifiers such as `user_id` and `test_id` are present enough for the view being computed.
-- The row survives the active dedupe policy when dedupe is required.
+## Required Metric Support
 
-Completed eligible attempts are the default base for published performance and ranking metrics.
+A completed eligible attempt should have:
 
-### Incomplete With Evidence
+- valid marks;
+- a full-test denominator, preferably `max_marks_db` from `COUNT(test_questions WHERE test_id = X)`;
+- nonzero attempted-question evidence;
+- parseable attempt timing where timing metrics are used.
 
-An incomplete attempt has `finished_at` missing.
+## Completion Flags
 
-It may be treated as incomplete-with-evidence only when it has positive learner activity evidence, such as:
+Use these fields when available:
 
-- `time_taken > 0`
-- `attempted_questions > 0`
-- `correct_answers > 0`
-- `marks > 0`
-- future verified `test_results` activity for the attempt
+- `missing_finished_at_column`
+- `completion_source`
+- `completion_status`
 
-A present zero mark alone is not enough evidence. Incomplete-with-evidence rows are diagnostic evidence, not default published performance evidence.
+Recommended values:
 
-### Incomplete Without Evidence
+- `completion_source = finished_at`
+- `completion_source = fallback_activity_evidence`
+- `completion_source = missing_finished_at_column`
+- `completion_status = verified_complete`
+- `completion_status = incomplete`
+- `completion_status = unknown_but_usable`
 
-An incomplete attempt without positive learner activity evidence is excluded from eligible KPI bases. It should appear only in DQ monitoring and exclusion reporting.
+## Published vs Proxy Sequence
 
-## Metric Policy
+Published KPI dataset:
 
-| Use case | Include incomplete-with-evidence? | Dedupe? | Pass-mark policy | Disclosure |
-| --- | --- | --- | --- | --- |
-| Published performance KPIs | No | Yes | Exclude or flag ambiguous pass marks | Required |
-| Rankings / leaderboards | No | Yes | Strict pass marks | Required |
-| Institute / geography rollups | No | Yes | Strict pass marks | Required |
-| Learner diagnostic drilldown | Allowed, clearly labeled | Optional | Strict for pass KPIs | Required |
-| DQ monitor | Show separately | Yes for eligible base | Report ambiguity | Required |
-| Future broader engagement model | Possible weak signal | TBD | Not pass-based | TBD |
+- completed/usable rows only;
+- may dedupe best attempt by learner/test;
+- used for rankings, institution rollups, and public summaries.
 
-## Current Named Policy Modes
+Proxy sequence dataset:
 
-### Published Performance
+- completed/usable rows only;
+- must preserve repeated eligible attempts;
+- used for inferred BLS proxy, current ALS proxy, potential ALS proxy, learning gain proxy, and CAS proxy.
 
-Use for performance dashboards, rankings, and institute-level views.
+## Accuracy Denominator Policy
 
-- `completed_only=True`
-- `include_incomplete_if_has_evidence=False`
-- `dedupe_best_attempt=True`
-- `strict_pass_mark=True`
+The full audit found `no_of_questions` can contain impossible values and should not be a trusted score denominator.
 
-### Learner Diagnostic
+Use:
 
-Use only for learner drilldown where partial evidence may help explain behavior.
+```text
+full_test_accuracy = marks / max_marks_db
+max_marks_db = COUNT(test_questions WHERE test_id = X)
+```
 
-- `completed_only=True`
-- `include_incomplete_if_has_evidence=True`
-- `dedupe_best_attempt=False` unless the page explicitly separates raw from eligible attempts
-- `strict_pass_mark=True`
+For attempted-question behavior/context, use:
 
-This mode must label eligible attempts, raw attempts, and partial evidence separately.
+```text
+attempted_accuracy = correct_answers / attempted_questions
+```
 
-### DQ Monitor
-
-Use for audit and monitoring.
-
-- `completed_only=True`
-- `include_incomplete_if_has_evidence=False`
-- `dedupe_best_attempt=True`
-- `strict_pass_mark=True`
-- expose exclusions, salvage counts, and coverage rates
-
-## Required Disclosures
-
-Any published view that aggregates beyond a single learner must disclose:
-
-- raw rows versus included rows
-- exclusion reason counts
-- duplicate handling
-- pass-mark usable coverage
-- question-level support coverage
-- institute / city / country coverage where segmentation is used
-
-## Open Items
-
-- Freeze whether learner drilldown should dedupe by default or show all eligible attempts.
-- Add verified `test_results` support once those tables are available in the repo pipeline.
-- Decide whether incomplete-with-evidence can become a weak engagement signal in a later Learn Smarter model.
-- Replace the boolean `include_incomplete_if_has_evidence` with a clearer completion policy enum in a future refactor.
+`no_of_questions` is retained for DQ checks only. It is suspect when missing,
+non-positive, less than attempted questions, or greater than `max_marks_db`.

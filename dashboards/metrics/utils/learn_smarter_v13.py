@@ -6,9 +6,10 @@ import pandas as pd
 
 def _score_denominator(df: pd.DataFrame) -> pd.Series:
     denominator = pd.Series(np.nan, index=df.index, dtype="float64")
-    for column in ["max_marks_effective", "total_questions", "no_of_questions"]:
+    for column in ["accuracy_denominator", "max_marks_db", "max_marks_effective", "total_questions", "question_limit"]:
         if column in df.columns:
-            denominator = denominator.fillna(pd.to_numeric(df[column], errors="coerce"))
+            candidate = pd.to_numeric(df[column], errors="coerce")
+            denominator = denominator.fillna(candidate)
     denominator = denominator.mask(denominator <= 0)
     return denominator
 

@@ -63,7 +63,7 @@ def _config_from_sidebar() -> DQConfig:
     st.sidebar.markdown("## Required Checks")
     require_valid_marks = st.sidebar.toggle("Require valid marks", value=base.require_valid_marks)
     require_valid_no_of_questions = st.sidebar.toggle(
-        "Require valid question count",
+        "Require valid raw no_of_questions",
         value=base.require_valid_no_of_questions,
     )
     require_valid_time = st.sidebar.toggle("Require valid time taken", value=base.require_valid_time)

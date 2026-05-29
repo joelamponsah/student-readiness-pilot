@@ -19,7 +19,9 @@ class DQConfig:
     strict_pass_mark: bool = True
     show_incomplete: bool = False  # for exploration only; NOT for published KPIs
     require_valid_marks: bool = True
-    require_valid_no_of_questions: bool = True
+    # no_of_questions is audited as unreliable; keep this off for published
+    # metrics unless explicitly exploring raw source consistency.
+    require_valid_no_of_questions: bool = False
     require_valid_time: bool = False
     require_question_level_support: bool = False
     require_usable_pass_mark: bool = False
@@ -65,20 +67,26 @@ def _robust_outlier_flag(x: pd.Series, k: float = 3.5) -> pd.Series:
 def _compute_max_marks_candidate(df: pd.DataFrame) -> pd.Series:
     """
     Best-effort max marks candidate:
-    - Prefer total_questions if present and numeric (often equals question count)
-    - Else fall back to no_of_questions when sensible
+    - Prefer max_marks_db from COUNT(test_questions), per the full audit.
+    - Else fall back to total_questions for legacy exports where it represents
+      the same DB question count.
+    - Else fall back to question_limit.
+    no_of_questions is intentionally excluded because the audit found corrupted
+    no_of_questions values.
     This is imperfect; we use it only to flag obvious pass_mark anomalies.
     """
     max_marks = pd.Series(np.nan, index=df.index)
 
+    if "max_marks_db" in df.columns:
+        max_marks = pd.to_numeric(df["max_marks_db"], errors="coerce")
+
     if "total_questions" in df.columns:
         tq = pd.to_numeric(df["total_questions"], errors="coerce")
-        max_marks = tq
+        max_marks = max_marks.fillna(tq)
 
-    if "no_of_questions" in df.columns:
-        noq = pd.to_numeric(df["no_of_questions"], errors="coerce")
-        # fill only where total_questions is missing
-        max_marks = max_marks.fillna(noq)
+    if "question_limit" in df.columns:
+        ql = pd.to_numeric(df["question_limit"], errors="coerce")
+        max_marks = max_marks.fillna(ql)
 
     return max_marks
 
@@ -158,7 +166,7 @@ def apply_dq_gate(
 
     # Coerce types
     df = _to_datetime(df, ["created_at", "updated_at", "finished_at"])
-    df = _to_numeric(df, ["marks", "no_of_questions", "time_taken", "attempted_questions", "correct_answers", "pass_mark", "total_questions"])
+    df = _to_numeric(df, ["marks", "no_of_questions", "time_taken", "attempted_questions", "correct_answers", "pass_mark", "total_questions", "question_limit", "max_marks_db"])
 
     # Required columns safety
     for c in ["user_id", "test_id", "test_taker_id"]:
@@ -202,15 +210,20 @@ def apply_dq_gate(
     # time_taken outlier flag (minutes)
     df["time_taken_outlier"] = _robust_outlier_flag(df.get("time_taken", np.nan))
 
-    # no_of_questions suspect (do NOT drop by default; used to protect denominators)
+    # no_of_questions suspect (do NOT drop by default; audit says this is a
+    # diagnostic field, not a trusted denominator)
     noq = pd.to_numeric(df.get("no_of_questions", np.nan), errors="coerce")
+    max_marks_candidate = _compute_max_marks_candidate(df)
     df["no_of_questions_suspect"] = (
-        noq.isna() | (noq <= 0) | (aq.notna() & (aq > 0) & (noq < aq))
+        noq.isna()
+        | (noq <= 0)
+        | (aq.notna() & (aq > 0) & (noq < aq))
+        | (max_marks_candidate.notna() & noq.notna() & (noq > max_marks_candidate))
+        | (max_marks_candidate.notna() & aq.notna() & (aq > max_marks_candidate))
     ).fillna(True)
 
     # Pass mark ambiguity
     pm = pd.to_numeric(df.get("pass_mark", np.nan), errors="coerce")
-    max_marks_candidate = _compute_max_marks_candidate(df)
     df["max_marks_effective"] = max_marks_candidate
     df["pass_mark_effective"] = _compute_pass_mark_effective(pm, max_marks_candidate)
     df["pass_mark_ambiguous"] = (

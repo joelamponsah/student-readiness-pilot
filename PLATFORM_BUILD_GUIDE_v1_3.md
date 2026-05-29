@@ -11,10 +11,12 @@ v1.3 is the Test / Exercise Readiness release. It keeps the v1.2 DQ baseline and
 - The loader must not dedupe attempts.
 - If `finished_at` is missing, DQ completion must fall back to activity evidence and remain explicitly source-aware.
 - Zero-attempt rows must stay visible long enough to be flagged, then neutralized.
-- Full-test accuracy must use `max_marks_db = COUNT(test_questions WHERE test_id = X)` when available.
+- Full-test accuracy must use the delivered attempt denominator, not the full randomized question-bank count.
+- Denominator priority is delivered result evidence, consistent `no_of_questions`, consistent `question_limit`, then low-confidence legacy fallback.
 - Attempted-question accuracy must use `correct_answers / attempted_questions` from the test-results rollup.
-- `no_of_questions` is not a trusted denominator; keep it as a raw DQ/anomaly field.
-- Legacy `total_questions` may be used only where it represents the DB question count from `test_questions`.
+- `max_marks_db` / `question_bank_count` from `COUNT(test_questions)` is context for random-pool size, not the normal score denominator.
+- `no_of_questions` and `question_limit` are usable only when they reconcile with marks, correct answers, attempted answers, and result evidence.
+- Legacy `total_questions` is ambiguous and must not override delivered denominator evidence.
 - `dashboards/metrics/pages/1_Metrics.py` is the explanatory metrics page; DQ gating remains on `0_DQ_Monitors.py`.
 - User Summary should treat inactive zero-attempt rows as non-attempts when showing average accuracy.
 - The current source does not provide `topic_id`, `subject_id`, or `year_group`.
@@ -29,5 +31,6 @@ v1.3 is the Test / Exercise Readiness release. It keeps the v1.2 DQ baseline and
 - Current ALS Proxy and Potential ALS Proxy appear only where repeated attempts exist.
 - `robust_SAB_scaled` stays within 0-100.
 - Proxy gain stays within -100 to 100.
-- `accuracy_denominator_source` is `max_marks_db` for normal v1.3 exports.
-- `no_of_questions_suspect` flags impossible raw question counts instead of excluding full-test accuracy by itself.
+- `accuracy_denominator_source` should normally be `delivered_result_questions`, `answer_grade_sum_diagnostic`, `no_of_questions`, or `question_limit`.
+- `max_marks_db_is_bank_count` should be true when DB question rows exceed the delivered attempt size.
+- `no_of_questions_suspect` flags counts that fail reconciliation; it does not exclude rows by itself unless a policy toggle requires it.

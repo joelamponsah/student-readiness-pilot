@@ -14,5 +14,8 @@ v1.3 is a Test / Exercise Readiness bridge release. It does not claim full Learn
 
 - Loader dedupe removed from session loading.
 - Zero-attempt rows are preserved long enough to flag inactive attempts.
-- Accuracy uses the canonical denominator order.
+- Full-test accuracy uses `max_marks_db = COUNT(test_questions WHERE test_id = X)`.
+- Attempted-question accuracy uses `correct_answers / attempted_questions` from the test-results rollup.
+- `no_of_questions` remains a raw DQ/anomaly field and is not a trusted denominator.
+- Duplicate `(test_taker_id, test_question_id)` rows must be deduped before answer rollups.
 - Institute Summary proxy metrics are rendered after institute selection.

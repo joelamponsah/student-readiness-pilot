@@ -36,26 +36,110 @@ def load_data_from_disk_or_session(default_path="data/verify_df_fixed.csv"):
 
 
 
+def _numeric_series(df: pd.DataFrame, column: str) -> pd.Series:
+    if column in df.columns:
+        return pd.to_numeric(df[column], errors="coerce")
+    return pd.Series(np.nan, index=df.index, dtype="float64")
+
+
+def _valid_denominator(candidate: pd.Series, df: pd.DataFrame) -> pd.Series:
+    marks = _numeric_series(df, "marks")
+    correct = _numeric_series(df, "correct_answers")
+    attempted = _numeric_series(df, "attempted_questions_raw").fillna(_numeric_series(df, "attempted_questions"))
+    valid = candidate.notna() & (candidate > 0)
+    valid &= marks.isna() | (marks <= candidate)
+    valid &= correct.isna() | (correct <= candidate)
+    valid &= attempted.isna() | (attempted <= candidate)
+    return valid.fillna(False)
+
+
+def _bank_like(candidate: pd.Series, df: pd.DataFrame) -> pd.Series:
+    """
+    Flag denominators that look like full randomized question-bank counts.
+
+    In v1.3, score percentages must use the delivered attempt size. Large DB
+    question-bank counts are retained as context, but they should not dilute
+    BLS/ALS/CAS or accuracy unless no delivered evidence exists.
+    """
+    anchors = pd.Series(np.nan, index=df.index, dtype="float64")
+    for col in ["delivered_result_questions", "answer_grade_sum_diagnostic", "no_of_questions", "question_limit"]:
+        value = _numeric_series(df, col)
+        anchors = anchors.fillna(value.where(_valid_denominator(value, df)))
+    return (
+        candidate.notna()
+        & anchors.notna()
+        & (candidate > anchors + 5)
+        & (candidate > anchors * 1.25)
+    ).fillna(False)
+
+
+def _derive_accuracy_denominator(df: pd.DataFrame) -> tuple:
+    denom = pd.Series(np.nan, index=df.index, dtype="float64")
+    source = pd.Series("missing", index=df.index, dtype="object")
+
+    high_confidence = ["delivered_denominator", "delivered_result_questions", "answer_grade_sum_diagnostic", "no_of_questions", "question_limit"]
+    medium_confidence = ["max_marks_effective", "accuracy_denominator", "total_questions", "max_marks_db"]
+
+    for col in high_confidence:
+        candidate = _numeric_series(df, col)
+        use = denom.isna() & _valid_denominator(candidate, df)
+        denom = denom.where(~use, candidate)
+        source = source.where(~use, col)
+
+    for col in medium_confidence:
+        candidate = _numeric_series(df, col)
+        use = denom.isna() & _valid_denominator(candidate, df) & ~_bank_like(candidate, df)
+        denom = denom.where(~use, candidate)
+        source = source.where(~use, col)
+
+    # Last resort for legacy extracts with no delivered-size evidence. This is
+    # explicitly low confidence and should be surfaced in DQ/diagnostics.
+    for col in ["max_marks_db", "total_questions"]:
+        candidate = _numeric_series(df, col)
+        use = denom.isna() & _valid_denominator(candidate, df)
+        denom = denom.where(~use, candidate)
+        source = source.where(~use, f"{col}_last_resort")
+
+    no_questions = _numeric_series(df, "no_of_questions")
+    question_limit = _numeric_series(df, "question_limit")
+    answer_sum = _numeric_series(df, "answer_grade_sum_diagnostic")
+    max_marks_db = _numeric_series(df, "max_marks_db")
+
+    noq_consistent = _valid_denominator(no_questions, df)
+    noq_consistent &= answer_sum.isna() | (answer_sum <= 0) | (no_questions.sub(answer_sum).abs() <= 1)
+    noq_consistent &= question_limit.isna() | (question_limit <= 0) | (no_questions.sub(question_limit).abs() <= 1)
+
+    ql_consistent = _valid_denominator(question_limit, df)
+    ql_consistent &= answer_sum.isna() | (answer_sum <= 0) | (question_limit.sub(answer_sum).abs() <= 1)
+    ql_consistent &= no_questions.isna() | (no_questions <= 0) | (question_limit.sub(no_questions).abs() <= 1)
+
+    bank_count = _bank_like(max_marks_db, df)
+    conflict = (
+        denom.isna()
+        | (no_questions.notna() & (no_questions > 0) & ~noq_consistent)
+        | (question_limit.notna() & (question_limit > 0) & ~ql_consistent)
+        | bank_count
+    ).fillna(False)
+
+    confidence = pd.Series("low", index=df.index, dtype="object")
+    confidence = confidence.where(~source.isin(["delivered_denominator", "delivered_result_questions", "answer_grade_sum_diagnostic", "no_of_questions"]), "high")
+    confidence = confidence.where(~source.eq("question_limit"), "medium")
+    confidence = confidence.where(~source.str.endswith("_last_resort", na=False), "low")
+    confidence = confidence.where(~denom.isna(), "missing")
+
+    return denom.replace(0, np.nan), source, confidence, bank_count, noq_consistent.fillna(False), ql_consistent.fillna(False), conflict
+
+
 def _canonical_accuracy_denominator(df: pd.DataFrame) -> pd.Series:
     """
     Canonical denominator for full-test score accuracy calculations.
 
-    Preference order:
-      1) accuracy_denominator, when already annotated by DQ/notebook logic
-      2) max_marks_db, COUNT(test_questions) from the audit-backed source
-      3) max_marks_effective, when already derived from max_marks_db/legacy total_questions
-      4) total_questions, legacy name for the same DB question count in older exports
-      5) question_limit, fallback only when DB question count is unavailable
-
-    no_of_questions is intentionally excluded. The full audit found corrupted
-    no_of_questions values, so it is a DQ field, not a trusted denominator.
+    v1.3 separates delivered attempt size from randomized question-bank size.
+    Use result evidence / no_of_questions / question_limit when consistent.
+    Keep max_marks_db as question-bank context and last-resort legacy fallback.
     """
-    denom = pd.Series(np.nan, index=df.index)
-    for col in ["accuracy_denominator", "max_marks_db", "max_marks_effective", "total_questions", "question_limit"]:
-        if col in df.columns:
-            candidate = pd.to_numeric(df[col], errors="coerce")
-            denom = denom.fillna(candidate)
-    return denom.replace(0, np.nan)
+    denom, *_ = _derive_accuracy_denominator(df)
+    return denom
 
 
 def safe_accuracy_series(df: pd.DataFrame) -> pd.Series:
@@ -96,12 +180,12 @@ def compute_basic_metrics2(df):
     df = df.copy()
 
     # Ensure numeric columns exist
-    for c in ['attempted_questions','correct_answers','marks','time_taken','duration','no_of_questions','pass_mark','total_questions','question_limit','max_marks_db','max_marks_effective']:
+    for c in ['attempted_questions','correct_answers','marks','time_taken','duration','no_of_questions','pass_mark','total_questions','question_limit','max_marks_db','max_marks_effective','delivered_denominator','delivered_result_questions','answer_grade_sum_diagnostic']:
         if c not in df.columns:
             df[c] = np.nan
 
     # Coerce numeric
-    for c in ['attempted_questions','correct_answers','marks','time_taken','duration','no_of_questions','pass_mark','total_questions','question_limit','max_marks_db','max_marks_effective']:
+    for c in ['attempted_questions','correct_answers','marks','time_taken','duration','no_of_questions','pass_mark','total_questions','question_limit','max_marks_db','max_marks_effective','delivered_denominator','delivered_result_questions','answer_grade_sum_diagnostic']:
         df[c] = pd.to_numeric(df[c], errors='coerce')
 
     # Guard zeros
@@ -114,14 +198,22 @@ def compute_basic_metrics2(df):
     df['total_questions'] = df['total_questions'].replace(0, np.nan)
     df['question_limit'] = df['question_limit'].replace(0, np.nan)
     df['max_marks_db'] = df['max_marks_db'].replace(0, np.nan)
-    # Full-test accuracy uses DB question count. no_of_questions is retained for
-    # DQ checks only because the audit found impossible no_of_questions values.
-    df['max_marks_effective'] = df['max_marks_effective'].fillna(df['max_marks_db']).fillna(df['total_questions']).fillna(df['question_limit'])
-    df['max_marks_effective'] = df['max_marks_effective'].replace(0, np.nan)
+    denom, denom_source, denom_confidence, bank_count, noq_ok, ql_ok, denom_conflict = _derive_accuracy_denominator(df)
+    df['question_bank_count'] = df['max_marks_db']
+    df['delivered_denominator'] = denom
+    df['delivered_denominator_source'] = denom_source
+    df['accuracy_denominator_source'] = denom_source
+    df['denominator_confidence'] = denom_confidence
+    df['max_marks_db_is_bank_count'] = bank_count
+    df['no_of_questions_consistent'] = noq_ok
+    df['question_limit_consistent'] = ql_ok
+    df['denominator_conflict_flag'] = denom_conflict
+    # Backward-compatible name used by older pages; now means delivered scoring
+    # denominator, not necessarily COUNT(test_questions).
+    df['max_marks_effective'] = denom
 
     # Accuracy
     df['accuracy_attempt'] = (df['correct_answers'] / df['attempted_questions']).fillna(0)
-    denom = _canonical_accuracy_denominator(df)
     df['accuracy_denominator'] = denom
     # Accuracy is a proportion, so keep it bounded even when the raw marks/denominator
     # combination is noisy or partially inferred.
@@ -177,7 +269,8 @@ def compute_test_analytics(df):
     df = compute_basic_metrics2(df)
     df = df[df['time_taken'] > 0]
     df['speed_marks'] = df['marks'] / df['time_taken']
-    df['accuracy_total'] = (df['marks'] / df['max_marks_effective']).fillna(0)
+    denom = _canonical_accuracy_denominator(df)
+    df['accuracy_total'] = (df['marks'] / denom).clip(lower=0, upper=1).fillna(0)
     df['efficiency_ratio'] = df['accuracy_total'] / df['time_consumed'].replace(0, np.nan)
     pass_col = 'pass_mark_effective' if 'pass_mark_effective' in df.columns else 'pass_mark'
     pass_source = df.loc[df.index, pass_col] if pass_col in df.columns else pd.Series(np.nan, index=df.index)

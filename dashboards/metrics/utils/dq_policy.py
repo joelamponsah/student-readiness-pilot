@@ -165,7 +165,7 @@ def apply_dq_gate(
         df["finished_at"] = pd.NaT
 
     # Coerce types
-    df = _to_datetime(df, ["created_at", "finished_at"])
+    df = _to_datetime(df, ["created_at", "updated_at", "finished_at"])
     df = _to_numeric(df, ["marks", "no_of_questions", "time_taken", "attempted_questions", "correct_answers", "pass_mark", "total_questions", "question_limit", "max_marks_db"])
 
     # Required columns safety
@@ -194,11 +194,11 @@ def apply_dq_gate(
     else:
         df["institute_missing"] = True
 
-    if "country" in df.columns:
+    #if "country" in df.columns:
         ctry = _safe_str_series(df["country"])
-        df["country_missing"] = ctry.eq("")
-    else:
-        df["country_missing"] = True
+       # df["country_missing"] = ctry.eq("")
+   # else:
+      #  df["country_missing"] = True
 
     # Question-level support flag
     aq = pd.to_numeric(df.get("attempted_questions", np.nan), errors="coerce")

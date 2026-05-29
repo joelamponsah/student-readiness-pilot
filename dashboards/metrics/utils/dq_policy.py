@@ -165,7 +165,7 @@ def apply_dq_gate(
         df["finished_at"] = pd.NaT
 
     # Coerce types
-    df = _to_datetime(df, ["created_at", "updated_at", "finished_at"])
+    df = _to_datetime(df, ["created_at", "finished_at"])
     df = _to_numeric(df, ["marks", "no_of_questions", "time_taken", "attempted_questions", "correct_answers", "pass_mark", "total_questions", "question_limit", "max_marks_db"])
 
     # Required columns safety

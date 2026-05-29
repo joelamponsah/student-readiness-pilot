@@ -306,7 +306,7 @@ st.caption(
 # Activity window (eligible, based on created_at if available)
 activity_window = "N/A"
 if "created_at" in user_tests.columns and user_tests["created_at"].notna().any():
-    activity_window = f"{user_tests['created_at'].min().date()} → {user_tests['created_at'].max().date()}"
+    activity_window = f"{user_tests['created_at'].min().date()} -> {user_tests['created_at'].max().date()}"
     
 # ---------------------------
 # KPI Row 1: raw vs eligible attempts + unique tests
@@ -466,7 +466,7 @@ if not band_tbl.empty:
 # ---------------------------
 # Readiness Insight
 # ---------------------------
-st.subheader("🧠 Overall Exam Readiness Insight")
+st.subheader("Overall Exam Readiness Insight")
 
 if user_sab.empty:
     st.warning("No readiness record available for this learner (likely insufficient valid attempts).")
@@ -474,7 +474,7 @@ else:
     r = user_sab.iloc[0]
     a, b, c = st.columns(3)
     a.metric("Exam status", str(r.get("exam_status", "Unknown")))
-    b.metric("Work Habits Score (0–100)", f"{float(r.get('robust_SAB_scaled', 0)):.1f}")
+    b.metric("Work Habits Score (0-100)", f"{float(r.get('robust_SAB_scaled', 0)):.1f}")
     st.caption("Work Habits Score reflects consistency of accuracy + pace across attempts (more evidence = more reliable).")
 
     if "readiness_probability_pct" in user_sab.columns:
@@ -495,18 +495,18 @@ else:
             f"**Why not eligible:** {r.get('blocking_reason','')}  \n"
             f"(Insight code: `{r.get('insight_code','')}`)"
         )
-    st.info("📘 Instructor / Stakeholder Summary")
+    st.info("Instructor / Stakeholder Summary")
     st.write(str(r.get("stakeholder_insight", "")))
 
-    st.success("🎯 Coach Feedback")
+    st.success("Coach Feedback")
     st.write(str(r.get("coach_feedback", "")))
 
-    st.info(f"👉 Recommended action: {str(r.get('recommended_action',''))}")
+    st.info(f"Recommended action: {str(r.get('recommended_action',''))}")
     st.caption(f"Insight code: {str(r.get('insight_code',''))}")
 
     if "redemption_plan" in user_sab.columns:
         plan_title = "Staying on Track" if str(r.get("exam_status", "")).lower() == "eligible" else "Redemption Arc Plan"
-        st.subheader(f"🛠️ {plan_title}")
+        st.subheader(f"{plan_title}")
 
         plan = r.get("redemption_plan", [])
         if isinstance(plan, list) and plan:
@@ -604,7 +604,7 @@ else:
         "Pass rate excludes ambiguous pass_mark tests when strict pass_mark is ON."
     )
 
-st.subheader("📋 Per-test performance table")
+st.subheader("Per-test performance table")
 
 # Base table uses all eligible attempts for this user
 ut = user_tests.copy()
@@ -618,14 +618,16 @@ else:
     ut["test_name"] = ut["test_id"].astype(str)
 ut["test_name"] = ut.get("test_name", ut["test_id"].astype(str)).fillna(ut["test_id"].astype(str))
 
-# Total marks candidate per test (best effort)
-# Prefer total_questions; fallback to no_of_questions
+# Total marks candidate per test (best effort). Full-test totals should come
+# from COUNT(test_questions), exposed as max_marks_db. no_of_questions is raw DQ
+# evidence only because the audit found impossible values.
+ut["total_marks_candidate"] = np.nan
+if "max_marks_db" in ut.columns:
+    ut["total_marks_candidate"] = ut["total_marks_candidate"].fillna(pd.to_numeric(ut["max_marks_db"], errors="coerce"))
 if "total_questions" in ut.columns:
-    ut["total_marks_candidate"] = pd.to_numeric(ut["total_questions"], errors="coerce")
-else:
-    ut["total_marks_candidate"] = np.nan
-if "no_of_questions" in ut.columns:
-    ut["total_marks_candidate"] = ut["total_marks_candidate"].fillna(pd.to_numeric(ut["no_of_questions"], errors="coerce"))
+    ut["total_marks_candidate"] = ut["total_marks_candidate"].fillna(pd.to_numeric(ut["total_questions"], errors="coerce"))
+if "question_limit" in ut.columns:
+    ut["total_marks_candidate"] = ut["total_marks_candidate"].fillna(pd.to_numeric(ut["question_limit"], errors="coerce"))
 
 # Pass/fail only on non-ambiguous pass marks (when strict)
 ut_pass = ut.copy()
@@ -696,7 +698,7 @@ st.dataframe(per_test[show_cols].sort_values(["Avg_Accuracy_%", "Attempts"], asc
 # Weekly trends
 # ---------------------------
 st.divider()
-st.subheader("📈 Trends (Weekly)")
+st.subheader("Trends (Weekly)")
 
 if "created_at" in user_tests.columns and user_tests["created_at"].notna().any():
     ut = user_tests.dropna(subset=["created_at"]).copy()
@@ -737,7 +739,7 @@ else:
 # Learner vs peers (accuracy distribution by test)
 # ---------------------------
 st.divider()
-st.subheader("📊 Learner vs peers (accuracy distribution by test)")
+st.subheader("Learner vs peers (accuracy distribution by test)")
 
 test_name_col = None
 for cand in ["name", "test_name", "title"]:
@@ -789,7 +791,7 @@ else:
 # Speed vs Accuracy scatter
 # ---------------------------
 st.divider()
-st.subheader("🎯 Speed vs Accuracy (each attempt)")
+st.subheader("Speed vs Accuracy (each attempt)")
 
 if "speed_acc_raw" in user_tests.columns and "accuracy_safe" in user_tests.columns and user_tests[["speed_acc_raw", "accuracy_safe"]].dropna().shape[0] >= 2:
     fig_scatter = px.scatter(
@@ -807,10 +809,10 @@ else:
 # Difficulty summary
 # ---------------------------
 st.divider()
-st.subheader("📚 Test difficulty summary")
-st.info("Easy -> difficulty 0.00–0.59")
-st.info("Moderate -> difficulty 0.60–0.89")
-st.info("Hard -> difficulty 0.90–1.00")
+st.subheader("Test difficulty summary")
+st.info("Easy -> difficulty 0.00-0.59")
+st.info("Moderate -> difficulty 0.60-0.89")
+st.info("Hard -> difficulty 0.90-1.00")
 
 user_diff = user_tests[["test_id"]].drop_duplicates().merge(diff_df, on="test_id", how="left")
 

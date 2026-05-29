@@ -3,15 +3,17 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
+try:
+    from utils.metrics import _canonical_accuracy_denominator
+except Exception:  # pragma: no cover
+    from .metrics import _canonical_accuracy_denominator
+
 
 def _score_denominator(df: pd.DataFrame) -> pd.Series:
-    denominator = pd.Series(np.nan, index=df.index, dtype="float64")
-    for column in ["accuracy_denominator", "max_marks_db", "max_marks_effective", "total_questions", "question_limit"]:
-        if column in df.columns:
-            candidate = pd.to_numeric(df[column], errors="coerce")
-            denominator = denominator.fillna(candidate)
-    denominator = denominator.mask(denominator <= 0)
-    return denominator
+    # Use the same delivered-attempt denominator as the Metrics page. Bank-size
+    # max_marks_db values are context only unless no delivered evidence exists.
+    denominator = _canonical_accuracy_denominator(df)
+    return denominator.mask(denominator <= 0)
 
 
 def add_test_exercise_readiness_fields(df: pd.DataFrame) -> pd.DataFrame:

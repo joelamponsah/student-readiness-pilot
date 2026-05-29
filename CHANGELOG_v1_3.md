@@ -1,5 +1,14 @@
 # v1.3 Change Log
 
+## 2026-05-29 - Align accuracy denominator with full audit
+
+- Added `test_takers.no_of_questions` to the v1.3 dataset builder as a raw DQ field, not as a trusted denominator.
+- Standardized full-test accuracy to use `max_marks_db = COUNT(test_questions WHERE test_id = X)`.
+- Added separate attempted-question normalization using `correct_answers / attempted_questions` from the test-results rollup.
+- Kept `question_limit` only as a fallback when DB question counts are unavailable.
+- Flagged `no_of_questions` as suspect when it is missing, non-positive, less than attempted questions, or greater than `max_marks_db`.
+- Updated dashboard readiness helpers and User Summary totals to avoid using raw `no_of_questions` as the default denominator.
+
 ## 2026-05-27 - Rename Metrics page and tighten summary interpretation
 
 - Renamed the main explanatory metrics page to `dashboards/metrics/pages/1_Metrics.py`.

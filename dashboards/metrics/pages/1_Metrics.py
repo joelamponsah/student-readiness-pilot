@@ -24,8 +24,11 @@ shows the resulting published KPI data and the proxy-sequence preview.
 - Any inferred subject label must remain explicit and lower-confidence than a real source field.
 
 ### Math used in the analysis
-- `accuracy_total = marks / max_marks_effective`
-- `max_marks_effective` prefers `max_marks_effective`, then `total_questions`, then `no_of_questions`
+- `full_test_accuracy = marks / max_marks_db`
+- `max_marks_db = COUNT(test_questions WHERE test_id = X)` when question-bank rows are available
+- legacy `total_questions` is treated as the same DB question count only in older exports
+- `attempted_accuracy = correct_answers / attempted_questions`
+- `no_of_questions` is not a trusted denominator; it is retained as a DQ/anomaly field
 - `speed_raw = attempted_questions / time_taken`
 - `adj_speed = correct_answers / time_taken`
 - `efficiency_ratio = accuracy_total / time_consumed`
@@ -34,6 +37,7 @@ shows the resulting published KPI data and the proxy-sequence preview.
 ### Interpretation
 - Published KPI data uses best-attempt dedupe for rollups, rankings, and summaries.
 - Proxy-sequence data preserves repeated eligible attempts for the v1.3 proxy outputs only.
+- BLS/ALS/CAS proxy percentages use full-test normalization, not raw `no_of_questions`.
 - Proxy values are partial readiness signals, not full Learn Smarter BLS/ALS/CAS results.
 """
 )

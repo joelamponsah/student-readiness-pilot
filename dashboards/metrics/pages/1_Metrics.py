@@ -24,11 +24,12 @@ shows the resulting published KPI data and the proxy-sequence preview.
 - Any inferred subject label must remain explicit and lower-confidence than a real source field.
 
 ### Math used in the analysis
-- `full_test_accuracy = marks / max_marks_db`
-- `max_marks_db = COUNT(test_questions WHERE test_id = X)` when question-bank rows are available
-- legacy `total_questions` is treated as the same DB question count only in older exports
+- `full_test_accuracy = marks / delivered_denominator`
+- `delivered_denominator` is selected from delivered-result evidence, then consistent `no_of_questions`, then consistent `question_limit`
+- `max_marks_db = COUNT(test_questions WHERE test_id = X)` is retained as question-bank context and only used as a low-confidence last resort
+- legacy `total_questions` is treated as ambiguous unless it reconciles with delivered attempt evidence
 - `attempted_accuracy = correct_answers / attempted_questions`
-- `no_of_questions` is not a trusted denominator; it is retained as a DQ/anomaly field
+- `no_of_questions` is allowed as a denominator only when it reconciles with marks/correct/attempted counts and question/result evidence
 - `speed_raw = attempted_questions / time_taken`
 - `adj_speed = correct_answers / time_taken`
 - `efficiency_ratio = accuracy_total / time_consumed`
@@ -37,7 +38,7 @@ shows the resulting published KPI data and the proxy-sequence preview.
 ### Interpretation
 - Published KPI data uses best-attempt dedupe for rollups, rankings, and summaries.
 - Proxy-sequence data preserves repeated eligible attempts for the v1.3 proxy outputs only.
-- BLS/ALS/CAS proxy percentages use full-test normalization, not raw `no_of_questions`.
+- BLS/ALS/CAS proxy percentages use the same delivered denominator as accuracy, with denominator source and conflict flags kept visible.
 - Proxy values are partial readiness signals, not full Learn Smarter BLS/ALS/CAS results.
 """
 )

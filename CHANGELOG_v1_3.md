@@ -1,5 +1,13 @@
 # v1.3 Change Log
 
+## 2026-05-31 - Route generated artifacts safely
+
+- Added dataset profile detection for v1.3 generated CSV artifacts.
+- Home now treats `proxy_sequence_attempts.csv` and raw attempt extracts as dashboard inputs.
+- Home now treats `v13_user_test_readiness_summary.csv`, `v13_group_readiness_summary.csv`, and `smoke_report.csv` as preview artifacts instead of overwriting `data/verify_df_fixed.csv`.
+- Shared loader now refuses summary artifacts as attempt-level page input, preventing DQ, Metrics, Ranking, User Summary, and Institute Summary pages from receiving the wrong schema.
+- Clarified that lower user counts in `v13_user_test_readiness_summary.csv` reflect DQ/proxy eligibility and one-row-per-learner-test aggregation, not the raw platform population.
+
 ## 2026-05-29 - Correct delivered-attempt denominator handling
 
 - Corrected the denominator policy after reconciling the audit with randomized question-pool behavior.

@@ -194,11 +194,11 @@ def apply_dq_gate(
     else:
         df["institute_missing"] = True
 
-    #if "country" in df.columns:
+    if "country" in df.columns:
         ctry = _safe_str_series(df["country"])
-       # df["country_missing"] = ctry.eq("")
-   # else:
-      #  df["country_missing"] = True
+        df["country_missing"] = ctry.eq("")
+    else:
+        df["country_missing"] = True
 
     # Question-level support flag
     aq = pd.to_numeric(df.get("attempted_questions", np.nan), errors="coerce")

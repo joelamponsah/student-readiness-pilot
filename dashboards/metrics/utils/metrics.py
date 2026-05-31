@@ -3,6 +3,41 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 import os
+from typing import Optional
+
+ATTEMPT_DATASET_KINDS = {"raw_attempts", "proxy_sequence_attempts"}
+
+
+def detect_dataset_profile(df: Optional[pd.DataFrame]) -> str:
+    """
+    Identify the v1.3 artifact type from columns.
+
+    Dashboard pages expect attempt-level data. Summary artifacts are valid
+    outputs, but they should not be saved as data/verify_df_fixed.csv or sent
+    through DQ gates a second time.
+    """
+    if df is None or not hasattr(df, "columns"):
+        return "missing"
+
+    cols = set(df.columns)
+    if {"raw_rows", "dq_annotated_rows", "published_kpi_rows"}.issubset(cols):
+        return "smoke_report"
+    if {"group_level", "group_id", "cas_proxy_score_pct"}.issubset(cols):
+        return "v13_group_readiness_summary"
+    if {"bls_score_pct", "current_als_score_pct", "potential_als_score_pct"}.issubset(cols):
+        return "v13_user_test_readiness_summary"
+    if {"dq_eligible_proxy_sequence", "attempt_id", "marks", "accuracy_denominator"}.issubset(cols):
+        return "proxy_sequence_attempts"
+    if {"user_id", "test_id", "marks"}.issubset(cols) and (
+        {"attempt_id", "test_taker_id", "created_at"} & cols
+    ):
+        return "raw_attempts"
+    return "unknown"
+
+
+def is_attempt_level_dataset(df: Optional[pd.DataFrame]) -> bool:
+    return detect_dataset_profile(df) in ATTEMPT_DATASET_KINDS
+
 
 def save_uploaded_df(df: pd.DataFrame, path="data/verify_df_fixed.csv"):
     os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -21,14 +56,16 @@ def load_data_from_disk_or_session(default_path="data/verify_df_fixed.csv"):
         if "df" in st.session_state and st.session_state["df"] is not None:
             # Preserve the session copy exactly. Attempt-level dedupe belongs to
             # the DQ gate, not the loader.
-            return st.session_state["df"].copy()
+            df = st.session_state["df"].copy()
+            return df if is_attempt_level_dataset(df) else None
     except Exception:
         pass
 
     # else load from disk
     if os.path.exists(default_path):
         try:
-            return pd.read_csv(default_path, low_memory=False)
+            df = pd.read_csv(default_path, low_memory=False)
+            return df if is_attempt_level_dataset(df) else None
         except Exception:
             return None
     return None

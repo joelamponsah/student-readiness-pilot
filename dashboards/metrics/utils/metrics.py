@@ -39,11 +39,11 @@ def is_attempt_level_dataset(df: Optional[pd.DataFrame]) -> bool:
     return detect_dataset_profile(df) in ATTEMPT_DATASET_KINDS
 
 
-def save_uploaded_df(df: pd.DataFrame, path="data/verify_df_fixed.csv"):
+def save_uploaded_df(df: pd.DataFrame, path="data/raw_attempts.csv"):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     df.to_csv(path, index=False)
 
-def load_data_from_disk_or_session(default_path="data/verify_df_fixed.csv"):
+def load_data_from_disk_or_session(default_path="data/raw_attempts.csv"):
     """
     Loads df from Streamlit session_state if present; otherwise from disk.
     FIXES:
@@ -70,7 +70,6 @@ def load_data_from_disk_or_session(default_path="data/verify_df_fixed.csv"):
             return None
     return None
 # basic metrics ------------------------------------------------
-
 
 
 def _numeric_series(df: pd.DataFrame, column: str) -> pd.Series:

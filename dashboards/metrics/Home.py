@@ -14,11 +14,12 @@ st.set_page_config(page_title="Home - Test / Exercise Readiness", layout="wide")
 st.sidebar.title("Home")
 st.sidebar.markdown("## Data")
 uploaded = st.sidebar.file_uploader(
-    "Load v1.3 CSV",
+    "Upload raw_attempts.csv (required dashboard input)",
     type=["csv"],
     help=(
-        "Upload an attempt-level file for dashboard pages. "
-        "v13_user_test_readiness_summary.csv is a summary artifact and will be previewed here only."
+        "Upload the raw attempt-level dataset used by the dashboard. "
+        "verify_df_fixed.csv is legacy/reference only. "
+        "proxy_sequence_attempts.csv is a derived artifact, not a primary input."
     ),
 )
 
@@ -28,7 +29,7 @@ if uploaded is not None:
     st.session_state["uploaded_profile"] = profile
 
     if is_attempt_level_dataset(df):
-        save_uploaded_df(df, path="data/verify_df_fixed.csv")
+        save_uploaded_df(df, path="data/raw_attempts.csv")
         st.session_state["df"] = df
         st.sidebar.success("Loaded attempt-level data for dashboard pages.")
     elif profile == "v13_user_test_readiness_summary":
@@ -47,10 +48,11 @@ if uploaded is not None:
         st.sidebar.warning("Loaded smoke report for Home preview only.")
     else:
         st.sidebar.error(
-            "Unrecognized CSV schema. Use proxy_sequence_attempts.csv or the raw attempt dataset for dashboard pages."
+            "Unrecognized CSV schema. Use raw_attempts.csv for dashboard pages. "
+            "Summary artifacts are preview-only."
         )
 else:
-    df = load_data_from_disk_or_session(default_path="data/verify_df_fixed.csv")
+    df = load_data_from_disk_or_session(default_path="data/raw_attempts.csv")
     if df is not None:
         st.session_state["df"] = df
 
@@ -98,7 +100,8 @@ if "df" in st.session_state and st.session_state["df"] is not None:
     st.dataframe(current.head(5), use_container_width=True)
 else:
     st.info(
-        "Upload `proxy_sequence_attempts.csv` or an attempt-level raw extract for dashboard pages. "
+        "Upload `raw_attempts.csv` or place it at `data/raw_attempts.csv` in the repo. "
+        "`verify_df_fixed.csv` is legacy/reference only. "
         "`v13_user_test_readiness_summary.csv` is already aggregated and is previewed below when loaded."
     )
 

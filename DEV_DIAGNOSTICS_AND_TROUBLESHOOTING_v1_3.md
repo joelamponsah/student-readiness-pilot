@@ -2,7 +2,7 @@
 
 ## Smoke Checks
 
-1. Confirm the loader preserves the raw row count.
+1. Confirm the loader preserves the raw row count from `data/raw_attempts.csv`.
 2. Confirm published DQ mode still returns eligible rows on the repo dataset.
 3. Confirm diagnostic mode preserves repeated eligible attempts.
 4. Confirm proxy metrics are based on the proxy-sequence slice, not the deduped published slice.
@@ -22,6 +22,8 @@
 14. Confirm `no_of_questions` is used only when it reconciles with delivered evidence.
 15. Confirm duplicate `(test_taker_id, test_question_id)` rows are deduped in the notebook answer rollup.
 16. Confirm attempts without test-results rows are visible in the smoke report as missing test-results coverage.
+17. Confirm the dashboard home text treats `raw_attempts.csv` as the required input and `verify_df_fixed.csv` as legacy/reference only.
+18. Confirm `proxy_sequence_attempts.csv` is treated as a derived artifact, not a primary upload target.
 
 ## Manual Proxy Verification
 

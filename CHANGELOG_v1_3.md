@@ -1,38 +1,42 @@
 # v1.3 Change Log
 
-## 2026-05-31 - Route generated artifacts safely
+## 2026-06-03 - Switch dashboard contract to raw attempt input
 
-- Added dataset profile detection for v1.3 generated CSV artifacts.
-- Home now treats `proxy_sequence_attempts.csv` and raw attempt extracts as dashboard inputs.
-- Home now treats `v13_user_test_readiness_summary.csv`, `v13_group_readiness_summary.csv`, and `smoke_report.csv` as preview artifacts instead of overwriting `data/verify_df_fixed.csv`.
-- Shared loader now refuses summary artifacts as attempt-level page input, preventing DQ, Metrics, Ranking, User Summary, and Institute Summary pages from receiving the wrong schema.
-- Clarified that lower user counts in `v13_user_test_readiness_summary.csv` reflect DQ/proxy eligibility and one-row-per-learner-test aggregation, not the raw platform population.
+- Introduced `data/raw_attempts.csv` as the required dashboard input contract for v1.3.
+- Updated the Streamlit home entry to load and save `data/raw_attempts.csv` by default.
+- Kept `data/verify_df_fixed.csv` as a legacy/reference artifact only.
+- Documented `proxy_sequence_attempts.csv` as a derived artifact, not a primary app input.
+- Added the raw-attempts build notebook and validation reports for the new contract.
 
-## 2026-05-29 - Correct delivered-attempt denominator handling
+## 2026-05-29 - Correct randomized-pool accuracy denominator
 
-- Corrected the denominator policy after reconciling the audit with randomized question-pool behavior.
-- Separated `question_bank_count` / `max_marks_db` from the delivered scoring denominator.
-- Standardized full-test accuracy to use `delivered_denominator`, selected from delivered result evidence, consistent `no_of_questions`, or consistent `question_limit`.
-- Added separate attempted-question normalization using `correct_answers / attempted_questions` from the test-results rollup.
-- Kept `max_marks_db = COUNT(test_questions WHERE test_id = X)` as question-bank context and a low-confidence last resort only.
-- Added denominator flags: `delivered_denominator_source`, `denominator_confidence`, `max_marks_db_is_bank_count`, `no_of_questions_consistent`, `question_limit_consistent`, and `denominator_conflict_flag`.
-- Updated dashboard readiness helpers and User Summary totals to avoid diluting marks with full question-bank counts.
+- Added `test_takers.no_of_questions` to the v1.3 dataset builder.
+- Standardized attempt accuracy to prefer delivered question count from `no_of_questions`, then `question_limit`, with `tests.total_questions` only as a legacy fallback.
+- Flagged `total_questions` as suspect when it appears to represent the full randomized question bank instead of the delivered attempt size.
+- Updated dashboard readiness helpers and User Summary totals to avoid using full bank size as the default denominator.
 
-## 2026-05-27 - Rename Metrics page and tighten summary interpretation
+## 2026-05-27 - Rename Metrics page and tighten user accuracy display
 
-- Renamed the main explanatory metrics page to `dashboards/metrics/pages/1_Metrics.py`.
-- Kept DQ gating on `0_DQ_Monitors.py` and removed DQ summary from the metrics page.
-- Clarified the metric math and the published KPI vs proxy-sequence split on the Metrics page.
-- Noted that User Summary should exclude inactive zero-attempt rows from displayed average accuracy.
+- Renamed the main metrics page to `dashboards/metrics/pages/1_Metrics.py`.
+- Removed the DQ summary block from the metrics page so DQ gating stays on DQ Monitors.
+- Added the calculation notes for accuracy, speed, efficiency, and proxy metrics.
+- Updated User Summary to exclude inactive zero-attempt rows from the average accuracy display.
 - Added the v1.3 schema boundary across the pages: no source `topic_id`, `subject_id`, or `year_group`; use `class_id` and `created_at` for cohort logic; treat `test_name` subject labels as inferred.
 
 ## 2026-05-27 - Fix loader, DQ fallback, and proxy-sequence separation
 
 - Removed attempt-level dedupe from `load_data_from_disk_or_session()`.
 - Made DQ completion logic source-aware when `finished_at` is missing.
+- Kept `verified_complete` distinct from `unknown_but_usable`; published KPI mode stays strict while diagnostic/proxy modes may include unknown-but-usable rows.
 - Separated published KPI data from proxy-sequence data.
 - Fixed zero-attempt handling and unified the accuracy denominator.
 - Moved the Institute Summary proxy block to the correct position after institute selection.
+
+## 2026-05-27 - Replace narrow Drive extraction with broad repo-side extractor
+
+- Added `scripts/v1_3_extraction_rebuild.py` as the repo-side replacement for the older Drive notebook extraction flow.
+- The new extractor starts from `test_takers` as the base table, left-joins outward, and writes a reconciliation report against `data/verify_df_fixed.csv` and `data/old_verify_df_fixed.csv`.
+- Marked the v1.3 summary artifact provisional until the broad-source extract is regenerated and reconciled.
 
 ## 2026-05-27 - Convert Streamlit entry point to Home page
 

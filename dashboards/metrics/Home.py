@@ -317,10 +317,9 @@ st.markdown(
     """
 For questions, feedback, or access support, contact:
 
-**Your Name**  
-**your.email@example.com**
+Joel Amponsah  
+jamponsah@ecampus.camp
 
-Please replace this with the correct project contact email before sharing the dashboard.
 """
 )
 

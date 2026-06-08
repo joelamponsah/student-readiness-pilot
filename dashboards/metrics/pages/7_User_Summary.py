@@ -137,14 +137,17 @@ if u.empty:
     st.stop()
 
 # Dropdown shows ONLY username, but u is still filtered/sorted behind the scenes
-u = u.drop_duplicates(subset=["username"]).copy()
+# Dropdown shows User ID instead of username
+u = u.drop_duplicates(subset=["user_id"]).copy()
 
-username_options = u["username"].tolist()
-selected_username = st.selectbox("Choose learner", username_options)
+user_id_options = u["user_id"].tolist()
+selected_user_id = st.selectbox("Choose learner by User ID", user_id_options)
 
-sel = u[u["username"] == selected_username].iloc[0]
+sel = u[u["user_id"] == selected_user_id].iloc[0]
 user_id = sel["user_id"]
-username = sel["username"]
+
+# Keep username for display later in the page
+username = sel["username"] if "username" in sel and pd.notna(sel["username"]) else str(user_id)
 
 user_tests = df[df["user_id"] == user_id].copy()
 user_sab = sab_df[sab_df["user_id"] == user_id].copy()

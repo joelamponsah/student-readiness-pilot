@@ -239,11 +239,26 @@ institutes = sorted(
     set(mapped_institutes).intersection(set(df["institute_std"].dropna().astype(str)))
 )
 
+# Exclude institutes with fewer than 10 unique users
+institute_user_counts = (
+    df[df["institute_std"].isin(institutes)]
+    .groupby("institute_std")["user_id"]
+    .nunique()
+)
+
+institutes = sorted(
+    institute_user_counts[institute_user_counts >= 10].index.tolist()
+)
+
 if not institutes:
-    st.warning("No mapped institutes found in the current dataset.")
+    st.warning("No mapped institutes with at least 10 users found in the current dataset.")
     st.stop()
 
+# Default target institute for showcase
+default_institute = "Opoku Ware Senior High"
+
 search = st.text_input("Search institute", value="")
+
 if search.strip():
     q = search.strip().lower()
     filtered_institutes = [i for i in institutes if q in i.lower()]
@@ -254,9 +269,22 @@ if not filtered_institutes:
     st.warning("No matches found. Try a different search term.")
     st.stop()
 
-st.caption(f"Showing {len(filtered_institutes)} of {len(institutes)} mapped institutes")
+st.caption(
+    f"Showing {len(filtered_institutes)} of {len(institutes)} mapped institutes "
+    f"with at least 10 users"
+)
 
-institute = st.selectbox("Select Institute", filtered_institutes)
+# Default to Opoku Ware Senior High if available
+if default_institute in filtered_institutes:
+    default_index = filtered_institutes.index(default_institute)
+else:
+    default_index = 0
+
+institute = st.selectbox(
+    "Select Institute",
+    filtered_institutes,
+    index=default_index
+)
 
 
 # slice

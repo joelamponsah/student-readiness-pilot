@@ -112,6 +112,14 @@ These pages show:
 - test stability and quality signals
 """
     )
+st.subheader("For Definitions, assumptions and formulas Used")
+
+""" 
+1. Start with **Basic Metrics**
+2. Then view **Accuracy & Speed by Users and tests** to view sample data
+3. Go to **Difficulty DCI stability** to understand how test defficulty is calculated and the index used
+4. Finally **Advanced Metrics** to see how readiness signals are generated from Accuracy to Speed Behavior 
+"""
 
 # ------------------------------------------------
 # Recommended demo paths
@@ -192,19 +200,13 @@ with demo3:
 with demo4:
     st.markdown(
         """
-### Path 4: Funding story
+### Path 4: Rankings & Leaderboard
 
-1. Start with **Institute Summary**
-2. Move to **User Summary**
-3. Then open **Tests Overview**
-4. Explain the gap:
-   - current version shows strong signals
-   - funding is needed for better data quality
-   - improved modelling
-   - real-time interventions
-   - teacher and student-facing recommendations
+1. Go to **Rankings & Leaderboard**
+2. Adjust weights based on your preference and watch rankings change.
+3. Observe changes in Global Leaderboards.
+4. Select rankings by Test to see which learners are performing better.
 
-**Use this path for grant reviewers.**
 """
     )
 
@@ -220,11 +222,9 @@ st.markdown(
 |---|---|---|
 | **Basic Metrics** | General speed, accuracy, efficiency and attempts | Quick performance overview |
 | **Accuracy Speed by User and Tests** | Aggregated user/test speed and accuracy metrics | Comparing learners and tests |
-| **Test and Topic Trends** | Performance patterns across tests/topics over time | Spotting improvement or decline |
 | **Difficulty / DCI / Stability** | Test difficulty and consistency indicators | Understanding assessment quality |
 | **Ranking and Leaderboard** | Relative learner performance | Finding top performers and weak spots |
 | **Advanced Metrics** | Deeper calculated indicators | Technical exploration |
-| **Exam Readiness Model** | Readiness-style outputs and model signals | Showing the predictive direction |
 | **User Summary** | Full learner-level profile | Diagnosing individual learners |
 | **Tests Overview** | Test-level drilldown by test name | Reviewing assessment performance |
 | **Institute Summary** | School-level dashboard | Best page for school/grant showcase |

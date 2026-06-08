@@ -14,24 +14,21 @@ st.set_page_config(
 # Header
 # ------------------------------------------------
 st.title("📘 Learner Readiness Dashboard")
-st.subheader("Grant Showcase Version")
+#st.subheader("Grant Showcase Version")
 
 st.markdown(
     """
-This dashboard is an early proof-of-concept for **Learner Readiness Intelligence**.
+This dashboard is for **Learner Readiness Intelligence**.
 
 It uses historical assessment activity from the eCampus platform to show how learner performance, test behaviour, 
 speed, accuracy, pass outcomes, and school-level patterns can be transformed into useful readiness insights.
 
-The purpose of this showcase is to demonstrate what is already possible with the existing data, and why funding is needed 
-to develop a more robust learner readiness model.
 """
 )
 
 st.info(
     """
-**Important note:** This is a first-version showcase dashboard.  
-It is not yet the final production model. Some outputs are exploratory and should be interpreted as decision-support signals, not final exam predictions.
+**Important note:** This is first-version. Some outputs are exploratory and should be interpreted as decision-support signals.
 """
 )
 
@@ -330,4 +327,4 @@ jamponsah@ecampus.camp
 """
 )
 
-st.caption("Learner Readiness Dashboard · Grant Showcase Version")
+st.caption("Learner Readiness Dashboard")

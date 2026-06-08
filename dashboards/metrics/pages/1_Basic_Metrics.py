@@ -450,7 +450,34 @@ col2.metric("Mean adjusted speed", fmt_num(mean_adj_speed, 3))
 col3.metric("Mean time consumed", fmt_num(mean_time_consumed, 3))
 col4.metric("Mean time taken", fmt_num(mean_time_taken, 3))
 col5.metric("Mean efficiency", fmt_num(mean_efficiency, 3))
+with st.expander("Click to understand dataset averages", expanded=False):
+    st.info(
+        """
+**Dataset average interpretation**
 
+Across the dataset, learners score about **57.4% accuracy** on average.  
+This suggests performance is **moderate**: learners are not failing badly overall, but there is still clear room for improvement before we can confidently say they are exam-ready.
+
+**Average adjusted speed:**  
+Learners answer correctly at an average pace of about **2.1 correct answers per minute**.  
+This shows that many learners are moving through tests at a reasonable speed, but speed alone does not prove readiness.
+
+**Average time taken:**  
+The average time taken is about **50 minutes per attempt**.  
+This gives us a useful baseline for understanding test-taking behaviour and comparing learners who are much faster or much slower than the group.
+
+**Average time consumed:**  
+The average time consumed is **1.0**, because this showcase version uses normalized time.  
+That means the typical learner attempt is being treated as the baseline. Values above 1.0 mean more time than average; values below 1.0 mean less time than average.
+
+**Average efficiency:**  
+The average efficiency score is **2.58**.  
+This means learners are getting a reasonable amount of accuracy for the time they spend, but this should be reviewed together with accuracy, pass rate, and learner consistency.
+
+**Overall takeaway:**  
+The dataset shows a **moderate readiness baseline**. It already contains useful learning signals, but the next phase should validate these signals against stronger data quality rules, test difficulty, and real exam outcomes.
+"""
+    )
 st.info(
     """
 **How to interpret dataset averages**
@@ -510,26 +537,7 @@ if mean_efficiency is not None:
 **Recommended review area:** Learners may need support with accuracy, pacing, or both. Use User Summary to separate careful-but-slow learners from fast-but-inaccurate learners.
 """
         )
-st.info(
-    """
-**Dataset average interpretation**
 
-Across the dataset, learners score about **57.4% accuracy** on average.  
-This suggests performance is **moderate**: learners are not failing badly overall, but there is still clear room for improvement before we can confidently say they are exam-ready.
-
-Learners answer correctly at an average pace of about **2.1 correct answers per minute**.  
-This shows that many learners are moving through tests at a reasonable speed, but speed alone does not prove readiness.
-
-The average time taken is about **50 minutes per attempt**.  
-This gives us a useful baseline for understanding test-taking behaviour and comparing learners who are much faster or much slower than the group.
-
-The average time consumed is **1.0**, because this showcase version uses normalized time.  
-That means the typical learner attempt is being treated as the baseline. Values above 1.0 mean more time than average; values below 1.0 mean less time than average.
-
-The average efficiency score is **2.58**.  
-This means learners are getting a reasonable amount of accuracy for the time they spend, but this should be reviewed together with accuracy, pass rate, and learner consistency.
-"""
-)
 
 st.caption("These thresholds are provisional and used for showcase interpretation only.")
 
@@ -607,60 +615,121 @@ col1, col2, col3, col4, col5 = st.columns(5)
 col1.metric("Std accuracy", fmt_num(std_accuracy, 3))
 col2.metric("Std adjusted speed", fmt_num(std_adj_speed, 3))
 col3.metric("Std time consumed", fmt_num(std_time_consumed, 3))
-col4.metric("Std time taken", fmt_num(std_time_taken, 3))
+#col4.metric("Std time taken", fmt_num(std_time_taken, 3))
 col5.metric("Std efficiency", fmt_num(std_efficiency, 3))
 
+with st.expander("Click to understand dataset variability", expanded=False):
+    st.info(
+        """
+**Dataset variability interpretation**
+
+The standard deviation values show how spread out learner performance is.
+
+**Accuracy variation:**  
+Accuracy has a standard deviation of **0.373**, which is quite high on a 0–1 scale.  
+This means learners are not performing at a similar level. Some learners are scoring very well, while others are scoring much lower.
+
+**Adjusted speed variation:**  
+Adjusted speed has a standard deviation of **3.434**, which also shows wide variation.  
+Some learners answer correctly very quickly, while others answer correctly much more slowly.
+
+**Raw time caveat:**  
+Time taken has a very high standard deviation of **1851.4 minutes**, which suggests there are extreme time outliers in the dataset.  
+This may happen because of unfinished attempts, paused sessions, bad timestamps, or attempts left open for too long.
+
+**Time consumed caveat:**  
+Time consumed also has a high standard deviation of **36.989**, which confirms that raw time behaviour is not stable across attempts.  
+For this showcase version, raw time-based metrics should therefore be interpreted carefully.
+
+**Efficiency variation:**  
+Efficiency has a standard deviation of **4.532**, meaning learners differ a lot in how much accuracy they achieve for the time they spend.
+
+**Important readiness note:**  
+The stronger readiness logic, especially the **Robust Work Habits / Robust SAB score**, already uses a more outlier-resistant approach based on interquartile time handling. This helps reduce the effect of extreme time values when estimating learner readiness behaviour.
+
+**Overall takeaway:**  
+The dataset has useful learning signals, but the raw time fields show why stronger data quality controls, outlier treatment, and model validation are needed in the next phase.
+"""
+    )
+
+st.info(
+    """
 st.info(
     """
 **How to interpret variability**
 
 Standard deviation shows how spread out the results are.
 
-- **Low standard deviation** means learners are performing more consistently.
-- **High standard deviation** means performance is uneven across learners or attempts.
-- High variability can point to differences in learner ability, test difficulty, effort, or data quality.
+- **Low standard deviation** means performance is more consistent.
+- **High standard deviation** means performance is uneven across learners, tests, schools, or attempts.
+- High variability may point to learner gaps, mixed test difficulty, inconsistent effort, or data-quality issues.
 - In readiness work, consistency matters because one strong score alone is not enough proof of readiness.
 """
 )
 
 if std_accuracy is not None:
     if std_accuracy < 0.15:
-        st.success("Accuracy is fairly consistent across attempts. This makes the average accuracy easier to trust.")
+        st.success(
+            """
+**Accuracy consistency:** Accuracy is fairly consistent across attempts.
+
+**Recommended review area:** The dataset average is easier to trust, but still check school-level and test-level patterns before making decisions.
+"""
+        )
     elif std_accuracy < 0.30:
-        st.warning("Accuracy has moderate variation. Some learners or tests may need closer review.")
+        st.warning(
+            """
+**Accuracy consistency:** Accuracy has moderate variation.
+
+**Recommended review area:** Review Tests Overview and Institute Summary to find where the variation is coming from. Some tests or learner groups may need closer review.
+"""
+        )
     else:
-        st.error("Accuracy varies widely. This suggests uneven performance and possible readiness gaps.")
+        st.error(
+            """
+**Accuracy consistency:** Accuracy varies widely.
+
+**Recommended review area:** Do not rely on the overall average alone. Inspect test difficulty, school-level performance, and individual learner histories before drawing conclusions.
+"""
+        )
 
 if std_efficiency is not None:
     if std_efficiency < 0.50:
-        st.success("Efficiency is relatively stable across the dataset.")
+        st.success(
+            """
+**Efficiency consistency:** Efficiency is relatively stable across the dataset.
+
+**Recommended review area:** Check whether stable efficiency also aligns with pass outcomes and readiness indicators.
+"""
+        )
     elif std_efficiency < 1.00:
-        st.warning("Efficiency has moderate variation. Learners may differ in pacing or accuracy-time balance.")
+        st.warning(
+            """
+**Efficiency consistency:** Efficiency has moderate variation.
+
+**Recommended review area:** Learners may differ in pacing, accuracy, or test-taking behaviour. Use User Summary to inspect individual patterns.
+"""
+        )
     else:
-        st.error("Efficiency varies widely. Some learners may be rushing, struggling, or using much more time than others.")
+        st.error(
+            """
+**Efficiency consistency:** Efficiency varies widely.
 
+**Recommended review area:** Some learners may be rushing, struggling, or spending much more time than others. Review outliers before treating efficiency as a readiness signal.
+"""
+        )
 
-st.info(
+st.caption("These thresholds are provisional and should be validated in future model development.")
+
+st.warning(
     """
-**Dataset variability interpretation**
+**Time-metric caveat**
 
-The standard deviation values show how spread out learner performance is.
+The raw `time_taken` field contains large outliers. This means simple averages and standard deviations for time can be misleading.
 
-Accuracy has a standard deviation of **0.373**, which is quite high on a 0–1 scale.  
-This means learners are not performing at a similar level. Some learners are scoring very well, while others are scoring much lower.
+For this reason, time-based values on this Basic Metrics page should be read as exploratory dataset diagnostics.
 
-Adjusted speed has a standard deviation of **3.434**, which also shows wide variation.  
-Some learners answer correctly very quickly, while others answer correctly much more slowly.
-
-Time taken has a very high standard deviation of **1851.4 minutes**, which suggests there are extreme time outliers in the dataset.  
-This may happen because of unfinished attempts, paused sessions, bad timestamps, or attempts left open for too long.
-
-Time consumed also has a high standard deviation of **36.989**, which confirms that time behaviour is not stable across attempts.  
-For this showcase version, time-based metrics should therefore be interpreted carefully.
-
-Efficiency has a standard deviation of **4.532**, meaning learners differ a lot in how much accuracy they achieve for the time they spend.
-
-Overall, this tells us that the dataset has useful learning signals, but there is a strong need for better data quality controls and a more robust readiness model.
+The dashboard's stronger readiness logic, especially the **Robust Work Habits / Robust SAB score**, already uses a more outlier-resistant approach based on interquartile time handling. This helps reduce the effect of extreme time values when estimating learner readiness behaviour.
 """
 )
 # ------------------------------------------------

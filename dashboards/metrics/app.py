@@ -152,7 +152,7 @@ with demo1:
    - Priority intervention list
    - Hardest tests
 
-**Use this path to show how a school leader could identify who needs support.**
+**Use this path to see how a school leader could identify who needs support.**
 """
     )
 
@@ -172,7 +172,7 @@ with demo2:
    - weekly trends
    - difficulty summary
 
-**Use this path to show how the dashboard explains learner behaviour, not just raw scores.**
+**Use this path to see how the dashboard explains learner behaviour, not just raw scores.**
 """
     )
 
@@ -193,7 +193,7 @@ with demo3:
    - activity window
    - accuracy and marks distributions
 
-**Use this path to show how tests themselves can be evaluated.**
+**Use this path to see how tests themselves can be evaluated.**
 """
     )
 
@@ -207,6 +207,7 @@ with demo4:
 3. Observe changes in Global Leaderboards.
 4. Select rankings by Test to see which learners are performing better.
 
+**Use this path to see how users can be ranked globally or by test.**
 """
     )
 
@@ -304,7 +305,11 @@ The next stage should focus on:
 - supporting schools with early-warning insights
 - linking readiness signals to actual exam performance
 
-The long-term goal is to help schools identify struggling learners earlier and support them before final exams.
+The long-term goal is to help schools identify struggling learners earlier and support them before final exams. 
+As a bonus, we could also  achieve the following;
+1. See which Teachers are having better results with their methods.
+2. Which schools are actually performing better than others.
+3. Regional /National wholistic view on learners for better analysis and deicsion making.
 """
 )
 
@@ -318,8 +323,9 @@ st.markdown(
     """
 For questions, feedback, or access support, contact:
 
-Joel Amponsah  
+Joel Amponsah - Data Intelligence Lead
 jamponsah@ecampus.camp
++31653561925 (call /whatsapp)
 
 """
 )

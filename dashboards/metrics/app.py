@@ -286,30 +286,6 @@ Known areas for improvement include:
 # ------------------------------------------------
 # Why funding is needed
 # ------------------------------------------------
-st.divider()
-st.header("Why funding is needed")
-
-st.markdown(
-    """
-Funding would allow this prototype to become a stronger, production-ready Learner Readiness system.
-
-The next stage should focus on:
-- improving the data foundation
-- validating the readiness model
-- adding real-time monitoring
-- building teacher dashboards
-- creating student intervention recommendations
-- supporting schools with early-warning insights
-- linking readiness signals to actual exam performance
-
-The long-term goal is to help schools identify struggling learners earlier and support them before final exams. 
-As a bonus, we could also  achieve the following;
-1. See which Teachers are having better results with their methods.
-2. Which schools are actually performing better than others.
-3. Regional /National wholistic view on learners for better analysis and deicsion making.
-"""
-)
-
 # ------------------------------------------------
 # Contact
 # ------------------------------------------------

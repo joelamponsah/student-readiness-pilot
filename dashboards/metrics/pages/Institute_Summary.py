@@ -274,11 +274,13 @@ st.caption(
     f"with at least 10 users"
 )
 
-# Default to Opoku Ware Senior High if available
-if default_institute in filtered_institutes:
-    default_index = filtered_institutes.index(default_institute)
-else:
-    default_index = 0
+# Default to Opoku Ware if available in the standardized mapped list
+default_index = 0
+
+for idx, inst in enumerate(filtered_institutes):
+    if "opoku ware" in inst.lower():
+        default_index = idx
+        break
 
 institute = st.selectbox(
     "Select Institute",

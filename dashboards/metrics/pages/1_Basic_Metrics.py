@@ -463,24 +463,75 @@ These averages describe the overall baseline of the dataset.
 - **Mean time taken** shows the average minutes spent per attempt.
 - **Mean efficiency** combines accuracy and time use into one signal.
 
-A high average accuracy with reasonable speed is a stronger signal than speed alone.  
-Very high speed with low accuracy may suggest guessing or shallow engagement.
+Use these averages as a starting point. They help identify whether the dataset is generally strong, mixed, or weak, but they should not be used alone to decide learner-level intervention.
 """
 )
 
 if mean_accuracy is not None:
     if mean_accuracy >= 0.70:
-        st.success("Overall accuracy is relatively strong. Many learners are performing well on the available tests.")
+        st.success(
+            """
+**Suggested interpretation:** Overall accuracy is relatively strong.
+
+**Recommended review area:** Check whether this strength is consistent across tests, schools, and learner groups. Then review Test Overview and Institute Summary to confirm whether the performance is broad-based or concentrated in a few groups.
+"""
+        )
     elif mean_accuracy >= 0.50:
-        st.warning("Overall accuracy is moderate. This suggests mixed readiness and room for targeted improvement.")
+        st.warning(
+            """
+**Suggested interpretation:** Overall accuracy is moderate.
+
+**Recommended review area:** This suggests mixed readiness. Review Institute Summary to identify schools with weaker learner groups, and use Tests Overview to find tests with low pass rates or low average accuracy.
+"""
+        )
     else:
-        st.error("Overall accuracy is low. This suggests many learners may need foundational support.")
+        st.error(
+            """
+**Suggested interpretation:** Overall accuracy is low.
+
+**Recommended review area:** Prioritise foundational review. Use Institute Summary to identify affected schools and User Summary to inspect learners with repeated low accuracy.
+"""
+        )
 
 if mean_efficiency is not None:
     if mean_efficiency >= 1:
-        st.success("Efficiency is relatively strong: learners are gaining reasonable accuracy for the time used.")
+        st.success(
+            """
+**Efficiency interpretation:** Learners are gaining reasonable accuracy for the time used.
+
+**Recommended review area:** Check whether high efficiency comes from true accuracy or unusually fast attempts. Very fast attempts should still be reviewed alongside accuracy and pass outcomes.
+"""
+        )
     else:
-        st.warning("Efficiency is low or moderate: learners may need support improving accuracy, pacing, or both.")
+        st.warning(
+            """
+**Efficiency interpretation:** Efficiency is low or moderate.
+
+**Recommended review area:** Learners may need support with accuracy, pacing, or both. Use User Summary to separate careful-but-slow learners from fast-but-inaccurate learners.
+"""
+        )
+st.info(
+    """
+**Dataset average interpretation**
+
+Across the dataset, learners score about **57.4% accuracy** on average.  
+This suggests performance is **moderate**: learners are not failing badly overall, but there is still clear room for improvement before we can confidently say they are exam-ready.
+
+Learners answer correctly at an average pace of about **2.1 correct answers per minute**.  
+This shows that many learners are moving through tests at a reasonable speed, but speed alone does not prove readiness.
+
+The average time taken is about **50 minutes per attempt**.  
+This gives us a useful baseline for understanding test-taking behaviour and comparing learners who are much faster or much slower than the group.
+
+The average time consumed is **1.0**, because this showcase version uses normalized time.  
+That means the typical learner attempt is being treated as the baseline. Values above 1.0 mean more time than average; values below 1.0 mean less time than average.
+
+The average efficiency score is **2.58**.  
+This means learners are getting a reasonable amount of accuracy for the time they spend, but this should be reviewed together with accuracy, pass rate, and learner consistency.
+"""
+)
+
+st.caption("These thresholds are provisional and used for showcase interpretation only.")
 
 # ------------------------------------------------
 # Relative performance
@@ -587,6 +638,31 @@ if std_efficiency is not None:
         st.warning("Efficiency has moderate variation. Learners may differ in pacing or accuracy-time balance.")
     else:
         st.error("Efficiency varies widely. Some learners may be rushing, struggling, or using much more time than others.")
+
+
+st.info(
+    """
+**Dataset variability interpretation**
+
+The standard deviation values show how spread out learner performance is.
+
+Accuracy has a standard deviation of **0.373**, which is quite high on a 0–1 scale.  
+This means learners are not performing at a similar level. Some learners are scoring very well, while others are scoring much lower.
+
+Adjusted speed has a standard deviation of **3.434**, which also shows wide variation.  
+Some learners answer correctly very quickly, while others answer correctly much more slowly.
+
+Time taken has a very high standard deviation of **1851.4 minutes**, which suggests there are extreme time outliers in the dataset.  
+This may happen because of unfinished attempts, paused sessions, bad timestamps, or attempts left open for too long.
+
+Time consumed also has a high standard deviation of **36.989**, which confirms that time behaviour is not stable across attempts.  
+For this showcase version, time-based metrics should therefore be interpreted carefully.
+
+Efficiency has a standard deviation of **4.532**, meaning learners differ a lot in how much accuracy they achieve for the time they spend.
+
+Overall, this tells us that the dataset has useful learning signals, but there is a strong need for better data quality controls and a more robust readiness model.
+"""
+)
 # ------------------------------------------------
 # How to interpret this page
 # ------------------------------------------------

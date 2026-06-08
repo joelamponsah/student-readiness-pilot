@@ -49,12 +49,12 @@ The purpose is to help testers understand what the dashboard is measuring before
 """
 )
 
-st.info(
-    """
-**Showcase note:** This is a proof-of-concept version.  
-The metrics below are useful learning-behaviour signals, but they are not yet a fully validated exam prediction model.
-"""
-)
+#st.info(
+ #   """
+#**Showcase note:** This is a proof-of-concept version.  
+#The metrics below are useful learning-behaviour signals, but they are not yet a fully validated exam prediction model.
+#"""
+#)
 
 
 # ------------------------------------------------
@@ -159,15 +159,15 @@ However, these signals must be interpreted together, not as isolated numbers.
 """
 )
 
-st.warning(
-    """
-Where full test-duration data is unavailable, `time_consumed` is shown as a normalized proxy:
+#st.warning(
+   # """
+#Where full test-duration data is unavailable, `time_consumed` is shown as a normalized proxy:
 
-**time_consumed = time_taken / average time_taken**
+#**time_consumed = time_taken / average time_taken**
 
-This keeps the showcase readable, but future versions should use the true test duration wherever available.
-"""
-)
+#This keeps the showcase readable, but future versions should use the true test duration wherever available.
+#"""
+#)
 
 
 # ------------------------------------------------

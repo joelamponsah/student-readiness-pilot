@@ -190,6 +190,10 @@ display_cols = test_users.columns.tolist()
 if "accuracy_pct" in display_cols:
     display_cols = [c for c in display_cols if c != "accuracy_total"]
     display_cols.insert(2, "accuracy_pct")
+# Remove duplicate columns before display to avoid Streamlit / PyArrow error
+test_users = test_users.loc[:, ~test_users.columns.duplicated()].copy()
+display_cols = [c for c in display_cols if c in test_users.columns]
+display_cols = list(dict.fromkeys(display_cols))
 
 st.dataframe(test_users[display_cols], use_container_width=True)
 

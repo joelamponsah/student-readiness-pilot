@@ -451,6 +451,36 @@ col3.metric("Mean time consumed", fmt_num(mean_time_consumed, 3))
 col4.metric("Mean time taken", fmt_num(mean_time_taken, 3))
 col5.metric("Mean efficiency", fmt_num(mean_efficiency, 3))
 
+st.info(
+    """
+**How to interpret dataset averages**
+
+These averages describe the overall baseline of the dataset.
+
+- **Mean accuracy** shows the typical test performance across all attempts.
+- **Mean adjusted speed** shows how quickly learners answer correctly.
+- **Mean time consumed** shows how much test time learners typically use.
+- **Mean time taken** shows the average minutes spent per attempt.
+- **Mean efficiency** combines accuracy and time use into one signal.
+
+A high average accuracy with reasonable speed is a stronger signal than speed alone.  
+Very high speed with low accuracy may suggest guessing or shallow engagement.
+"""
+)
+
+if mean_accuracy is not None:
+    if mean_accuracy >= 0.70:
+        st.success("Overall accuracy is relatively strong. Many learners are performing well on the available tests.")
+    elif mean_accuracy >= 0.50:
+        st.warning("Overall accuracy is moderate. This suggests mixed readiness and room for targeted improvement.")
+    else:
+        st.error("Overall accuracy is low. This suggests many learners may need foundational support.")
+
+if mean_efficiency is not None:
+    if mean_efficiency >= 1:
+        st.success("Efficiency is relatively strong: learners are gaining reasonable accuracy for the time used.")
+    else:
+        st.warning("Efficiency is low or moderate: learners may need support improving accuracy, pacing, or both.")
 
 # ------------------------------------------------
 # Relative performance
@@ -529,7 +559,34 @@ col3.metric("Std time consumed", fmt_num(std_time_consumed, 3))
 col4.metric("Std time taken", fmt_num(std_time_taken, 3))
 col5.metric("Std efficiency", fmt_num(std_efficiency, 3))
 
+st.info(
+    """
+**How to interpret variability**
 
+Standard deviation shows how spread out the results are.
+
+- **Low standard deviation** means learners are performing more consistently.
+- **High standard deviation** means performance is uneven across learners or attempts.
+- High variability can point to differences in learner ability, test difficulty, effort, or data quality.
+- In readiness work, consistency matters because one strong score alone is not enough proof of readiness.
+"""
+)
+
+if std_accuracy is not None:
+    if std_accuracy < 0.15:
+        st.success("Accuracy is fairly consistent across attempts. This makes the average accuracy easier to trust.")
+    elif std_accuracy < 0.30:
+        st.warning("Accuracy has moderate variation. Some learners or tests may need closer review.")
+    else:
+        st.error("Accuracy varies widely. This suggests uneven performance and possible readiness gaps.")
+
+if std_efficiency is not None:
+    if std_efficiency < 0.50:
+        st.success("Efficiency is relatively stable across the dataset.")
+    elif std_efficiency < 1.00:
+        st.warning("Efficiency has moderate variation. Learners may differ in pacing or accuracy-time balance.")
+    else:
+        st.error("Efficiency varies widely. Some learners may be rushing, struggling, or using much more time than others.")
 # ------------------------------------------------
 # How to interpret this page
 # ------------------------------------------------
@@ -540,10 +597,13 @@ st.markdown(
     """
 Use this page as the **formula reference** for the rest of the dashboard.
 
+
+
 Recommended next steps:
 1. Go to **User Summary** to inspect one learner.
 2. Go to **Tests Overview** to inspect one test.
 3. Go to **Institute Summary** to inspect school-level readiness.
-4. Use this page whenever you need to explain what a metric means.
+4. When done go to Advanced Metrics to understand SAB, RObust Sab and how readiness signals are being calculated
+5. Use this page whenever you need to explain what a metric means.
 """
 )

@@ -8,6 +8,35 @@ from utils.metrics import load_data_from_disk_or_session, compute_basic_metrics2
 
 
 # ------------------------------------------------
+# Helper functions
+# ------------------------------------------------
+def safe_mean(df, col):
+    if col not in df.columns:
+        return None
+    s = pd.to_numeric(df[col], errors="coerce").dropna()
+    return s.mean() if not s.empty else None
+
+
+def safe_std(df, col):
+    if col not in df.columns:
+        return None
+    s = pd.to_numeric(df[col], errors="coerce").dropna()
+    return s.std() if len(s) > 1 else 0
+
+
+def fmt_num(x, decimals=3, fallback="0.000"):
+    if x is None or pd.isna(x):
+        return fallback
+    return f"{x:.{decimals}f}"
+
+
+def fmt_pct(x, decimals=1, fallback="0.0%"):
+    if x is None or pd.isna(x):
+        return fallback
+    return f"{x * 100:.{decimals}f}%"
+
+
+# ------------------------------------------------
 # Page setup
 # ------------------------------------------------
 st.title("Basic Metrics & Formula Guide")
@@ -41,6 +70,70 @@ df = compute_basic_metrics2(df)
 
 
 # ------------------------------------------------
+# Showcase-safe metric cleanup / fallbacks
+# ------------------------------------------------
+
+# Convert key numeric columns safely
+numeric_cols = [
+    "marks",
+    "no_of_questions",
+    "time_taken",
+    "accuracy_attempt",
+    "accuracy_total",
+    "time_consumed",
+    "speed_raw",
+    "adj_speed",
+    "speed_norm",
+    "speed_rel_time",
+    "efficiency_ratio",
+]
+
+for col in numeric_cols:
+    if col in df.columns:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
+
+# Replace infinite values
+df = df.replace([float("inf"), float("-inf")], pd.NA)
+
+# Safe fallback for accuracy_total
+if "accuracy_total" not in df.columns or df["accuracy_total"].notna().sum() == 0:
+    if "marks" in df.columns and "no_of_questions" in df.columns:
+        noq = pd.to_numeric(df["no_of_questions"], errors="coerce").replace(0, pd.NA)
+        marks = pd.to_numeric(df["marks"], errors="coerce")
+        df["accuracy_total"] = marks / noq
+
+# Safe fallback for time_consumed
+# Preferred formula is: time_taken / test duration.
+# If duration is unavailable, use a normalized proxy: time_taken / average time_taken.
+if "time_consumed" not in df.columns or df["time_consumed"].notna().sum() == 0:
+    if "time_taken" in df.columns and df["time_taken"].notna().sum() > 0:
+        clean_time = pd.to_numeric(df["time_taken"], errors="coerce").replace(0, pd.NA)
+        avg_time_taken = clean_time.mean()
+
+        if pd.notna(avg_time_taken) and avg_time_taken > 0:
+            df["time_consumed"] = clean_time / avg_time_taken
+        else:
+            df["time_consumed"] = pd.NA
+
+# Clean invalid time_consumed values
+if "time_consumed" in df.columns:
+    df["time_consumed"] = pd.to_numeric(df["time_consumed"], errors="coerce")
+    df.loc[df["time_consumed"] <= 0, "time_consumed"] = pd.NA
+
+# Safe fallback for efficiency_ratio
+if "efficiency_ratio" not in df.columns or df["efficiency_ratio"].notna().sum() == 0:
+    if "accuracy_total" in df.columns and "time_consumed" in df.columns:
+        acc = pd.to_numeric(df["accuracy_total"], errors="coerce")
+        tc = pd.to_numeric(df["time_consumed"], errors="coerce").replace(0, pd.NA)
+        df["efficiency_ratio"] = acc / tc
+
+# Final numeric cleanup
+for col in ["accuracy_total", "time_consumed", "efficiency_ratio"]:
+    if col in df.columns:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
+
+
+# ------------------------------------------------
 # Core assumptions
 # ------------------------------------------------
 st.divider()
@@ -71,6 +164,16 @@ However, these signals must be interpreted together, not as isolated numbers.
 """
 )
 
+st.warning(
+    """
+Where full test-duration data is unavailable, `time_consumed` is shown as a normalized proxy:
+
+**time_consumed = time_taken / average time_taken**
+
+This keeps the showcase readable, but future versions should use the true test duration wherever available.
+"""
+)
+
 
 # ------------------------------------------------
 # Formula glossary
@@ -94,7 +197,7 @@ st.info("**Speed Marks** = marks / time taken")
 st.caption("Meaning: Score gained per minute. Useful when marks are the cleanest available performance signal.")
 
 st.info("**Time Consumed** = time taken / test duration")
-st.caption("Meaning: How much of the available test time the learner used.")
+st.caption("Meaning: How much of the available test time the learner used. In this showcase, a fallback proxy is used if test duration is unavailable.")
 
 st.info("**Efficiency Ratio** = total accuracy / time consumed")
 st.caption("Meaning: Accuracy achieved relative to the time used. A higher value suggests stronger accuracy-time efficiency.")
@@ -116,23 +219,23 @@ attempts = len(df)
 learners = df["user_id"].nunique() if "user_id" in df.columns else None
 tests = df["test_id"].nunique() if "test_id" in df.columns else None
 
-avg_accuracy = df["accuracy_total"].mean() if "accuracy_total" in df.columns else None
-avg_speed = df["speed_raw"].mean() if "speed_raw" in df.columns else None
-avg_adj_speed = df["adj_speed"].mean() if "adj_speed" in df.columns else None
-avg_time_taken = df["time_taken"].mean() if "time_taken" in df.columns else None
-avg_efficiency = df["efficiency_ratio"].mean() if "efficiency_ratio" in df.columns else None
+avg_accuracy = safe_mean(df, "accuracy_total")
+avg_speed = safe_mean(df, "speed_raw")
+avg_adj_speed = safe_mean(df, "adj_speed")
+avg_time_taken = safe_mean(df, "time_taken")
+avg_efficiency = safe_mean(df, "efficiency_ratio")
 
 c1, c2, c3, c4 = st.columns(4)
 c1.metric("Attempts", f"{attempts:,}")
 c2.metric("Learners", f"{learners:,}" if learners is not None else "N/A")
 c3.metric("Tests", f"{tests:,}" if tests is not None else "N/A")
-c4.metric("Avg accuracy", f"{avg_accuracy * 100:.1f}%" if avg_accuracy is not None and pd.notna(avg_accuracy) else "N/A")
+c4.metric("Avg accuracy", fmt_pct(avg_accuracy, 1))
 
 c5, c6, c7, c8 = st.columns(4)
-c5.metric("Avg raw speed", f"{avg_speed:.2f} q/min" if avg_speed is not None and pd.notna(avg_speed) else "N/A")
-c6.metric("Avg adjusted speed", f"{avg_adj_speed:.2f} correct/min" if avg_adj_speed is not None and pd.notna(avg_adj_speed) else "N/A")
-c7.metric("Avg time taken", f"{avg_time_taken:.1f} min" if avg_time_taken is not None and pd.notna(avg_time_taken) else "N/A")
-c8.metric("Avg efficiency", f"{avg_efficiency:.2f}" if avg_efficiency is not None and pd.notna(avg_efficiency) else "N/A")
+c5.metric("Avg raw speed", f"{avg_speed:.2f} q/min" if avg_speed is not None and pd.notna(avg_speed) else "0.00 q/min")
+c6.metric("Avg adjusted speed", f"{avg_adj_speed:.2f} correct/min" if avg_adj_speed is not None and pd.notna(avg_adj_speed) else "0.00 correct/min")
+c7.metric("Avg time taken", f"{avg_time_taken:.1f} min" if avg_time_taken is not None and pd.notna(avg_time_taken) else "0.0 min")
+c8.metric("Avg efficiency", fmt_num(avg_efficiency, 2, fallback="0.00"))
 
 
 # ------------------------------------------------
@@ -225,7 +328,7 @@ They help answer:
 c1, c2 = st.columns(2)
 
 with c1:
-    if "accuracy_total" in df.columns:
+    if "accuracy_total" in df.columns and df["accuracy_total"].notna().any():
         fig = px.histogram(
             df,
             x="accuracy_total",
@@ -237,7 +340,7 @@ with c1:
         st.info("No `accuracy_total` column available.")
 
 with c2:
-    if "time_consumed" in df.columns:
+    if "time_consumed" in df.columns and df["time_consumed"].notna().any():
         fig2 = px.histogram(
             df,
             x="time_consumed",
@@ -248,7 +351,7 @@ with c2:
     else:
         st.info("No `time_consumed` column available.")
 
-if "speed_raw" in df.columns:
+if "speed_raw" in df.columns and df["speed_raw"].notna().any():
     fig3 = px.histogram(
         df,
         x="speed_raw",
@@ -296,7 +399,7 @@ st.subheader("Distributions: speed-accuracy signals")
 c4, c5 = st.columns(2)
 
 with c4:
-    if "accurate_speed" in df.columns:
+    if "accurate_speed" in df.columns and df["accurate_speed"].notna().any():
         fig4 = px.histogram(
             df,
             x="accurate_speed",
@@ -308,7 +411,7 @@ with c4:
         st.info("No adjusted speed data available.")
 
 with c5:
-    if "efficiency_ratio" in df.columns:
+    if "efficiency_ratio" in df.columns and df["efficiency_ratio"].notna().any():
         fig5 = px.histogram(
             df,
             x="efficiency_ratio",
@@ -334,32 +437,19 @@ These values help create a baseline for comparing individual learners, tests, an
 """
 )
 
+mean_accuracy = safe_mean(df, "accuracy_total")
+mean_adj_speed = safe_mean(df, "adj_speed")
+mean_time_consumed = safe_mean(df, "time_consumed")
+mean_time_taken = safe_mean(df, "time_taken")
+mean_efficiency = safe_mean(df, "efficiency_ratio")
+
 col1, col2, col3, col4, col5 = st.columns(5)
 
-col1.metric(
-    "Mean accuracy",
-    f"{df['accuracy_total'].mean():.3f}" if "accuracy_total" in df.columns else "N/A"
-)
-
-col2.metric(
-    "Mean adjusted speed",
-    f"{df['adj_speed'].mean():.3f}" if "adj_speed" in df.columns else "N/A"
-)
-
-col3.metric(
-    "Mean time consumed",
-    f"{df['time_consumed'].mean():.3f}" if "time_consumed" in df.columns else "N/A"
-)
-
-col4.metric(
-    "Mean time taken",
-    f"{df['time_taken'].mean():.3f}" if "time_taken" in df.columns else "N/A"
-)
-
-col5.metric(
-    "Mean efficiency",
-    f"{df['efficiency_ratio'].mean():.3f}" if "efficiency_ratio" in df.columns else "N/A"
-)
+col1.metric("Mean accuracy", fmt_num(mean_accuracy, 3))
+col2.metric("Mean adjusted speed", fmt_num(mean_adj_speed, 3))
+col3.metric("Mean time consumed", fmt_num(mean_time_consumed, 3))
+col4.metric("Mean time taken", fmt_num(mean_time_taken, 3))
+col5.metric("Mean efficiency", fmt_num(mean_efficiency, 3))
 
 
 # ------------------------------------------------
@@ -376,7 +466,7 @@ This helps show whether a learner is above or below the overall group baseline.
 """
 )
 
-if "accuracy_total" in df.columns:
+if "accuracy_total" in df.columns and df["accuracy_total"].notna().any():
     df["accuracy_avg"] = df["accuracy_total"].mean()
     df["rel_acc"] = df["accuracy_total"] - df["accuracy_avg"]
 
@@ -394,7 +484,7 @@ if "accuracy_total" in df.columns:
         st.plotly_chart(fig6, use_container_width=True)
 
     with c7:
-        if "speed_rel_time" in df.columns:
+        if "speed_rel_time" in df.columns and df["speed_rel_time"].notna().any():
             fig7 = px.histogram(
                 df,
                 x="speed_rel_time",
@@ -425,32 +515,19 @@ Higher variability can suggest unstable performance, uneven test difficulty, or 
 
 st.info("**Standard Deviation** = how far values typically spread around the average")
 
+std_accuracy = safe_std(df, "accuracy_total")
+std_adj_speed = safe_std(df, "adj_speed")
+std_time_consumed = safe_std(df, "time_consumed")
+std_time_taken = safe_std(df, "time_taken")
+std_efficiency = safe_std(df, "efficiency_ratio")
+
 col1, col2, col3, col4, col5 = st.columns(5)
 
-col1.metric(
-    "Std accuracy",
-    f"{df['accuracy_total'].std():.3f}" if "accuracy_total" in df.columns else "N/A"
-)
-
-col2.metric(
-    "Std adjusted speed",
-    f"{df['adj_speed'].std():.3f}" if "adj_speed" in df.columns else "N/A"
-)
-
-col3.metric(
-    "Std time consumed",
-    f"{df['time_consumed'].std():.3f}" if "time_consumed" in df.columns else "N/A"
-)
-
-col4.metric(
-    "Std time taken",
-    f"{df['time_taken'].std():.3f}" if "time_taken" in df.columns else "N/A"
-)
-
-col5.metric(
-    "Std efficiency",
-    f"{df['efficiency_ratio'].std():.3f}" if "efficiency_ratio" in df.columns else "N/A"
-)
+col1.metric("Std accuracy", fmt_num(std_accuracy, 3))
+col2.metric("Std adjusted speed", fmt_num(std_adj_speed, 3))
+col3.metric("Std time consumed", fmt_num(std_time_consumed, 3))
+col4.metric("Std time taken", fmt_num(std_time_taken, 3))
+col5.metric("Std efficiency", fmt_num(std_efficiency, 3))
 
 
 # ------------------------------------------------

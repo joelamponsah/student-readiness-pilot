@@ -163,10 +163,12 @@ class_meta["class_label"] = class_meta.apply(
     lambda r: f"{r['class_id_std']} (learners: {int(r['learner_count'])} | tests: {int(r['test_count'])})",
     axis=1,
 )
-class_meta = class_meta.sort_values(
-    ["learner_count", "test_count", "class_id_std"],
-    ascending=[False, False, True],
-    kind="mergesort",
+class_meta["class_label"] = class_meta.apply(
+    lambda r: (
+        f"{r['class_id_std']} "
+        f"(learners: {int(r['learner_count'])} | source tests: {int(r['test_count'])})"
+    ),
+    axis=1,
 )
 
 selected_class_label = st.selectbox("Select class", class_meta["class_label"].tolist())
@@ -304,6 +306,15 @@ else:
 st.subheader(f"Selected Class: {selected_class_id}")
 st.caption("Custom selected-test groups will be added after source-backed class summaries are validated.")
 
+source_test_count = int(class_rows_all["test_id"].nunique()) if "test_id" in class_rows_all.columns else 0
+filtered_test_count = int(class_rows["test_id"].nunique()) if "test_id" in class_rows.columns else 0
+source_learner_count = int(class_rows_all["user_id"].nunique()) if "user_id" in class_rows_all.columns else 0
+filtered_learner_count = int(class_rows["user_id"].nunique()) if "user_id" in class_rows.columns else 0
+
+st.caption(
+    f"Source view: {source_learner_count:,} learners | {source_test_count:,} tests. "
+    f"Filtered class-readiness view: {filtered_learner_count:,} learners | {filtered_test_count:,} tests."
+)
 if proxy_fallback_used or dq_fallback_used:
     st.info(
         "One or more artifacts used learner-based fallback filtering because class_id_std was unavailable. "

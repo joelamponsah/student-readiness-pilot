@@ -26,8 +26,8 @@ def _first_existing_column(df: pd.DataFrame, candidates: list[str]) -> str | Non
     return None
 
 
-def _safe_metric_mean(df: pd.DataFrame, col: str, decimals: int = 2) -> str:
-    if df is None or df.empty or col not in df.columns:
+def _safe_metric_mean(df: pd.DataFrame, col: str | None, decimals: int = 2) -> str:
+    if col is None or df is None or df.empty or col not in df.columns:
         return "N/A"
     vals = pd.to_numeric(df[col], errors="coerce")
     if not vals.notna().any():
@@ -48,7 +48,7 @@ def _filter_by_class_or_fallback_users(
     frame_name: str,
 ) -> tuple[pd.DataFrame, bool]:
     """
-    Prefer strict class_id_std filtering to prevent class leakage.
+    Prefer strict class_id_std filtering to prevent learner-based class leakage.
     Fall back to selected learners only when class_id_std is missing.
     """
     if frame is None or frame.empty:
@@ -177,9 +177,96 @@ st.caption(
     "Learner-level readiness is overall learner readiness for learners in this class."
 )
 
-class_rows = class_df[class_df["class_id_std"].eq(selected_class_id)].copy()
+# ---------------------------
+# Class rows + temporary class-test confidence filter
+# ---------------------------
+class_rows_all = class_df[class_df["class_id_std"].eq(selected_class_id)].copy()
+
+selected_user_keys_all = set(class_rows_all["user_id"].dropna().astype(str).unique().tolist())
+selected_class_learner_count = len(selected_user_keys_all)
+
+# ------------------------------------------------------------
+# Temporary class-test confidence filter
+# ------------------------------------------------------------
+# Why:
+# raw_attempts currently appears to contain duplicated attempt rows across many
+# class_id values because class membership is joined onto attempts. This can make
+# one learner's extra tests appear inside a class summary.
+#
+# Rule:
+# Keep tests that look class-relevant:
+# - attempted by at least 3 learners in the selected class, OR
+# - attempted by at least 20% of selected class learners.
+#
+# This is NOT official class-test assignment logic. It is a temporary heuristic
+# until source-backed class_test_assignments or canonical class_id-per-attempt exists.
+if {"test_id", "user_id"}.issubset(class_rows_all.columns) and selected_class_learner_count > 0:
+    test_confidence = (
+        class_rows_all.groupby("test_id", dropna=False)
+        .agg(
+            class_test_learner_count=("user_id", "nunique"),
+            class_test_row_count=("user_id", "size"),
+        )
+        .reset_index()
+    )
+
+    test_confidence["class_test_learner_share"] = (
+        test_confidence["class_test_learner_count"] / selected_class_learner_count
+    )
+
+    test_confidence["class_test_included"] = (
+        (test_confidence["class_test_learner_count"] >= 3)
+        | (test_confidence["class_test_learner_share"] >= 0.20)
+    )
+
+    included_test_ids = set(
+        test_confidence.loc[test_confidence["class_test_included"], "test_id"].tolist()
+    )
+
+    class_rows = class_rows_all[class_rows_all["test_id"].isin(included_test_ids)].copy()
+
+    excluded_test_count = int((~test_confidence["class_test_included"]).sum())
+    excluded_row_count = int(len(class_rows_all) - len(class_rows))
+
+    st.info(
+        "Heuristic class-test filter is active. "
+        "The page only includes tests attempted by at least 3 learners or at least 20% of selected class learners. "
+        "This is not official class assignment data."
+    )
+
+    st.caption(
+        f"Filtered out {excluded_test_count:,} low-confidence test(s) "
+        f"and {excluded_row_count:,} learner-test row(s) for this class."
+    )
+
+    with st.expander("Low-confidence tests filtered out"):
+        filtered_out_tests = test_confidence.loc[
+            ~test_confidence["class_test_included"]
+        ].sort_values(
+            ["class_test_learner_count", "class_test_learner_share"],
+            ascending=[False, False],
+            kind="mergesort",
+        )
+        st.dataframe(filtered_out_tests, use_container_width=True)
+
+else:
+    class_rows = class_rows_all.copy()
+    test_confidence = pd.DataFrame()
+    st.warning(
+        "Could not apply heuristic class-test filter because test_id/user_id is missing "
+        "or selected class learner count is zero."
+    )
+
+if class_rows.empty:
+    st.warning(
+        "No class rows remain after the heuristic class-test filter. "
+        "Lower the threshold later only after validating class-test assignment data."
+    )
+    st.stop()
+
 selected_user_keys = set(class_rows["user_id"].dropna().astype(str).unique().tolist())
 selected_user_ids = class_rows["user_id"].dropna().unique()
+included_test_ids = set(class_rows["test_id"].dropna().tolist()) if "test_id" in class_rows.columns else set()
 
 # Learner-level readiness: overall learner readiness for learners in selected class.
 readiness_user_work = readiness_user.copy()
@@ -190,18 +277,29 @@ else:
     readiness_class = pd.DataFrame()
 
 # Class-level attempt/DQ traces: strict class filter first, user fallback only if class_id_std absent.
-proxy_class, proxy_fallback_used = _filter_by_class_or_fallback_users(
+proxy_class_all, proxy_fallback_used = _filter_by_class_or_fallback_users(
     proxy_sequence,
     selected_class_id,
-    selected_user_keys,
+    selected_user_keys_all,
     "proxy_sequence",
 )
-dq_class, dq_fallback_used = _filter_by_class_or_fallback_users(
+dq_class_all, dq_fallback_used = _filter_by_class_or_fallback_users(
     dq_attempts,
     selected_class_id,
-    selected_user_keys,
+    selected_user_keys_all,
     "dq_attempts",
 )
+
+# Apply the same included-test filter to class-level traces to suppress extra test leakage.
+if included_test_ids and "test_id" in proxy_class_all.columns:
+    proxy_class = proxy_class_all[proxy_class_all["test_id"].isin(included_test_ids)].copy()
+else:
+    proxy_class = proxy_class_all.copy()
+
+if included_test_ids and "test_id" in dq_class_all.columns:
+    dq_class = dq_class_all[dq_class_all["test_id"].isin(included_test_ids)].copy()
+else:
+    dq_class = dq_class_all.copy()
 
 st.subheader(f"Selected Class: {selected_class_id}")
 st.caption("Custom selected-test groups will be added after source-backed class summaries are validated.")
@@ -218,9 +316,21 @@ if proxy_fallback_used or dq_fallback_used:
 st.subheader("Class Overview")
 
 overview1 = st.columns(4)
-overview1[0].metric("Learners", f"{class_rows['user_id'].nunique():,}" if "user_id" in class_rows.columns else "N/A")
-overview1[1].metric("Tests/exercises", f"{class_rows['test_id'].nunique():,}" if "test_id" in class_rows.columns else "N/A")
-overview1[2].metric("User-test groups", f"{len(class_rows):,}")
+overview1[0].metric(
+    "Learners",
+    f"{class_rows['user_id'].nunique():,}" if "user_id" in class_rows.columns else "N/A",
+    help="Learners after the temporary class-test confidence filter.",
+)
+overview1[1].metric(
+    "Tests/exercises",
+    f"{class_rows['test_id'].nunique():,}" if "test_id" in class_rows.columns else "N/A",
+    help="Tests after the temporary class-test confidence filter.",
+)
+overview1[2].metric(
+    "User-test groups",
+    f"{len(class_rows):,}",
+    help="Learner-test rows after the temporary class-test confidence filter.",
+)
 overview1[3].metric("Avg readiness probability %", _safe_metric_mean(readiness_class, "readiness_probability_pct"))
 
 overview2 = st.columns(4)
@@ -237,6 +347,8 @@ overview3[3].metric("Avg CAS proxy %", _safe_metric_mean(class_rows, "cas_proxy_
 
 if sab_col:
     st.caption(f"Robust SAB source column: `{sab_col}` from readiness_user.")
+    if sab_col in readiness_user.columns:
+        st.caption(f"robust SAB non-null users in readiness_user: {int(readiness_user[sab_col].notna().sum()):,}")
 else:
     st.caption("Robust SAB source column was not found in readiness_user.")
 
@@ -576,6 +688,8 @@ with st.expander("Group summary preview"):
         if "class_id_std" in group_preview.columns:
             group_preview["_class_id_key"] = _normalise_string_series(group_preview["class_id_std"])
             group_preview = group_preview[group_preview["_class_id_key"].eq(selected_class_id)].drop(columns=["_class_id_key"])
+        if included_test_ids and "test_id" in group_preview.columns:
+            group_preview = group_preview[group_preview["test_id"].isin(included_test_ids)]
         st.dataframe(group_preview.head(50), use_container_width=True)
     else:
         st.info("No group_summary is available.")

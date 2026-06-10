@@ -1,0 +1,29 @@
+check_name,check_category,value,severity,notes
+v13_attempt_question_metrics.csv_row_count,row_count,43140,INFO,
+v13_raw_attempts.csv_row_count,row_count,46486,INFO,
+v13_user_subscription_base.csv_row_count,row_count,175088,INFO,
+v13_content_question_map.csv_row_count,row_count,226128,INFO,
+v13_school_subject_cas_proxy.csv_row_count,row_count,1904,INFO,
+v13_content_topic_tas_proxy.csv_row_count,row_count,576,INFO,
+v13_learning_gain_signals.csv_row_count,row_count,19823,INFO,
+v13_readiness_signals.csv_row_count,row_count,12267,INFO,
+v13_work_habits_signals.csv_row_count,row_count,12225,INFO,
+v13_learner_readiness_summary.csv_row_count,row_count,10781,INFO,
+v13_school_readiness_summary.csv_row_count,row_count,1132,INFO,
+v13_test_readiness_summary.csv_row_count,row_count,3630,INFO,
+v13_cohort_context.csv_row_count,row_count,16880,INFO,
+v13_school_class_bundle_signals.csv_row_count,row_count,11586,INFO,
+v13_metric_definitions.csv_row_count,row_count,8,INFO,
+v13_data_dictionary.csv_row_count,row_count,296,INFO,
+raw_attempts_missing_institute_rows,institute,9562,MEDIUM,Kept as UNKNOWN_UNMAPPED.
+raw_attempts_generic_institute_rows,institute,10361,HIGH,Needs manual institute mapping.
+raw_attempts_multi_class_mapping_rows,mapping,1360,MEDIUM,Excluded from default CAS.
+raw_attempts_missing_class_rows,mapping,0,HIGH,Attempts without class mapping.
+attempts_missing_question_evidence,question_evidence,9243,HIGH,Affects readiness metrics.
+denominator_source_distribution,denominator,"{""test_takers_no_of_questions"": 43140}",INFO,
+pass_mark_ambiguous_attempts,pass_mark,332,MEDIUM,Safe pass flag is null for ambiguous rows.
+marks_mismatch_attempts,marks,31717,MEDIUM,Recorded marks differ from result sum.
+invalid_subscription_date_rows,subscription,70916,MEDIUM,Cohort context only; not hard filtering.
+zero_or_negative_time_taken_rows,speed,6061,LOW,Speed metrics exclude invalid time.
+single_attempt_rows,learning_gain,12358,INFO,Learning gain unavailable for single attempts.
+low_evidence_school_class_groups,evidence,1751,MEDIUM,Use evidence_level in dashboard.

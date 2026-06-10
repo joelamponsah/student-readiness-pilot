@@ -15,8 +15,8 @@ from utils.artifact_contracts import ARTIFACTS
 
 PRIMARY_ARTIFACT_DIR = Path("/content/drive/MyDrive/Learn Smarter framework/datasets/outputs/data")
 FALLBACK_ARTIFACT_DIR = Path("data/processed")
-ZIP_ARTIFACT_DIR = Path("/tmp/lr_ext2_artifacts/processed")
-ZIP_DOWNLOAD_PATH = Path("/tmp/lr_ext2_artifacts/artifacts.zip")
+ZIP_ARTIFACT_DIR = Path("data/zip")
+ZIP_DOWNLOAD_PATH = Path("data/zip/artifacts.zip")
 
 
 def _has_known_artifact(path: Path) -> bool:

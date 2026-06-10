@@ -104,10 +104,13 @@ def _resolve_gdrive_zip_artifacts() -> Path | None:
     try:
         import gdown
     except ImportError:
-        st.warning(
-            "LR_ARTIFACT_ZIP_GDRIVE_ID is set, but `gdown` is not installed. "
-            "Install requirements.txt and retry."
-        )
+        import sys
+
+st.warning(
+    "LR_ARTIFACT_ZIP_GDRIVE_ID is set, but `gdown` is not installed. "
+    f"Python executable: {sys.executable}. "
+    "Confirm gdown is in the root requirements.txt of the deployed branch."
+)
         return None
 
     try:

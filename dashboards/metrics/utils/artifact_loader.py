@@ -6,6 +6,8 @@ import os
 import shutil
 import zipfile
 from pathlib import Path
+import sys
+import gdown
 
 import pandas as pd
 import streamlit as st
@@ -102,9 +104,8 @@ def _resolve_gdrive_zip_artifacts() -> Path | None:
     ZIP_ROOT_DIR.mkdir(parents=True, exist_ok=True)
 
     try:
-        import gdown
+    
     except ImportError:
-        import sys
         st.warning(
     "LR_ARTIFACT_ZIP_GDRIVE_ID is set, but `gdown` is not installed. "
     f"Python executable: {sys.executable}. "

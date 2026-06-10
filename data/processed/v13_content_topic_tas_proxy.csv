@@ -1,0 +1,577 @@
+institute_std,class_id,content_id,class_name,content_title,content_order,learner_count,attempt_count,question_count,avg_score_pct,avg_accuracy_expected_pct,avg_completion_pct,content_mapping_confidence,tas_proxy_score_pct,evidence_score,evidence_level
+AFB,70,416.0,Audit & Compliance,What is Money Laundering?,1.0,4,4,2,86.28571428571429,86.28571428571429,100.0,HIGH,89.03,17.87,VERY_LOW
+AFB,70,418.0,Audit & Compliance,Letshego Ghana's Risk Based Approach,1.0,2,2,1,82.0,82.0,100.0,HIGH,85.6,12.27,VERY_LOW
+AFB GHANA LTD,70,422.0,Audit & Compliance,SUSPICIOUS TRANSACTION REPORTING,10.0,1,1,1,80.0,80.0,100.0,HIGH,84.0,9.47,VERY_LOW
+Accra,262,2327.0,Integrated Science for WASSCE,Radioactivity,1.0,1,1,32,44.23,44.23,100.0,HIGH,55.38,9.47,VERY_LOW
+Accra,262,2376.0,Integrated Science for WASSCE,"Forces, Motion And Pressure",1.0,1,1,10,44.23,44.23,100.0,HIGH,55.38,9.47,VERY_LOW
+Accra,262,2386.0,Integrated Science for WASSCE,Pressure,1.0,1,1,5,44.23,44.23,100.0,HIGH,55.38,9.47,VERY_LOW
+Accra,262,4720.0,Integrated Science for WASSCE,Preparation of Gases,1.0,1,1,4,44.23,44.23,100.0,HIGH,55.38,9.47,VERY_LOW
+Accra,262,4723.0,Integrated Science for WASSCE,Rates of Reaction,1.0,1,1,1,44.23,44.23,100.0,HIGH,55.38,9.47,VERY_LOW
+Accra Academy,262,2327.0,Integrated Science for WASSCE,Radioactivity,1.0,1,1,32,3.85,3.85,100.0,HIGH,23.08,9.47,VERY_LOW
+Accra Academy,262,2376.0,Integrated Science for WASSCE,"Forces, Motion And Pressure",1.0,1,1,10,3.85,3.85,100.0,HIGH,23.08,9.47,VERY_LOW
+Accra Academy,262,2386.0,Integrated Science for WASSCE,Pressure,1.0,1,1,5,3.85,3.85,100.0,HIGH,23.08,9.47,VERY_LOW
+Accra Academy,262,2493.0,Integrated Science for WASSCE,Reproduction And Growth In Plants,1.0,1,1,28,51.67,51.67,100.0,HIGH,61.34,9.47,VERY_LOW
+Accra Academy,262,2520.0,Integrated Science for WASSCE,Respiratory System,1.0,1,1,31,51.67,51.67,100.0,HIGH,61.34,9.47,VERY_LOW
+Accra Academy,262,4720.0,Integrated Science for WASSCE,Preparation of Gases,1.0,1,1,4,3.85,3.85,100.0,HIGH,23.08,9.47,VERY_LOW
+Accra Academy,262,4723.0,Integrated Science for WASSCE,Rates of Reaction,1.0,1,1,1,3.85,3.85,100.0,HIGH,23.08,9.47,VERY_LOW
+Accra Academy,262,4724.0,Integrated Science for WASSCE,Tectonic Movements,1.0,1,1,1,51.67,51.67,100.0,HIGH,61.34,9.47,VERY_LOW
+Afb,70,416.0,Audit & Compliance,What is Money Laundering?,1.0,1,1,1,100.0,100.0,100.0,HIGH,100.0,9.47,VERY_LOW
+Afb,70,422.0,Audit & Compliance,SUSPICIOUS TRANSACTION REPORTING,10.0,1,1,1,100.0,100.0,100.0,HIGH,100.0,9.47,VERY_LOW
+Armed Forces Senior Technical,262,2124.0,Integrated Science for WASSCE,"Transport-diffusion, Osmosis And Plasmolysis",1.0,1,1,18,21.43,21.43,100.0,HIGH,37.14,9.47,VERY_LOW
+Armed Forces Senior Technical,262,2137.0,Integrated Science for WASSCE,Solar Energy,1.0,1,1,4,21.43,21.43,100.0,HIGH,37.14,9.47,VERY_LOW
+Armed Forces Senior Technical,262,2150.0,Integrated Science for WASSCE,Ecosystem,1.0,1,1,27,21.43,21.43,100.0,HIGH,37.14,9.47,VERY_LOW
+Armed Forces Senior Technical,262,2520.0,Integrated Science for WASSCE,Respiratory System,1.0,1,1,2,21.43,21.43,100.0,HIGH,37.14,9.47,VERY_LOW
+Armed Forces Senior Technical,262,4725.0,Integrated Science for WASSCE,Water Movements,1.0,1,1,5,21.43,21.43,100.0,HIGH,37.14,9.47,VERY_LOW
+Art,262,2327.0,Integrated Science for WASSCE,Radioactivity,1.0,1,1,32,30.77,30.77,100.0,HIGH,44.62,9.47,VERY_LOW
+Art,262,2376.0,Integrated Science for WASSCE,"Forces, Motion And Pressure",1.0,1,1,10,30.77,30.77,100.0,HIGH,44.62,9.47,VERY_LOW
+Art,262,2386.0,Integrated Science for WASSCE,Pressure,1.0,1,1,5,30.77,30.77,100.0,HIGH,44.62,9.47,VERY_LOW
+Art,262,4720.0,Integrated Science for WASSCE,Preparation of Gases,1.0,1,1,4,30.77,30.77,100.0,HIGH,44.62,9.47,VERY_LOW
+Art,262,4723.0,Integrated Science for WASSCE,Rates of Reaction,1.0,1,1,1,30.77,30.77,100.0,HIGH,44.62,9.47,VERY_LOW
+Business,291,5742.0,French for WASSCE,VERBES,1.0,1,1,8,70.0,70.0,100.0,HIGH,76.0,9.47,VERY_LOW
+Business,291,5743.0,French for WASSCE,PRONOMS,1.0,1,1,2,70.0,70.0,100.0,HIGH,76.0,9.47,VERY_LOW
+Business,291,5744.0,French for WASSCE,ADJECTIF,1.0,1,1,7,70.0,70.0,100.0,HIGH,76.0,9.47,VERY_LOW
+Business,291,5746.0,French for WASSCE,ADVERBE,1.0,1,1,4,70.0,70.0,100.0,HIGH,76.0,9.47,VERY_LOW
+Business,291,5759.0,French for WASSCE,LA VOIX PASSIVE ET ACTIVE,1.0,1,1,1,70.0,70.0,100.0,HIGH,76.0,9.47,VERY_LOW
+Business,291,5766.0,French for WASSCE,LA NEGATION,1.0,1,1,1,70.0,70.0,100.0,HIGH,76.0,9.47,VERY_LOW
+Business,291,5767.0,French for WASSCE,PREPOSITIONS,1.0,1,1,4,70.0,70.0,100.0,HIGH,76.0,9.47,VERY_LOW
+Business,291,5769.0,French for WASSCE,NOMS,1.0,1,1,7,70.0,70.0,100.0,HIGH,76.0,9.47,VERY_LOW
+Education,262,2493.0,Integrated Science for WASSCE,Reproduction And Growth In Plants,1.0,1,1,45,36.67,36.67,100.0,HIGH,49.34,9.47,VERY_LOW
+Education,262,4723.0,Integrated Science for WASSCE,Rates of Reaction,1.0,1,1,15,36.67,36.67,100.0,HIGH,49.34,9.47,VERY_LOW
+Effort Montessori School International,255,5673.0,English Language for BECE,Pronouns,1.0,1,1,1,75.0,75.0,100.0,HIGH,80.0,9.47,VERY_LOW
+Fataw Ibrahim,263,4781.0,Biology for WASSCE,THE DIVERSITY OF LIVING THINGS,1.0,1,1,1,39.34,39.34,100.0,HIGH,51.47,9.47,VERY_LOW
+Fataw Ibrahim,263,4784.0,Biology for WASSCE,INTERACTIONS IN NATURE I,1.0,1,1,2,39.34,39.34,100.0,HIGH,51.47,9.47,VERY_LOW
+Fataw Ibrahim,263,4785.0,Biology for WASSCE,LIFE PROCESSES IN LIVING THINGS II,1.0,1,1,1,39.34,39.34,100.0,HIGH,51.47,9.47,VERY_LOW
+Fataw Ibrahim,263,4789.0,Biology for WASSCE,THE CELL II,1.0,1,1,1,39.34,39.34,100.0,HIGH,51.47,9.47,VERY_LOW
+Fataw Ibrahim,263,4791.0,Biology for WASSCE,NUTRITION IN PLANTS,1.0,1,1,3,39.34,39.34,100.0,HIGH,51.47,9.47,VERY_LOW
+Fataw Ibrahim,263,4800.0,Biology for WASSCE,RESPIRATION IN MAMMALS,1.0,1,1,2,39.34,39.34,100.0,HIGH,51.47,9.47,VERY_LOW
+Fataw Ibrahim,263,4802.0,Biology for WASSCE,MOVEMENT AND SUPPORT IN MAMMALS,1.0,1,1,1,39.34,39.34,100.0,HIGH,51.47,9.47,VERY_LOW
+General Art,291,5742.0,French for WASSCE,VERBES,1.0,1,1,11,37.5,37.5,100.0,HIGH,50.0,9.47,VERY_LOW
+General Art,291,5743.0,French for WASSCE,PRONOMS,1.0,1,1,3,37.5,37.5,100.0,HIGH,50.0,9.47,VERY_LOW
+General Art,291,5744.0,French for WASSCE,ADJECTIF,1.0,1,1,7,37.5,37.5,100.0,HIGH,50.0,9.47,VERY_LOW
+General Art,291,5746.0,French for WASSCE,ADVERBE,1.0,1,1,3,37.5,37.5,100.0,HIGH,50.0,9.47,VERY_LOW
+General Art,291,5759.0,French for WASSCE,LA VOIX PASSIVE ET ACTIVE,1.0,1,1,3,37.5,37.5,100.0,HIGH,50.0,9.47,VERY_LOW
+General Art,291,5767.0,French for WASSCE,PREPOSITIONS,1.0,1,1,4,37.5,37.5,100.0,HIGH,50.0,9.47,VERY_LOW
+General Art,291,5769.0,French for WASSCE,NOMS,1.0,1,1,5,37.5,37.5,100.0,HIGH,50.0,9.47,VERY_LOW
+Ghana communication technology university,291,5742.0,French for WASSCE,VERBES,1.0,1,1,10,90.0,90.0,100.0,HIGH,92.0,9.47,VERY_LOW
+Ghana communication technology university,291,5743.0,French for WASSCE,PRONOMS,1.0,1,1,4,90.0,90.0,100.0,HIGH,92.0,9.47,VERY_LOW
+Ghana communication technology university,291,5744.0,French for WASSCE,ADJECTIF,1.0,1,1,6,90.0,90.0,100.0,HIGH,92.0,9.47,VERY_LOW
+Ghana communication technology university,291,5746.0,French for WASSCE,ADVERBE,1.0,1,1,1,90.0,90.0,100.0,HIGH,92.0,9.47,VERY_LOW
+Ghana communication technology university,291,5759.0,French for WASSCE,LA VOIX PASSIVE ET ACTIVE,1.0,1,1,4,90.0,90.0,100.0,HIGH,92.0,9.47,VERY_LOW
+Ghana communication technology university,291,5766.0,French for WASSCE,LA NEGATION,1.0,1,1,2,90.0,90.0,100.0,HIGH,92.0,9.47,VERY_LOW
+Ghana communication technology university,291,5769.0,French for WASSCE,NOMS,1.0,1,1,5,90.0,90.0,100.0,HIGH,92.0,9.47,VERY_LOW
+Ghanaian,263,4783.0,Biology for WASSCE,"STRUCTURE, MODE OF LIFE AND ECONOMIC IMPORTANCE OF SOME INSECTS",1.0,1,1,1,23.33,23.33,100.0,HIGH,38.66,9.47,VERY_LOW
+Ghanaian,263,4788.0,Biology for WASSCE,INTERACTIONS IN NATURE II,1.0,1,1,2,23.33,23.33,100.0,HIGH,38.66,9.47,VERY_LOW
+Ghanaian,263,4799.0,Biology for WASSCE,TRANSPORT SYSTEMS IN MAMMALS,1.0,1,1,1,23.33,23.33,100.0,HIGH,38.66,9.47,VERY_LOW
+JHS,253,776.0,Mathematics for BECE,MULTIPLICATION OF TWO BINOMIALS,26.0,1,1,2,77.5,77.5,100.0,HIGH,82.0,9.47,VERY_LOW
+Juaben Senior high school,263,4781.0,Biology for WASSCE,THE DIVERSITY OF LIVING THINGS,1.0,1,1,1,11.48,11.48,100.0,HIGH,29.18,9.47,VERY_LOW
+Juaben Senior high school,263,4784.0,Biology for WASSCE,INTERACTIONS IN NATURE I,1.0,1,1,2,11.48,11.48,100.0,HIGH,29.18,9.47,VERY_LOW
+Juaben Senior high school,263,4785.0,Biology for WASSCE,LIFE PROCESSES IN LIVING THINGS II,1.0,1,1,1,11.48,11.48,100.0,HIGH,29.18,9.47,VERY_LOW
+Juaben Senior high school,263,4789.0,Biology for WASSCE,THE CELL II,1.0,1,1,1,11.48,11.48,100.0,HIGH,29.18,9.47,VERY_LOW
+Juaben Senior high school,263,4791.0,Biology for WASSCE,NUTRITION IN PLANTS,1.0,1,1,3,11.479999999999999,11.479999999999999,100.0,HIGH,29.18,9.47,VERY_LOW
+Juaben Senior high school,263,4800.0,Biology for WASSCE,RESPIRATION IN MAMMALS,1.0,1,1,2,11.48,11.48,100.0,HIGH,29.18,9.47,VERY_LOW
+Juaben Senior high school,263,4802.0,Biology for WASSCE,MOVEMENT AND SUPPORT IN MAMMALS,1.0,1,1,1,11.48,11.48,100.0,HIGH,29.18,9.47,VERY_LOW
+KAJAJI SENIOR HIGH SCHOOL,596,6452.0,Core Mathematics for GES - SHS,UNIT 12: EQUATIONS AND INEQUALITIES IN ONE VARIABLE,1.0,1,1,1,40.0,40.0,100.0,HIGH,52.0,9.47,VERY_LOW
+KAJAJI SENIOR HIGH SCHOOL,597,6459.0,English Language for GES -  SHS,UNIT 4: COHESIVE DEVICES IN PARAGRAPH DEVELOPMENT,1.0,1,1,6,60.0,60.0,100.0,HIGH,68.0,9.47,VERY_LOW
+KAJAJI SENIOR HIGH SCHOOL,597,6460.0,English Language for GES -  SHS,UNIT 5: GENRES OF LITERATURE,1.0,1,1,3,60.0,60.0,100.0,HIGH,68.0,9.47,VERY_LOW
+KAJAJI SENIOR HIGH SCHOOL,597,6461.0,English Language for GES -  SHS,UNIT 6: RECOGNISE THE MAIN IDEAS IN LEVEL-APPROPRIATE ORAL TEXTS.,1.0,1,1,3,60.0,60.0,100.0,HIGH,68.0,9.47,VERY_LOW
+KAJAJI SENIOR HIGH SCHOOL,597,6463.0,English Language for GES -  SHS,UNIT 8: CHARACTER/CHARACTERISATION,1.0,1,1,1,60.0,60.0,100.0,HIGH,68.0,9.47,VERY_LOW
+KAJAJI SENIOR HIGH SCHOOL,597,6469.0,English Language for GES -  SHS,UNIT 14: CONSONANT SOUNDS,1.0,1,1,3,60.0,60.0,100.0,HIGH,68.0,9.47,VERY_LOW
+KAJAJI SENIOR HIGH SCHOOL,598,6475.0,Integrated  Science for GES - SHS,"Know, understand and identify the origin and composition of natural gas.",1.0,1,1,8,30.0,30.0,100.0,HIGH,44.0,9.47,VERY_LOW
+KNUSt,262,2327.0,Integrated Science for WASSCE,Radioactivity,1.0,1,1,32,1.92,1.92,100.0,HIGH,21.54,9.47,VERY_LOW
+KNUSt,262,2376.0,Integrated Science for WASSCE,"Forces, Motion And Pressure",1.0,1,1,10,1.92,1.92,100.0,HIGH,21.54,9.47,VERY_LOW
+KNUSt,262,2386.0,Integrated Science for WASSCE,Pressure,1.0,1,1,5,1.92,1.92,100.0,HIGH,21.54,9.47,VERY_LOW
+KNUSt,262,4720.0,Integrated Science for WASSCE,Preparation of Gases,1.0,1,1,4,1.92,1.92,100.0,HIGH,21.54,9.47,VERY_LOW
+KNUSt,262,4723.0,Integrated Science for WASSCE,Rates of Reaction,1.0,1,1,1,1.92,1.92,100.0,HIGH,21.54,9.47,VERY_LOW
+Kay-Billie-Klaer International School,253,776.0,Mathematics for BECE,MULTIPLICATION OF TWO BINOMIALS,26.0,2,2,2,42.5,42.5,100.0,HIGH,54.0,12.27,VERY_LOW
+Kotoka JHS,262,2327.0,Integrated Science for WASSCE,Radioactivity,1.0,1,1,32,100.0,100.0,100.0,HIGH,100.0,9.47,VERY_LOW
+Kotoka JHS,262,2376.0,Integrated Science for WASSCE,"Forces, Motion And Pressure",1.0,1,1,10,100.0,100.0,100.0,HIGH,100.0,9.47,VERY_LOW
+Kotoka JHS,262,2386.0,Integrated Science for WASSCE,Pressure,1.0,1,1,5,100.0,100.0,100.0,HIGH,100.0,9.47,VERY_LOW
+Kotoka JHS,262,4720.0,Integrated Science for WASSCE,Preparation of Gases,1.0,1,1,4,100.0,100.0,100.0,HIGH,100.0,9.47,VERY_LOW
+Kotoka JHS,262,4723.0,Integrated Science for WASSCE,Rates of Reaction,1.0,1,1,1,100.0,100.0,100.0,HIGH,100.0,9.47,VERY_LOW
+LETSHEGO,70,416.0,Audit & Compliance,What is Money Laundering?,1.0,1,1,3,88.0,88.0,100.0,HIGH,90.4,9.47,VERY_LOW
+LETSHEGO,70,418.0,Audit & Compliance,Letshego Ghana's Risk Based Approach,1.0,1,1,1,88.0,88.0,100.0,HIGH,90.4,9.47,VERY_LOW
+LETSHEGO,70,422.0,Audit & Compliance,SUSPICIOUS TRANSACTION REPORTING,10.0,1,1,1,88.0,88.0,100.0,HIGH,90.4,9.47,VERY_LOW
+Letshego,70,416.0,Audit & Compliance,What is Money Laundering?,1.0,6,6,3,84.57142857142857,84.57142857142857,100.0,HIGH,87.66,23.47,LOW
+Letshego,70,418.0,Audit & Compliance,Letshego Ghana's Risk Based Approach,1.0,1,1,1,80.0,80.0,100.0,HIGH,84.0,9.47,VERY_LOW
+Letshego,70,422.0,Audit & Compliance,SUSPICIOUS TRANSACTION REPORTING,10.0,4,4,1,88.0,88.0,100.0,HIGH,90.4,17.87,VERY_LOW
+Letshego GH,70,416.0,Audit & Compliance,What is Money Laundering?,1.0,1,1,3,84.0,84.0,100.0,HIGH,87.2,9.47,VERY_LOW
+Letshego GH,70,422.0,Audit & Compliance,SUSPICIOUS TRANSACTION REPORTING,10.0,1,1,1,84.0,84.0,100.0,HIGH,87.2,9.47,VERY_LOW
+Letshego Ghana,70,416.0,Audit & Compliance,What is Money Laundering?,1.0,3,3,3,85.6,85.6,100.0,HIGH,88.48,15.07,VERY_LOW
+Letshego Ghana,70,418.0,Audit & Compliance,Letshego Ghana's Risk Based Approach,1.0,3,3,1,86.66666666666667,86.66666666666667,100.0,HIGH,89.33,15.07,VERY_LOW
+Letshego Ghana,70,422.0,Audit & Compliance,SUSPICIOUS TRANSACTION REPORTING,10.0,1,1,1,88.0,88.0,100.0,HIGH,90.4,9.47,VERY_LOW
+Letshego Ghana Ltd,70,416.0,Audit & Compliance,What is Money Laundering?,1.0,1,1,1,96.0,96.0,100.0,HIGH,96.8,9.47,VERY_LOW
+Letshego Ghana Ltd,70,418.0,Audit & Compliance,Letshego Ghana's Risk Based Approach,1.0,1,1,1,96.0,96.0,100.0,HIGH,96.8,9.47,VERY_LOW
+Letshego Ghana Savings and Loan PLC,70,422.0,Audit & Compliance,SUSPICIOUS TRANSACTION REPORTING,10.0,1,1,1,96.0,96.0,100.0,HIGH,96.8,9.47,VERY_LOW
+Letshego Saving and Loan,70,416.0,Audit & Compliance,What is Money Laundering?,1.0,1,1,2,88.0,88.0,100.0,HIGH,90.4,9.47,VERY_LOW
+Letshego plc,70,416.0,Audit & Compliance,What is Money Laundering?,1.0,1,1,3,84.0,84.0,100.0,HIGH,87.2,9.47,VERY_LOW
+Letshego plc,70,422.0,Audit & Compliance,SUSPICIOUS TRANSACTION REPORTING,10.0,1,1,1,84.0,84.0,100.0,HIGH,87.2,9.47,VERY_LOW
+Lister professional institute,258,4871.0,Elective Mathematics for WASSCE,VECTORS I (VECTORS IN A PLANE),1.0,1,1,39,12.2,12.2,100.0,HIGH,29.76,9.47,VERY_LOW
+Lotus Educational Centre,262,2150.0,Integrated Science for WASSCE,Ecosystem,1.0,1,1,25,1.72,1.72,100.0,HIGH,21.38,9.47,VERY_LOW
+Lotus Educational Centre,262,2274.0,Integrated Science for WASSCE,Reproductive Systems And Growth In Mammals,1.0,1,1,31,1.72,1.72,100.0,HIGH,21.38,9.47,VERY_LOW
+Lotus Educational Centre,262,2310.0,Integrated Science for WASSCE,Coordination of Life Processes(Nervous System),1.0,1,1,2,1.72,1.72,100.0,HIGH,21.38,9.47,VERY_LOW
+Lotus Educational Centre,262,2327.0,Integrated Science for WASSCE,Radioactivity,1.0,1,1,32,25.0,25.0,100.0,HIGH,40.0,9.47,VERY_LOW
+Lotus Educational Centre,262,2376.0,Integrated Science for WASSCE,"Forces, Motion And Pressure",1.0,1,1,10,25.0,25.0,100.0,HIGH,40.0,9.47,VERY_LOW
+Lotus Educational Centre,262,2386.0,Integrated Science for WASSCE,Pressure,1.0,1,1,5,25.0,25.0,100.0,HIGH,40.0,9.47,VERY_LOW
+Lotus Educational Centre,262,4720.0,Integrated Science for WASSCE,Preparation of Gases,1.0,1,1,4,25.0,25.0,100.0,HIGH,40.0,9.47,VERY_LOW
+Lotus Educational Centre,262,4723.0,Integrated Science for WASSCE,Rates of Reaction,1.0,1,1,1,25.0,25.0,100.0,HIGH,40.0,9.47,VERY_LOW
+Modal College,262,2327.0,Integrated Science for WASSCE,Radioactivity,1.0,1,1,32,5.77,5.77,100.0,HIGH,24.62,9.47,VERY_LOW
+Modal College,262,2376.0,Integrated Science for WASSCE,"Forces, Motion And Pressure",1.0,1,1,10,5.77,5.77,100.0,HIGH,24.62,9.47,VERY_LOW
+Modal College,262,2386.0,Integrated Science for WASSCE,Pressure,1.0,1,1,5,5.77,5.77,100.0,HIGH,24.62,9.47,VERY_LOW
+Modal College,262,4720.0,Integrated Science for WASSCE,Preparation of Gases,1.0,1,1,4,5.77,5.77,100.0,HIGH,24.62,9.47,VERY_LOW
+Modal College,262,4723.0,Integrated Science for WASSCE,Rates of Reaction,1.0,1,1,1,5.77,5.77,100.0,HIGH,24.62,9.47,VERY_LOW
+NAGIES ANGEL EDUCATONAL CENTRE,253,776.0,Mathematics for BECE,MULTIPLICATION OF TWO BINOMIALS,26.0,1,1,2,5.0,5.0,100.0,HIGH,24.0,9.47,VERY_LOW
+NAGIES ANGELS EDUCATIONAL CENTRE,253,776.0,Mathematics for BECE,MULTIPLICATION OF TWO BINOMIALS,26.0,1,1,2,22.5,22.5,100.0,HIGH,38.0,9.47,VERY_LOW
+NMTC - Pantang,253,776.0,Mathematics for BECE,MULTIPLICATION OF TWO BINOMIALS,26.0,1,1,2,30.0,30.0,100.0,HIGH,44.0,9.47,VERY_LOW
+Nagie's  Angels Educational Center,253,776.0,Mathematics for BECE,MULTIPLICATION OF TWO BINOMIALS,26.0,1,1,2,40.0,40.0,100.0,HIGH,52.0,9.47,VERY_LOW
+Nagie's Angels  Educational Centre,254,4345.0,Social Studies for JHS- BECE,REQUIRES UPDATE,1.0,1,1,1,47.22,47.22,100.0,HIGH,57.78,9.47,VERY_LOW
+Nagie's Angels  Educational Centre,254,4390.0,Social Studies for JHS- BECE,The Environment and Environmental Problems,1.0,1,2,3,37.31333333333333,37.31333333333333,100.0,HIGH,49.85,10.27,VERY_LOW
+Nagie's Angels  Educational Centre,254,4391.0,Social Studies for JHS- BECE,Adolescent Reproductive Health,1.0,1,1,2,47.22,47.22,100.0,HIGH,57.78,9.47,VERY_LOW
+Nagie's Angels  Educational Centre,254,4392.0,Social Studies for JHS- BECE,Our Culture,1.0,1,1,3,47.22,47.22,100.0,HIGH,57.78,9.47,VERY_LOW
+Nagie's Angels  Educational Centre,254,4393.0,Social Studies for JHS- BECE,Mapping our environment,1.0,1,2,4,36.09,36.09,100.0,HIGH,48.87,10.27,VERY_LOW
+Nagie's Angels  Educational Centre,254,4394.0,Social Studies for JHS- BECE,Our Country Ghana,1.0,1,1,3,47.22,47.22,100.0,HIGH,57.78,9.47,VERY_LOW
+Nagie's Angels  Educational Centre,254,4395.0,Social Studies for JHS- BECE,Significance of some natural features of the earth,1.0,1,1,2,47.22,47.22,100.0,HIGH,57.78,9.47,VERY_LOW
+Nagie's Angels  Educational Centre,254,4396.0,Social Studies for JHS- BECE,Population growth and development,1.0,1,1,2,47.22,47.22,100.0,HIGH,57.78,9.47,VERY_LOW
+Nagie's Angels  Educational Centre,254,4399.0,Social Studies for JHS- BECE,Colonisation and national development,1.0,1,2,3,37.31333333333333,37.31333333333333,100.0,HIGH,49.85,10.27,VERY_LOW
+Nagie's Angels  Educational Centre,254,4400.0,Social Studies for JHS- BECE,Independence and nationhood,1.0,1,2,3,37.31333333333333,37.31333333333333,100.0,HIGH,49.85,10.27,VERY_LOW
+Nagie's Angels  Educational Centre,254,4401.0,Social Studies for JHS- BECE,Citizenship and human right,1.0,1,1,4,47.22,47.22,100.0,HIGH,57.78,9.47,VERY_LOW
+Nagie's Angels  Educational Centre,254,4402.0,Social Studies for JHS- BECE,Our constitution,1.0,1,1,2,17.5,17.5,100.0,HIGH,34.0,9.47,VERY_LOW
+Nagie's Angels  Educational Centre,254,4404.0,Social Studies for JHS- BECE,Conflict prevention and management,1.0,1,1,1,17.5,17.5,100.0,HIGH,34.0,9.47,VERY_LOW
+Nagie's Angels  Educational Centre,254,4405.0,Social Studies for JHS- BECE,Ghana’s cooperation with other nations,1.0,1,1,2,17.5,17.5,100.0,HIGH,34.0,9.47,VERY_LOW
+Nagie's Angels  Educational Centre,254,4407.0,Social Studies for JHS- BECE,Promoting political stability in Ghana,1.0,1,1,1,47.22,47.22,100.0,HIGH,57.78,9.47,VERY_LOW
+Nagie's Angels  Educational Centre,254,4409.0,Social Studies for JHS- BECE,The use of land in our community,1.0,1,1,1,17.5,17.5,100.0,HIGH,34.0,9.47,VERY_LOW
+Nagie's Angels  Educational Centre,254,4410.0,Social Studies for JHS- BECE,Our natural and human resources,1.0,1,1,2,17.5,17.5,100.0,HIGH,34.0,9.47,VERY_LOW
+Nagie's Angels  Educational Centre,254,4414.0,Social Studies for JHS- BECE,Education and productivity,1.0,1,1,2,17.5,17.5,100.0,HIGH,34.0,9.47,VERY_LOW
+Nagie's Angels  Educational Centre,254,4415.0,Social Studies for JHS- BECE,Entrepreneurship,1.0,1,1,1,17.5,17.5,100.0,HIGH,34.0,9.47,VERY_LOW
+Nagie's Angels  Educational Centre,254,4416.0,Social Studies for JHS- BECE,Problems of development in Ghana,1.0,1,1,1,17.5,17.5,100.0,HIGH,34.0,9.47,VERY_LOW
+Nagie's Angels Educational Centre,255,5673.0,English Language for BECE,Pronouns,1.0,1,1,1,62.5,62.5,100.0,HIGH,70.0,9.47,VERY_LOW
+Nagies Angels Educational Centre,253,776.0,Mathematics for BECE,MULTIPLICATION OF TWO BINOMIALS,26.0,2,2,2,45.0,45.0,100.0,HIGH,56.0,12.27,VERY_LOW
+North Ridge Lyceum,253,776.0,Mathematics for BECE,MULTIPLICATION OF TWO BINOMIALS,26.0,1,1,2,90.0,90.0,100.0,HIGH,92.0,9.47,VERY_LOW
+Nursing School,262,2150.0,Integrated Science for WASSCE,Ecosystem,1.0,1,1,25,100.0,100.0,100.0,HIGH,100.0,9.47,VERY_LOW
+Nursing School,262,2274.0,Integrated Science for WASSCE,Reproductive Systems And Growth In Mammals,1.0,1,1,31,100.0,100.0,100.0,HIGH,100.0,9.47,VERY_LOW
+Nursing School,262,2310.0,Integrated Science for WASSCE,Coordination of Life Processes(Nervous System),1.0,1,1,2,100.0,100.0,100.0,HIGH,100.0,9.47,VERY_LOW
+Nursing School,262,2327.0,Integrated Science for WASSCE,Radioactivity,1.0,1,1,32,96.15,96.15,100.0,HIGH,96.92,9.47,VERY_LOW
+Nursing School,262,2376.0,Integrated Science for WASSCE,"Forces, Motion And Pressure",1.0,1,1,10,96.15,96.15,100.0,HIGH,96.92,9.47,VERY_LOW
+Nursing School,262,2386.0,Integrated Science for WASSCE,Pressure,1.0,1,1,5,96.15,96.15,100.0,HIGH,96.92,9.47,VERY_LOW
+Nursing School,262,2493.0,Integrated Science for WASSCE,Reproduction And Growth In Plants,1.0,1,2,73,95.64054794520548,95.64054794520548,100.0,HIGH,96.51,10.27,VERY_LOW
+Nursing School,262,2520.0,Integrated Science for WASSCE,Respiratory System,1.0,1,1,31,96.67,96.67,100.0,HIGH,97.34,9.47,VERY_LOW
+Nursing School,262,4720.0,Integrated Science for WASSCE,Preparation of Gases,1.0,1,1,4,96.15,96.15,100.0,HIGH,96.92,9.47,VERY_LOW
+Nursing School,262,4723.0,Integrated Science for WASSCE,Rates of Reaction,1.0,1,2,16,95.071875,95.071875,100.0,HIGH,96.06,10.27,VERY_LOW
+Nursing School,262,4724.0,Integrated Science for WASSCE,Tectonic Movements,1.0,1,1,1,96.67,96.67,100.0,HIGH,97.34,9.47,VERY_LOW
+OPOKU WARE SCHOOL,597,6456.0,English Language for GES -  SHS,UNIT I: PURE VOWELS (SHORT VOWELS),1.0,1,2,4,52.5,52.5,100.0,HIGH,62.0,10.27,VERY_LOW
+OPOKU WARE SCHOOL,597,6458.0,English Language for GES -  SHS,UNIT 3: NOUNS,1.0,2,2,11,68.18181818181819,68.18181818181819,100.0,HIGH,74.55,12.27,VERY_LOW
+OPOKU WARE SCHOOL,597,6460.0,English Language for GES -  SHS,UNIT 5: GENRES OF LITERATURE,1.0,1,1,4,90.0,90.0,100.0,HIGH,92.0,9.47,VERY_LOW
+OPOKU WARE SCHOOL,597,6462.0,English Language for GES -  SHS,UNIT 7: PRONOUNS,1.0,1,1,1,90.0,90.0,100.0,HIGH,92.0,9.47,VERY_LOW
+OWASS,597,6460.0,English Language for GES -  SHS,UNIT 5: GENRES OF LITERATURE,1.0,1,1,4,40.0,40.0,100.0,HIGH,52.0,9.47,VERY_LOW
+OWASS,597,6461.0,English Language for GES -  SHS,UNIT 6: RECOGNISE THE MAIN IDEAS IN LEVEL-APPROPRIATE ORAL TEXTS.,1.0,1,1,2,40.0,40.0,100.0,HIGH,52.0,9.47,VERY_LOW
+OWASS,597,6463.0,English Language for GES -  SHS,UNIT 8: CHARACTER/CHARACTERISATION,1.0,1,1,3,40.0,40.0,100.0,HIGH,52.0,9.47,VERY_LOW
+OWASS,597,6469.0,English Language for GES -  SHS,UNIT 14: CONSONANT SOUNDS,1.0,1,1,1,40.0,40.0,100.0,HIGH,52.0,9.47,VERY_LOW
+Opoku Ware School,263,2662.0,Biology for WASSCE,REPRODUCTION IN PLANTS,1.0,1,1,1,46.43,46.43,100.0,HIGH,57.14,9.47,VERY_LOW
+Opoku Ware School,263,4781.0,Biology for WASSCE,THE DIVERSITY OF LIVING THINGS,1.0,1,1,6,46.43,46.43,100.0,HIGH,57.14,9.47,VERY_LOW
+Opoku Ware School,263,4782.0,Biology for WASSCE,LIFE PROCESSES IN LIVING THINGS I,1.0,1,1,1,46.43,46.43,100.0,HIGH,57.14,9.47,VERY_LOW
+Opoku Ware School,263,4783.0,Biology for WASSCE,"STRUCTURE, MODE OF LIFE AND ECONOMIC IMPORTANCE OF SOME INSECTS",1.0,1,1,1,46.43,46.43,100.0,HIGH,57.14,9.47,VERY_LOW
+Opoku Ware School,263,4784.0,Biology for WASSCE,INTERACTIONS IN NATURE I,1.0,1,1,4,46.43,46.43,100.0,HIGH,57.14,9.47,VERY_LOW
+Opoku Ware School,263,4785.0,Biology for WASSCE,LIFE PROCESSES IN LIVING THINGS II,1.0,1,1,1,46.43,46.43,100.0,HIGH,57.14,9.47,VERY_LOW
+Opoku Ware School,263,4787.0,Biology for WASSCE,HUMAN ECOLOGY AND HEALTH,1.0,1,1,6,46.43,46.43,100.0,HIGH,57.14,9.47,VERY_LOW
+Opoku Ware School,263,4788.0,Biology for WASSCE,INTERACTIONS IN NATURE II,1.0,1,1,4,46.43,46.43,100.0,HIGH,57.14,9.47,VERY_LOW
+Opoku Ware School,263,4789.0,Biology for WASSCE,THE CELL II,1.0,1,1,1,46.43,46.43,100.0,HIGH,57.14,9.47,VERY_LOW
+Opoku Ware School,263,4790.0,Biology for WASSCE,PLANT ANATOMY,1.0,1,1,2,46.43,46.43,100.0,HIGH,57.14,9.47,VERY_LOW
+Opoku Ware School,263,4798.0,Biology for WASSCE,NUTRITION IN MAMMALS,1.0,1,1,1,46.43,46.43,100.0,HIGH,57.14,9.47,VERY_LOW
+Opoku Ware School,263,4800.0,Biology for WASSCE,RESPIRATION IN MAMMALS,1.0,1,1,1,46.43,46.43,100.0,HIGH,57.14,9.47,VERY_LOW
+Opoku Ware School,263,4801.0,Biology for WASSCE,EXCRETION AND HOMEOSTASIS IN MAMMALS,1.0,1,1,2,46.43,46.43,100.0,HIGH,57.14,9.47,VERY_LOW
+Opoku Ware School,263,4803.0,Biology for WASSCE,CONTROL AND COORDINATION IN MAMMALS,1.0,1,1,4,46.43,46.43,100.0,HIGH,57.14,9.47,VERY_LOW
+Opoku Ware School,263,4804.0,Biology for WASSCE,REPRODUCTION IN MAMMALS,1.0,1,1,3,46.43,46.43,100.0,HIGH,57.14,9.47,VERY_LOW
+Opoku Ware School,263,4805.0,Biology for WASSCE,"GENETICS, VARIATION AND EVOLUTION",1.0,1,1,3,46.43,46.43,100.0,HIGH,57.14,9.47,VERY_LOW
+Opoku Ware School,597,6456.0,English Language for GES -  SHS,UNIT I: PURE VOWELS (SHORT VOWELS),1.0,2,2,7,87.14285714285714,87.14285714285714,100.0,HIGH,89.71,12.27,VERY_LOW
+Opoku Ware School,597,6457.0,English Language for GES -  SHS,UNIT 2: READING TECHNIQUES,1.0,1,1,2,50.0,50.0,100.0,HIGH,60.0,9.47,VERY_LOW
+Opoku Ware School,597,6458.0,English Language for GES -  SHS,UNIT 3: NOUNS,1.0,3,3,11,79.0909090909091,79.0909090909091,100.0,HIGH,83.27,15.07,VERY_LOW
+Opoku Ware School,597,6459.0,English Language for GES -  SHS,UNIT 4: COHESIVE DEVICES IN PARAGRAPH DEVELOPMENT,1.0,1,1,2,50.0,50.0,100.0,HIGH,60.0,9.47,VERY_LOW
+Opoku Ware School,597,6460.0,English Language for GES -  SHS,UNIT 5: GENRES OF LITERATURE,1.0,2,2,5,66.0,66.0,100.0,HIGH,72.8,12.27,VERY_LOW
+Opoku Ware School,597,6461.0,English Language for GES -  SHS,UNIT 6: RECOGNISE THE MAIN IDEAS IN LEVEL-APPROPRIATE ORAL TEXTS.,1.0,1,1,1,70.0,70.0,100.0,HIGH,76.0,9.47,VERY_LOW
+Opoku Ware School,597,6469.0,English Language for GES -  SHS,UNIT 14: CONSONANT SOUNDS,1.0,1,1,5,70.0,70.0,100.0,HIGH,76.0,9.47,VERY_LOW
+Opoku Ware School,598,6471.0,Integrated  Science for GES - SHS,Characteristics of science and how they are applied in everyday life.,1.0,1,1,1,10.0,10.0,100.0,HIGH,28.0,9.47,VERY_LOW
+Opoku Ware School,598,6473.0,Integrated  Science for GES - SHS,Demonstrate understanding of liquids in the Lives of humans.,1.0,1,1,9,10.0,10.0,100.0,HIGH,28.0,9.47,VERY_LOW
+Opuku Ware School,597,6457.0,English Language for GES -  SHS,UNIT 2: READING TECHNIQUES,1.0,1,1,6,30.0,30.0,100.0,HIGH,44.0,9.47,VERY_LOW
+Opuku Ware School,597,6459.0,English Language for GES -  SHS,UNIT 4: COHESIVE DEVICES IN PARAGRAPH DEVELOPMENT,1.0,1,1,2,30.0,30.0,100.0,HIGH,44.0,9.47,VERY_LOW
+Physics,262,2493.0,Integrated Science for WASSCE,Reproduction And Growth In Plants,1.0,1,1,28,40.0,40.0,100.0,HIGH,52.0,9.47,VERY_LOW
+Physics,262,2520.0,Integrated Science for WASSCE,Respiratory System,1.0,1,1,31,40.0,40.0,100.0,HIGH,52.0,9.47,VERY_LOW
+Physics,262,4724.0,Integrated Science for WASSCE,Tectonic Movements,1.0,1,1,1,40.0,40.0,100.0,HIGH,52.0,9.47,VERY_LOW
+Preset pacesetters shs,291,5742.0,French for WASSCE,VERBES,1.0,1,1,16,22.5,22.5,100.0,HIGH,38.0,9.47,VERY_LOW
+Preset pacesetters shs,291,5743.0,French for WASSCE,PRONOMS,1.0,1,1,3,22.5,22.5,100.0,HIGH,38.0,9.47,VERY_LOW
+Preset pacesetters shs,291,5744.0,French for WASSCE,ADJECTIF,1.0,1,1,4,22.5,22.5,100.0,HIGH,38.0,9.47,VERY_LOW
+Preset pacesetters shs,291,5746.0,French for WASSCE,ADVERBE,1.0,1,1,1,22.5,22.5,100.0,HIGH,38.0,9.47,VERY_LOW
+Preset pacesetters shs,291,5759.0,French for WASSCE,LA VOIX PASSIVE ET ACTIVE,1.0,1,1,2,22.5,22.5,100.0,HIGH,38.0,9.47,VERY_LOW
+Preset pacesetters shs,291,5766.0,French for WASSCE,LA NEGATION,1.0,1,1,1,22.5,22.5,100.0,HIGH,38.0,9.47,VERY_LOW
+Preset pacesetters shs,291,5767.0,French for WASSCE,PREPOSITIONS,1.0,1,1,4,22.5,22.5,100.0,HIGH,38.0,9.47,VERY_LOW
+Preset pacesetters shs,291,5769.0,French for WASSCE,NOMS,1.0,1,1,4,22.5,22.5,100.0,HIGH,38.0,9.47,VERY_LOW
+Preset shs,262,2327.0,Integrated Science for WASSCE,Radioactivity,1.0,1,1,32,78.85,78.85,100.0,HIGH,83.08,9.47,VERY_LOW
+Preset shs,262,2376.0,Integrated Science for WASSCE,"Forces, Motion And Pressure",1.0,1,1,10,78.85,78.85,100.0,HIGH,83.08,9.47,VERY_LOW
+Preset shs,262,2386.0,Integrated Science for WASSCE,Pressure,1.0,1,1,5,78.85,78.85,100.0,HIGH,83.08,9.47,VERY_LOW
+Preset shs,262,4720.0,Integrated Science for WASSCE,Preparation of Gases,1.0,1,1,4,78.85,78.85,100.0,HIGH,83.08,9.47,VERY_LOW
+Preset shs,262,4723.0,Integrated Science for WASSCE,Rates of Reaction,1.0,1,1,1,78.85,78.85,100.0,HIGH,83.08,9.47,VERY_LOW
+Prince Of Peace Methodist Church,262,2327.0,Integrated Science for WASSCE,Radioactivity,1.0,2,2,32,91.35,91.35,100.0,HIGH,93.08,12.27,VERY_LOW
+Prince Of Peace Methodist Church,262,2376.0,Integrated Science for WASSCE,"Forces, Motion And Pressure",1.0,2,2,10,91.35,91.35,100.0,HIGH,93.08,12.27,VERY_LOW
+Prince Of Peace Methodist Church,262,2386.0,Integrated Science for WASSCE,Pressure,1.0,2,2,5,91.35,91.35,100.0,HIGH,93.08,12.27,VERY_LOW
+Prince Of Peace Methodist Church,262,2493.0,Integrated Science for WASSCE,Reproduction And Growth In Plants,1.0,3,4,73,61.87410852713178,61.87410852713178,100.0,HIGH,69.5,15.87,VERY_LOW
+Prince Of Peace Methodist Church,262,2520.0,Integrated Science for WASSCE,Respiratory System,1.0,3,3,31,65.55666666666667,65.55666666666667,100.0,HIGH,72.45,15.07,VERY_LOW
+Prince Of Peace Methodist Church,262,4720.0,Integrated Science for WASSCE,Preparation of Gases,1.0,2,2,4,91.35,91.35,100.0,HIGH,93.08,12.27,VERY_LOW
+Prince Of Peace Methodist Church,262,4723.0,Integrated Science for WASSCE,Rates of Reaction,1.0,3,3,16,59.2764705882353,59.2764705882353,100.0,HIGH,67.42,15.07,VERY_LOW
+Prince Of Peace Methodist Church,262,4724.0,Integrated Science for WASSCE,Tectonic Movements,1.0,3,3,1,65.55666666666667,65.55666666666667,100.0,HIGH,72.45,15.07,VERY_LOW
+Prince Of Peace Methodists Church,262,2124.0,Integrated Science for WASSCE,"Transport-diffusion, Osmosis And Plasmolysis",1.0,1,1,18,46.43,46.43,100.0,HIGH,57.14,9.47,VERY_LOW
+Prince Of Peace Methodists Church,262,2137.0,Integrated Science for WASSCE,Solar Energy,1.0,1,1,4,46.43,46.43,100.0,HIGH,57.14,9.47,VERY_LOW
+Prince Of Peace Methodists Church,262,2150.0,Integrated Science for WASSCE,Ecosystem,1.0,1,1,27,46.43,46.43,100.0,HIGH,57.14,9.47,VERY_LOW
+Prince Of Peace Methodists Church,262,2327.0,Integrated Science for WASSCE,Radioactivity,1.0,2,2,32,81.72999999999999,81.72999999999999,100.0,HIGH,85.38,12.27,VERY_LOW
+Prince Of Peace Methodists Church,262,2376.0,Integrated Science for WASSCE,"Forces, Motion And Pressure",1.0,2,2,10,81.72999999999999,81.72999999999999,100.0,HIGH,85.38,12.27,VERY_LOW
+Prince Of Peace Methodists Church,262,2386.0,Integrated Science for WASSCE,Pressure,1.0,2,2,5,81.72999999999999,81.72999999999999,100.0,HIGH,85.38,12.27,VERY_LOW
+Prince Of Peace Methodists Church,262,2493.0,Integrated Science for WASSCE,Reproduction And Growth In Plants,1.0,2,3,73,35.82841584158416,35.82841584158416,100.0,HIGH,48.66,13.07,VERY_LOW
+Prince Of Peace Methodists Church,262,2520.0,Integrated Science for WASSCE,Respiratory System,1.0,2,3,33,39.396875,39.396875,100.0,HIGH,51.52,13.07,VERY_LOW
+Prince Of Peace Methodists Church,262,4720.0,Integrated Science for WASSCE,Preparation of Gases,1.0,2,2,4,81.72999999999999,81.72999999999999,100.0,HIGH,85.38,12.27,VERY_LOW
+Prince Of Peace Methodists Church,262,4723.0,Integrated Science for WASSCE,Rates of Reaction,1.0,2,3,16,37.559411764705885,37.559411764705885,100.0,HIGH,50.05,13.07,VERY_LOW
+Prince Of Peace Methodists Church,262,4724.0,Integrated Science for WASSCE,Tectonic Movements,1.0,2,2,1,39.17,39.17,100.0,HIGH,51.34,12.27,VERY_LOW
+Prince Of Peace Methodists Church,262,4725.0,Integrated Science for WASSCE,Water Movements,1.0,1,1,5,46.43,46.43,100.0,HIGH,57.14,9.47,VERY_LOW
+Prince of Peace Methodist Church,262,2124.0,Integrated Science for WASSCE,"Transport-diffusion, Osmosis And Plasmolysis",1.0,1,1,18,33.93,33.93,100.0,HIGH,47.14,9.47,VERY_LOW
+Prince of Peace Methodist Church,262,2137.0,Integrated Science for WASSCE,Solar Energy,1.0,1,1,4,33.93,33.93,100.0,HIGH,47.14,9.47,VERY_LOW
+Prince of Peace Methodist Church,262,2150.0,Integrated Science for WASSCE,Ecosystem,1.0,1,1,27,33.93,33.93,100.0,HIGH,47.14,9.47,VERY_LOW
+Prince of Peace Methodist Church,262,2327.0,Integrated Science for WASSCE,Radioactivity,1.0,2,2,32,57.69,57.69,100.0,HIGH,66.15,12.27,VERY_LOW
+Prince of Peace Methodist Church,262,2376.0,Integrated Science for WASSCE,"Forces, Motion And Pressure",1.0,2,2,10,57.69,57.69,100.0,HIGH,66.15,12.27,VERY_LOW
+Prince of Peace Methodist Church,262,2386.0,Integrated Science for WASSCE,Pressure,1.0,2,2,5,57.69,57.69,100.0,HIGH,66.15,12.27,VERY_LOW
+Prince of Peace Methodist Church,262,2493.0,Integrated Science for WASSCE,Reproduction And Growth In Plants,1.0,2,3,73,92.22772277227723,92.22772277227723,100.0,HIGH,93.78,13.07,VERY_LOW
+Prince of Peace Methodist Church,262,2520.0,Integrated Science for WASSCE,Respiratory System,1.0,2,3,33,88.2478125,88.2478125,100.0,HIGH,90.6,13.07,VERY_LOW
+Prince of Peace Methodist Church,262,4720.0,Integrated Science for WASSCE,Preparation of Gases,1.0,2,2,4,57.69,57.69,100.0,HIGH,66.15,12.27,VERY_LOW
+Prince of Peace Methodist Church,262,4723.0,Integrated Science for WASSCE,Rates of Reaction,1.0,2,3,16,90.61058823529413,90.61058823529413,100.0,HIGH,92.49,13.07,VERY_LOW
+Prince of Peace Methodist Church,262,4724.0,Integrated Science for WASSCE,Tectonic Movements,1.0,2,2,1,90.0,90.0,100.0,HIGH,92.0,12.27,VERY_LOW
+Prince of Peace Methodist Church,262,4725.0,Integrated Science for WASSCE,Water Movements,1.0,1,1,5,33.93,33.93,100.0,HIGH,47.14,9.47,VERY_LOW
+Prince of Peace Methodist Church,263,4781.0,Biology for WASSCE,THE DIVERSITY OF LIVING THINGS,1.0,1,1,1,37.7,37.7,100.0,HIGH,50.16,9.47,VERY_LOW
+Prince of Peace Methodist Church,263,4784.0,Biology for WASSCE,INTERACTIONS IN NATURE I,1.0,1,1,2,37.7,37.7,100.0,HIGH,50.16,9.47,VERY_LOW
+Prince of Peace Methodist Church,263,4785.0,Biology for WASSCE,LIFE PROCESSES IN LIVING THINGS II,1.0,1,1,1,37.7,37.7,100.0,HIGH,50.16,9.47,VERY_LOW
+Prince of Peace Methodist Church,263,4789.0,Biology for WASSCE,THE CELL II,1.0,1,1,1,37.7,37.7,100.0,HIGH,50.16,9.47,VERY_LOW
+Prince of Peace Methodist Church,263,4791.0,Biology for WASSCE,NUTRITION IN PLANTS,1.0,1,1,3,37.7,37.7,100.0,HIGH,50.16,9.47,VERY_LOW
+Prince of Peace Methodist Church,263,4800.0,Biology for WASSCE,RESPIRATION IN MAMMALS,1.0,1,1,2,37.7,37.7,100.0,HIGH,50.16,9.47,VERY_LOW
+Prince of Peace Methodist Church,263,4802.0,Biology for WASSCE,MOVEMENT AND SUPPORT IN MAMMALS,1.0,1,1,1,37.7,37.7,100.0,HIGH,50.16,9.47,VERY_LOW
+SHS,258,1818.0,Elective Mathematics for WASSCE,SURDS,1.0,1,1,2,34.0,34.0,100.0,HIGH,47.2,9.47,VERY_LOW
+SHS,258,1830.0,Elective Mathematics for WASSCE,BINOMIAL THEOREM,1.0,1,1,44,34.0,34.0,100.0,HIGH,47.2,9.47,VERY_LOW
+SHS,262,2327.0,Integrated Science for WASSCE,Radioactivity,1.0,2,2,32,35.58,35.58,100.0,HIGH,48.46,12.27,VERY_LOW
+SHS,262,2376.0,Integrated Science for WASSCE,"Forces, Motion And Pressure",1.0,2,2,10,35.58,35.58,100.0,HIGH,48.46,12.27,VERY_LOW
+SHS,262,2386.0,Integrated Science for WASSCE,Pressure,1.0,2,2,5,35.58,35.58,100.0,HIGH,48.46,12.27,VERY_LOW
+SHS,262,2493.0,Integrated Science for WASSCE,Reproduction And Growth In Plants,1.0,1,1,28,30.0,30.0,100.0,HIGH,44.0,9.47,VERY_LOW
+SHS,262,2520.0,Integrated Science for WASSCE,Respiratory System,1.0,1,1,31,30.0,30.0,100.0,HIGH,44.0,9.47,VERY_LOW
+SHS,262,4720.0,Integrated Science for WASSCE,Preparation of Gases,1.0,2,2,4,35.58,35.58,100.0,HIGH,48.46,12.27,VERY_LOW
+SHS,262,4723.0,Integrated Science for WASSCE,Rates of Reaction,1.0,2,2,1,35.58,35.58,100.0,HIGH,48.46,12.27,VERY_LOW
+SHS,262,4724.0,Integrated Science for WASSCE,Tectonic Movements,1.0,1,1,1,30.0,30.0,100.0,HIGH,44.0,9.47,VERY_LOW
+SHS,291,5742.0,French for WASSCE,VERBES,1.0,2,2,17,30.441176470588236,30.441176470588236,100.0,HIGH,44.35,12.27,VERY_LOW
+SHS,291,5743.0,French for WASSCE,PRONOMS,1.0,2,2,11,33.541666666666664,33.541666666666664,100.0,HIGH,46.83,12.27,VERY_LOW
+SHS,291,5744.0,French for WASSCE,ADJECTIF,1.0,2,2,13,34.42307692307692,34.42307692307692,100.0,HIGH,47.54,12.27,VERY_LOW
+SHS,291,5745.0,French for WASSCE,DETERMINANTS,1.0,1,1,2,17.5,17.5,100.0,HIGH,34.0,9.47,VERY_LOW
+SHS,291,5746.0,French for WASSCE,ADVERBE,1.0,2,2,11,30.0,30.0,100.0,HIGH,44.0,12.27,VERY_LOW
+SHS,291,5749.0,French for WASSCE,EXPLIQUER LES SYSTEMES EDUCATIFS,1.0,1,1,1,45.0,45.0,100.0,HIGH,56.0,9.47,VERY_LOW
+SHS,291,5759.0,French for WASSCE,LA VOIX PASSIVE ET ACTIVE,1.0,2,2,3,35.833333333333336,35.833333333333336,100.0,HIGH,48.67,12.27,VERY_LOW
+SHS,291,5766.0,French for WASSCE,LA NEGATION,1.0,2,2,4,34.0,34.0,100.0,HIGH,47.2,12.27,VERY_LOW
+SHS,291,5767.0,French for WASSCE,PREPOSITIONS,1.0,2,2,3,35.833333333333336,35.833333333333336,100.0,HIGH,48.67,12.27,VERY_LOW
+SHS,291,5769.0,French for WASSCE,NOMS,1.0,2,2,5,23.0,23.0,100.0,HIGH,38.4,12.27,VERY_LOW
+School,263,4781.0,Biology for WASSCE,THE DIVERSITY OF LIVING THINGS,1.0,1,1,1,50.82,50.82,100.0,HIGH,60.66,9.47,VERY_LOW
+School,263,4784.0,Biology for WASSCE,INTERACTIONS IN NATURE I,1.0,1,1,2,50.82,50.82,100.0,HIGH,60.66,9.47,VERY_LOW
+School,263,4785.0,Biology for WASSCE,LIFE PROCESSES IN LIVING THINGS II,1.0,1,1,1,50.82,50.82,100.0,HIGH,60.66,9.47,VERY_LOW
+School,263,4789.0,Biology for WASSCE,THE CELL II,1.0,1,1,1,50.82,50.82,100.0,HIGH,60.66,9.47,VERY_LOW
+School,263,4791.0,Biology for WASSCE,NUTRITION IN PLANTS,1.0,1,1,3,50.82,50.82,100.0,HIGH,60.66,9.47,VERY_LOW
+School,263,4800.0,Biology for WASSCE,RESPIRATION IN MAMMALS,1.0,1,1,2,50.82,50.82,100.0,HIGH,60.66,9.47,VERY_LOW
+School,263,4802.0,Biology for WASSCE,MOVEMENT AND SUPPORT IN MAMMALS,1.0,1,1,1,50.82,50.82,100.0,HIGH,60.66,9.47,VERY_LOW
+Senior High School,262,2327.0,Integrated Science for WASSCE,Radioactivity,1.0,1,1,32,32.69,32.69,100.0,HIGH,46.15,9.47,VERY_LOW
+Senior High School,262,2376.0,Integrated Science for WASSCE,"Forces, Motion And Pressure",1.0,1,1,10,32.69,32.69,100.0,HIGH,46.15,9.47,VERY_LOW
+Senior High School,262,2386.0,Integrated Science for WASSCE,Pressure,1.0,1,1,5,32.69,32.69,100.0,HIGH,46.15,9.47,VERY_LOW
+Senior High School,262,4720.0,Integrated Science for WASSCE,Preparation of Gases,1.0,1,1,4,32.69,32.69,100.0,HIGH,46.15,9.47,VERY_LOW
+Senior High School,262,4723.0,Integrated Science for WASSCE,Rates of Reaction,1.0,1,1,1,32.69,32.69,100.0,HIGH,46.15,9.47,VERY_LOW
+Senior high school student,262,2327.0,Integrated Science for WASSCE,Radioactivity,1.0,1,1,32,7.69,7.69,100.0,HIGH,26.15,9.47,VERY_LOW
+Senior high school student,262,2376.0,Integrated Science for WASSCE,"Forces, Motion And Pressure",1.0,1,1,10,7.69,7.69,100.0,HIGH,26.15,9.47,VERY_LOW
+Senior high school student,262,2386.0,Integrated Science for WASSCE,Pressure,1.0,1,1,5,7.69,7.69,100.0,HIGH,26.15,9.47,VERY_LOW
+Senior high school student,262,4720.0,Integrated Science for WASSCE,Preparation of Gases,1.0,1,1,4,7.69,7.69,100.0,HIGH,26.15,9.47,VERY_LOW
+Senior high school student,262,4723.0,Integrated Science for WASSCE,Rates of Reaction,1.0,1,1,1,7.69,7.69,100.0,HIGH,26.15,9.47,VERY_LOW
+Shs,262,2124.0,Integrated Science for WASSCE,"Transport-diffusion, Osmosis And Plasmolysis",1.0,1,1,18,44.64,44.64,100.0,HIGH,55.71,9.47,VERY_LOW
+Shs,262,2137.0,Integrated Science for WASSCE,Solar Energy,1.0,1,1,4,44.64,44.64,100.0,HIGH,55.71,9.47,VERY_LOW
+Shs,262,2150.0,Integrated Science for WASSCE,Ecosystem,1.0,1,1,27,44.64,44.64,100.0,HIGH,55.71,9.47,VERY_LOW
+Shs,262,2520.0,Integrated Science for WASSCE,Respiratory System,1.0,1,1,2,44.64,44.64,100.0,HIGH,55.71,9.47,VERY_LOW
+Shs,262,4725.0,Integrated Science for WASSCE,Water Movements,1.0,1,1,5,44.64,44.64,100.0,HIGH,55.71,9.47,VERY_LOW
+Shs,263,2662.0,Biology for WASSCE,REPRODUCTION IN PLANTS,1.0,1,1,1,80.0,80.0,100.0,HIGH,84.0,9.47,VERY_LOW
+Shs,263,4780.0,Biology for WASSCE,THE CELL I,1.0,1,1,1,80.0,80.0,100.0,HIGH,84.0,9.47,VERY_LOW
+Shs,263,4781.0,Biology for WASSCE,THE DIVERSITY OF LIVING THINGS,1.0,1,1,1,80.0,80.0,100.0,HIGH,84.0,9.47,VERY_LOW
+Shs,263,4784.0,Biology for WASSCE,INTERACTIONS IN NATURE I,1.0,1,1,2,80.0,80.0,100.0,HIGH,84.0,9.47,VERY_LOW
+Shs,263,4787.0,Biology for WASSCE,HUMAN ECOLOGY AND HEALTH,1.0,1,1,2,80.0,80.0,100.0,HIGH,84.0,9.47,VERY_LOW
+Shs,263,4788.0,Biology for WASSCE,INTERACTIONS IN NATURE II,1.0,1,1,2,80.0,80.0,100.0,HIGH,84.0,9.47,VERY_LOW
+Shs,263,4790.0,Biology for WASSCE,PLANT ANATOMY,1.0,1,1,1,80.0,80.0,100.0,HIGH,84.0,9.47,VERY_LOW
+Shs,263,4791.0,Biology for WASSCE,NUTRITION IN PLANTS,1.0,1,1,1,80.0,80.0,100.0,HIGH,84.0,9.47,VERY_LOW
+Shs,263,4792.0,Biology for WASSCE,TRANSPORT SYSTEMS IN PLANTS,1.0,1,1,1,80.0,80.0,100.0,HIGH,84.0,9.47,VERY_LOW
+Shs,263,4799.0,Biology for WASSCE,TRANSPORT SYSTEMS IN MAMMALS,1.0,1,1,3,80.0,80.0,100.0,HIGH,84.0,9.47,VERY_LOW
+Shs,263,4802.0,Biology for WASSCE,MOVEMENT AND SUPPORT IN MAMMALS,1.0,1,1,1,80.0,80.0,100.0,HIGH,84.0,9.47,VERY_LOW
+Shs,263,4803.0,Biology for WASSCE,CONTROL AND COORDINATION IN MAMMALS,1.0,1,1,1,80.0,80.0,100.0,HIGH,84.0,9.47,VERY_LOW
+St.Augustine’s College,263,4781.0,Biology for WASSCE,THE DIVERSITY OF LIVING THINGS,1.0,1,1,1,63.93,63.93,100.0,HIGH,71.14,9.47,VERY_LOW
+St.Augustine’s College,263,4784.0,Biology for WASSCE,INTERACTIONS IN NATURE I,1.0,1,1,2,63.93,63.93,100.0,HIGH,71.14,9.47,VERY_LOW
+St.Augustine’s College,263,4785.0,Biology for WASSCE,LIFE PROCESSES IN LIVING THINGS II,1.0,1,1,1,63.93,63.93,100.0,HIGH,71.14,9.47,VERY_LOW
+St.Augustine’s College,263,4789.0,Biology for WASSCE,THE CELL II,1.0,1,1,1,63.93,63.93,100.0,HIGH,71.14,9.47,VERY_LOW
+St.Augustine’s College,263,4791.0,Biology for WASSCE,NUTRITION IN PLANTS,1.0,1,1,3,63.93,63.93,100.0,HIGH,71.14,9.47,VERY_LOW
+St.Augustine’s College,263,4800.0,Biology for WASSCE,RESPIRATION IN MAMMALS,1.0,1,1,2,63.93,63.93,100.0,HIGH,71.14,9.47,VERY_LOW
+St.Augustine’s College,263,4802.0,Biology for WASSCE,MOVEMENT AND SUPPORT IN MAMMALS,1.0,1,1,1,63.93,63.93,100.0,HIGH,71.14,9.47,VERY_LOW
+"St.Francis Xavier Junior seminary,",262,2493.0,Integrated Science for WASSCE,Reproduction And Growth In Plants,1.0,1,1,45,65.0,65.0,100.0,HIGH,72.0,9.47,VERY_LOW
+"St.Francis Xavier Junior seminary,",262,4723.0,Integrated Science for WASSCE,Rates of Reaction,1.0,1,1,15,65.0,65.0,100.0,HIGH,72.0,9.47,VERY_LOW
+St.Louis Senior high school,291,5742.0,French for WASSCE,VERBES,1.0,1,1,9,17.5,17.5,100.0,HIGH,34.0,9.47,VERY_LOW
+St.Louis Senior high school,291,5743.0,French for WASSCE,PRONOMS,1.0,1,1,4,17.5,17.5,100.0,HIGH,34.0,9.47,VERY_LOW
+St.Louis Senior high school,291,5744.0,French for WASSCE,ADJECTIF,1.0,1,1,5,17.5,17.5,100.0,HIGH,34.0,9.47,VERY_LOW
+St.Louis Senior high school,291,5745.0,French for WASSCE,DETERMINANTS,1.0,1,1,1,17.5,17.5,100.0,HIGH,34.0,9.47,VERY_LOW
+St.Louis Senior high school,291,5746.0,French for WASSCE,ADVERBE,1.0,1,1,3,17.5,17.5,100.0,HIGH,34.0,9.47,VERY_LOW
+St.Louis Senior high school,291,5748.0,French for WASSCE,ENTRER DANS LE MONDE DU TRAVAIL,1.0,1,1,1,17.5,17.5,100.0,HIGH,34.0,9.47,VERY_LOW
+St.Louis Senior high school,291,5759.0,French for WASSCE,LA VOIX PASSIVE ET ACTIVE,1.0,1,1,3,17.5,17.5,100.0,HIGH,34.0,9.47,VERY_LOW
+St.Louis Senior high school,291,5767.0,French for WASSCE,PREPOSITIONS,1.0,1,1,2,17.5,17.5,100.0,HIGH,34.0,9.47,VERY_LOW
+St.Louis Senior high school,291,5769.0,French for WASSCE,NOMS,1.0,1,1,5,17.5,17.5,100.0,HIGH,34.0,9.47,VERY_LOW
+Student,253,776.0,Mathematics for BECE,MULTIPLICATION OF TWO BINOMIALS,26.0,1,1,2,22.5,22.5,100.0,HIGH,38.0,9.47,VERY_LOW
+Student,263,4781.0,Biology for WASSCE,THE DIVERSITY OF LIVING THINGS,1.0,1,1,1,29.51,29.51,100.0,HIGH,43.61,9.47,VERY_LOW
+Student,263,4784.0,Biology for WASSCE,INTERACTIONS IN NATURE I,1.0,1,1,2,29.51,29.51,100.0,HIGH,43.61,9.47,VERY_LOW
+Student,263,4785.0,Biology for WASSCE,LIFE PROCESSES IN LIVING THINGS II,1.0,1,1,1,29.51,29.51,100.0,HIGH,43.61,9.47,VERY_LOW
+Student,263,4789.0,Biology for WASSCE,THE CELL II,1.0,1,1,1,29.51,29.51,100.0,HIGH,43.61,9.47,VERY_LOW
+Student,263,4791.0,Biology for WASSCE,NUTRITION IN PLANTS,1.0,1,1,3,29.51,29.51,100.0,HIGH,43.61,9.47,VERY_LOW
+Student,263,4800.0,Biology for WASSCE,RESPIRATION IN MAMMALS,1.0,1,1,2,29.51,29.51,100.0,HIGH,43.61,9.47,VERY_LOW
+Student,263,4802.0,Biology for WASSCE,MOVEMENT AND SUPPORT IN MAMMALS,1.0,1,1,1,29.51,29.51,100.0,HIGH,43.61,9.47,VERY_LOW
+TUSK FOUNDATION,253,776.0,Mathematics for BECE,MULTIPLICATION OF TWO BINOMIALS,26.0,1,1,2,25.0,25.0,100.0,HIGH,40.0,9.47,VERY_LOW
+TUSK FOUNDATION,262,2327.0,Integrated Science for WASSCE,Radioactivity,1.0,2,2,32,43.269999999999996,43.269999999999996,100.0,HIGH,54.62,12.27,VERY_LOW
+TUSK FOUNDATION,262,2376.0,Integrated Science for WASSCE,"Forces, Motion And Pressure",1.0,2,2,10,43.269999999999996,43.269999999999996,100.0,HIGH,54.62,12.27,VERY_LOW
+TUSK FOUNDATION,262,2386.0,Integrated Science for WASSCE,Pressure,1.0,2,2,5,43.269999999999996,43.269999999999996,100.0,HIGH,54.62,12.27,VERY_LOW
+TUSK FOUNDATION,262,4720.0,Integrated Science for WASSCE,Preparation of Gases,1.0,2,2,4,43.269999999999996,43.269999999999996,100.0,HIGH,54.62,12.27,VERY_LOW
+TUSK FOUNDATION,262,4723.0,Integrated Science for WASSCE,Rates of Reaction,1.0,2,2,1,43.269999999999996,43.269999999999996,100.0,HIGH,54.62,12.27,VERY_LOW
+TUSK FOUNDATION,263,4781.0,Biology for WASSCE,THE DIVERSITY OF LIVING THINGS,1.0,1,1,1,49.18,49.18,100.0,HIGH,59.34,9.47,VERY_LOW
+TUSK FOUNDATION,263,4784.0,Biology for WASSCE,INTERACTIONS IN NATURE I,1.0,1,1,2,49.18,49.18,100.0,HIGH,59.34,9.47,VERY_LOW
+TUSK FOUNDATION,263,4785.0,Biology for WASSCE,LIFE PROCESSES IN LIVING THINGS II,1.0,1,1,1,49.18,49.18,100.0,HIGH,59.34,9.47,VERY_LOW
+TUSK FOUNDATION,263,4789.0,Biology for WASSCE,THE CELL II,1.0,1,1,1,49.18,49.18,100.0,HIGH,59.34,9.47,VERY_LOW
+TUSK FOUNDATION,263,4791.0,Biology for WASSCE,NUTRITION IN PLANTS,1.0,1,1,3,49.18,49.18,100.0,HIGH,59.34,9.47,VERY_LOW
+TUSK FOUNDATION,263,4800.0,Biology for WASSCE,RESPIRATION IN MAMMALS,1.0,1,1,2,49.18,49.18,100.0,HIGH,59.34,9.47,VERY_LOW
+TUSK FOUNDATION,263,4802.0,Biology for WASSCE,MOVEMENT AND SUPPORT IN MAMMALS,1.0,1,1,1,49.18,49.18,100.0,HIGH,59.34,9.47,VERY_LOW
+Tusk,253,776.0,Mathematics for BECE,MULTIPLICATION OF TWO BINOMIALS,26.0,1,1,2,20.0,20.0,100.0,HIGH,36.0,9.47,VERY_LOW
+Tusk,262,2327.0,Integrated Science for WASSCE,Radioactivity,1.0,1,1,32,76.92,76.92,100.0,HIGH,81.54,9.47,VERY_LOW
+Tusk,262,2376.0,Integrated Science for WASSCE,"Forces, Motion And Pressure",1.0,1,1,10,76.92,76.92,100.0,HIGH,81.54,9.47,VERY_LOW
+Tusk,262,2386.0,Integrated Science for WASSCE,Pressure,1.0,1,1,5,76.92,76.92,100.0,HIGH,81.54,9.47,VERY_LOW
+Tusk,262,2493.0,Integrated Science for WASSCE,Reproduction And Growth In Plants,1.0,1,1,45,48.33,48.33,100.0,HIGH,58.66,9.47,VERY_LOW
+Tusk,262,4720.0,Integrated Science for WASSCE,Preparation of Gases,1.0,1,1,4,76.92,76.92,100.0,HIGH,81.54,9.47,VERY_LOW
+Tusk,262,4723.0,Integrated Science for WASSCE,Rates of Reaction,1.0,1,2,16,50.116875,50.116875,100.0,HIGH,60.09,10.27,VERY_LOW
+Tusk Foundation,262,2327.0,Integrated Science for WASSCE,Radioactivity,1.0,2,2,32,50.0,50.0,100.0,HIGH,60.0,12.27,VERY_LOW
+Tusk Foundation,262,2376.0,Integrated Science for WASSCE,"Forces, Motion And Pressure",1.0,2,2,10,50.0,50.0,100.0,HIGH,60.0,12.27,VERY_LOW
+Tusk Foundation,262,2386.0,Integrated Science for WASSCE,Pressure,1.0,2,2,5,50.0,50.0,100.0,HIGH,60.0,12.27,VERY_LOW
+Tusk Foundation,262,4720.0,Integrated Science for WASSCE,Preparation of Gases,1.0,2,2,4,50.0,50.0,100.0,HIGH,60.0,12.27,VERY_LOW
+Tusk Foundation,262,4723.0,Integrated Science for WASSCE,Rates of Reaction,1.0,2,2,1,50.0,50.0,100.0,HIGH,60.0,12.27,VERY_LOW
+Tusk foundation,262,2327.0,Integrated Science for WASSCE,Radioactivity,1.0,1,1,32,100.0,100.0,100.0,HIGH,100.0,9.47,VERY_LOW
+Tusk foundation,262,2376.0,Integrated Science for WASSCE,"Forces, Motion And Pressure",1.0,1,1,10,100.0,100.0,100.0,HIGH,100.0,9.47,VERY_LOW
+Tusk foundation,262,2386.0,Integrated Science for WASSCE,Pressure,1.0,1,1,5,100.0,100.0,100.0,HIGH,100.0,9.47,VERY_LOW
+Tusk foundation,262,4720.0,Integrated Science for WASSCE,Preparation of Gases,1.0,1,1,4,100.0,100.0,100.0,HIGH,100.0,9.47,VERY_LOW
+Tusk foundation,262,4723.0,Integrated Science for WASSCE,Rates of Reaction,1.0,1,1,1,100.0,100.0,100.0,HIGH,100.0,9.47,VERY_LOW
+UNKNOWN_UNMAPPED,70,416.0,Audit & Compliance,What is Money Laundering?,1.0,108,110,4,87.6241610738255,87.6241610738255,100.0,HIGH,90.1,86.67,HIGH
+UNKNOWN_UNMAPPED,70,417.0,Audit & Compliance,THE MONEY LAUNDERING PROCESS,2.0,4,4,1,75.0,75.0,100.0,HIGH,80.0,17.87,VERY_LOW
+UNKNOWN_UNMAPPED,70,418.0,Audit & Compliance,Letshego Ghana's Risk Based Approach,1.0,55,55,1,85.23636363636363,85.23636363636363,100.0,HIGH,88.19,86.67,HIGH
+UNKNOWN_UNMAPPED,70,421.0,Audit & Compliance,Politically Exposed Persons (PEPs),1.0,5,5,1,84.0,84.0,100.0,HIGH,87.2,20.67,LOW
+UNKNOWN_UNMAPPED,70,422.0,Audit & Compliance,SUSPICIOUS TRANSACTION REPORTING,10.0,51,51,1,87.76470588235294,87.76470588235294,100.0,HIGH,90.21,86.67,HIGH
+UNKNOWN_UNMAPPED,70,425.0,Audit & Compliance,Letshego Ghana's Rules around Anti-Corruption,1.0,8,10,4,95.45454545454545,95.45454545454545,100.0,HIGH,96.36,30.67,LOW
+UNKNOWN_UNMAPPED,70,426.0,Audit & Compliance,Further Resources : Aml/cft,1.0,9,15,5,86.4,86.4,100.0,HIGH,89.12,36.67,LOW
+UNKNOWN_UNMAPPED,70,427.0,Audit & Compliance,Key AML & CFT Concepts,1.0,12,15,4,92.57142857142857,92.57142857142857,100.0,HIGH,94.06,42.67,LOW
+UNKNOWN_UNMAPPED,70,428.0,Audit & Compliance,Aml Programme,1.0,10,10,2,94.0,94.0,100.0,HIGH,95.2,34.67,LOW
+UNKNOWN_UNMAPPED,70,429.0,Audit & Compliance,Anti-Money Laundering  Reporting Officer (AMLRO),1.0,4,4,1,75.0,75.0,100.0,HIGH,80.0,17.87,VERY_LOW
+UNKNOWN_UNMAPPED,70,430.0,Audit & Compliance,Training,1.0,6,6,1,100.0,100.0,100.0,HIGH,100.0,23.47,LOW
+UNKNOWN_UNMAPPED,253,776.0,Mathematics for BECE,MULTIPLICATION OF TWO BINOMIALS,26.0,9,9,2,54.72222222222222,54.72222222222222,100.0,HIGH,63.78,31.87,LOW
+UNKNOWN_UNMAPPED,254,4345.0,Social Studies for JHS- BECE,REQUIRES UPDATE,1.0,2,2,1,86.11,86.11,100.0,HIGH,88.89,12.27,VERY_LOW
+UNKNOWN_UNMAPPED,254,4390.0,Social Studies for JHS- BECE,The Environment and Environmental Problems,1.0,2,2,2,86.11,86.11,100.0,HIGH,88.89,12.27,VERY_LOW
+UNKNOWN_UNMAPPED,254,4391.0,Social Studies for JHS- BECE,Adolescent Reproductive Health,1.0,2,2,2,86.11,86.11,100.0,HIGH,88.89,12.27,VERY_LOW
+UNKNOWN_UNMAPPED,254,4392.0,Social Studies for JHS- BECE,Our Culture,1.0,2,2,3,86.11,86.11,100.0,HIGH,88.89,12.27,VERY_LOW
+UNKNOWN_UNMAPPED,254,4393.0,Social Studies for JHS- BECE,Mapping our environment,1.0,2,3,4,88.0942857142857,88.0942857142857,100.0,HIGH,90.48,13.07,VERY_LOW
+UNKNOWN_UNMAPPED,254,4394.0,Social Studies for JHS- BECE,Our Country Ghana,1.0,2,2,3,86.11,86.11,100.0,HIGH,88.89,12.27,VERY_LOW
+UNKNOWN_UNMAPPED,254,4395.0,Social Studies for JHS- BECE,Significance of some natural features of the earth,1.0,2,2,2,86.11,86.11,100.0,HIGH,88.89,12.27,VERY_LOW
+UNKNOWN_UNMAPPED,254,4396.0,Social Studies for JHS- BECE,Population growth and development,1.0,2,2,2,86.11,86.11,100.0,HIGH,88.89,12.27,VERY_LOW
+UNKNOWN_UNMAPPED,254,4399.0,Social Studies for JHS- BECE,Colonisation and national development,1.0,2,2,2,86.11,86.11,100.0,HIGH,88.89,12.27,VERY_LOW
+UNKNOWN_UNMAPPED,254,4400.0,Social Studies for JHS- BECE,Independence and nationhood,1.0,2,2,2,86.11,86.11,100.0,HIGH,88.89,12.27,VERY_LOW
+UNKNOWN_UNMAPPED,254,4401.0,Social Studies for JHS- BECE,Citizenship and human right,1.0,2,2,4,86.11,86.11,100.0,HIGH,88.89,12.27,VERY_LOW
+UNKNOWN_UNMAPPED,254,4407.0,Social Studies for JHS- BECE,Promoting political stability in Ghana,1.0,2,2,1,86.11,86.11,100.0,HIGH,88.89,12.27,VERY_LOW
+UNKNOWN_UNMAPPED,255,5673.0,English Language for BECE,Pronouns,1.0,2,2,2,43.75,43.75,100.0,HIGH,55.0,12.27,VERY_LOW
+UNKNOWN_UNMAPPED,262,2124.0,Integrated Science for WASSCE,"Transport-diffusion, Osmosis And Plasmolysis",1.0,3,3,18,41.07333333333333,41.07333333333333,100.0,HIGH,52.86,15.07,VERY_LOW
+UNKNOWN_UNMAPPED,262,2137.0,Integrated Science for WASSCE,Solar Energy,1.0,3,3,4,41.07333333333333,41.07333333333333,100.0,HIGH,52.86,15.07,VERY_LOW
+UNKNOWN_UNMAPPED,262,2150.0,Integrated Science for WASSCE,Ecosystem,1.0,3,3,27,41.07333333333333,41.07333333333333,100.0,HIGH,52.86,15.07,VERY_LOW
+UNKNOWN_UNMAPPED,262,2327.0,Integrated Science for WASSCE,Radioactivity,1.0,13,13,32,51.480000000000004,51.480000000000004,100.0,HIGH,61.18,43.07,LOW
+UNKNOWN_UNMAPPED,262,2376.0,Integrated Science for WASSCE,"Forces, Motion And Pressure",1.0,13,13,10,51.48,51.48,100.0,HIGH,61.18,43.07,LOW
+UNKNOWN_UNMAPPED,262,2386.0,Integrated Science for WASSCE,Pressure,1.0,13,13,5,51.48,51.48,100.0,HIGH,61.18,43.07,LOW
+UNKNOWN_UNMAPPED,262,2493.0,Integrated Science for WASSCE,Reproduction And Growth In Plants,1.0,2,2,45,23.33,23.33,100.0,HIGH,38.66,12.27,VERY_LOW
+UNKNOWN_UNMAPPED,262,2520.0,Integrated Science for WASSCE,Respiratory System,1.0,3,3,2,41.07333333333333,41.07333333333333,100.0,HIGH,52.86,15.07,VERY_LOW
+UNKNOWN_UNMAPPED,262,4720.0,Integrated Science for WASSCE,Preparation of Gases,1.0,13,13,4,51.480000000000004,51.480000000000004,100.0,HIGH,61.18,43.07,LOW
+UNKNOWN_UNMAPPED,262,4723.0,Integrated Science for WASSCE,Rates of Reaction,1.0,14,15,16,31.840465116279066,31.840465116279066,100.0,HIGH,45.47,46.67,LOW
+UNKNOWN_UNMAPPED,262,4725.0,Integrated Science for WASSCE,Water Movements,1.0,3,3,5,41.07333333333334,41.07333333333334,100.0,HIGH,52.86,15.07,VERY_LOW
+UNKNOWN_UNMAPPED,263,2662.0,Biology for WASSCE,REPRODUCTION IN PLANTS,1.0,2,2,1,52.5,52.5,100.0,HIGH,62.0,12.27,VERY_LOW
+UNKNOWN_UNMAPPED,263,4780.0,Biology for WASSCE,THE CELL I,1.0,3,3,3,28.79,28.79,100.0,HIGH,43.03,15.07,VERY_LOW
+UNKNOWN_UNMAPPED,263,4781.0,Biology for WASSCE,THE DIVERSITY OF LIVING THINGS,1.0,8,10,8,19.087333333333333,19.087333333333333,100.0,HIGH,35.27,30.67,LOW
+UNKNOWN_UNMAPPED,263,4782.0,Biology for WASSCE,LIFE PROCESSES IN LIVING THINGS I,1.0,1,1,1,5.08,5.08,100.0,HIGH,24.06,9.47,VERY_LOW
+UNKNOWN_UNMAPPED,263,4783.0,Biology for WASSCE,"STRUCTURE, MODE OF LIFE AND ECONOMIC IMPORTANCE OF SOME INSECTS",1.0,1,1,1,93.33,93.33,100.0,HIGH,94.66,9.47,VERY_LOW
+UNKNOWN_UNMAPPED,263,4784.0,Biology for WASSCE,INTERACTIONS IN NATURE I,1.0,8,11,6,28.670499999999997,28.670499999999997,100.0,HIGH,42.94,31.47,LOW
+UNKNOWN_UNMAPPED,263,4785.0,Biology for WASSCE,LIFE PROCESSES IN LIVING THINGS II,1.0,8,8,2,19.48875,19.48875,100.0,HIGH,35.59,29.07,LOW
+UNKNOWN_UNMAPPED,263,4787.0,Biology for WASSCE,HUMAN ECOLOGY AND HEALTH,1.0,3,4,6,35.23875,35.23875,100.0,HIGH,48.19,15.87,VERY_LOW
+UNKNOWN_UNMAPPED,263,4788.0,Biology for WASSCE,INTERACTIONS IN NATURE II,1.0,2,3,4,66.11,66.11,100.0,HIGH,72.89,13.07,VERY_LOW
+UNKNOWN_UNMAPPED,263,4789.0,Biology for WASSCE,THE CELL II,1.0,7,8,3,29.352222222222224,29.352222222222224,100.0,HIGH,43.48,27.07,LOW
+UNKNOWN_UNMAPPED,263,4790.0,Biology for WASSCE,PLANT ANATOMY,1.0,3,4,3,41.6875,41.6875,100.0,HIGH,53.35,15.87,VERY_LOW
+UNKNOWN_UNMAPPED,263,4791.0,Biology for WASSCE,NUTRITION IN PLANTS,1.0,8,11,6,24.7696,24.7696,100.0,HIGH,39.82,31.47,LOW
+UNKNOWN_UNMAPPED,263,4792.0,Biology for WASSCE,TRANSPORT SYSTEMS IN PLANTS,1.0,2,2,1,52.5,52.5,100.0,HIGH,62.0,12.27,VERY_LOW
+UNKNOWN_UNMAPPED,263,4796.0,Biology for WASSCE,GROWTH AND DEVELOPMENT IN PLANTS,1.0,1,1,2,5.08,5.08,100.0,HIGH,24.06,9.47,VERY_LOW
+UNKNOWN_UNMAPPED,263,4798.0,Biology for WASSCE,NUTRITION IN MAMMALS,1.0,1,1,2,5.08,5.08,100.0,HIGH,24.06,9.47,VERY_LOW
+UNKNOWN_UNMAPPED,263,4799.0,Biology for WASSCE,TRANSPORT SYSTEMS IN MAMMALS,1.0,2,3,4,58.332857142857144,58.332857142857144,100.0,HIGH,66.67,13.07,VERY_LOW
+UNKNOWN_UNMAPPED,263,4800.0,Biology for WASSCE,RESPIRATION IN MAMMALS,1.0,7,7,2,21.54714285714286,21.54714285714286,100.0,HIGH,37.24,26.27,LOW
+UNKNOWN_UNMAPPED,263,4801.0,Biology for WASSCE,EXCRETION AND HOMEOSTASIS IN MAMMALS,1.0,1,1,1,56.67,56.67,100.0,HIGH,65.34,9.47,VERY_LOW
+UNKNOWN_UNMAPPED,263,4802.0,Biology for WASSCE,MOVEMENT AND SUPPORT IN MAMMALS,1.0,8,10,5,22.589166666666667,22.589166666666667,100.0,HIGH,38.07,30.67,LOW
+UNKNOWN_UNMAPPED,263,4803.0,Biology for WASSCE,CONTROL AND COORDINATION IN MAMMALS,1.0,3,4,3,41.6875,41.6875,100.0,HIGH,53.35,15.87,VERY_LOW
+UNKNOWN_UNMAPPED,263,4804.0,Biology for WASSCE,REPRODUCTION IN MAMMALS,1.0,1,1,2,56.67,56.67,100.0,HIGH,65.34,9.47,VERY_LOW
+UNKNOWN_UNMAPPED,263,4805.0,Biology for WASSCE,"GENETICS, VARIATION AND EVOLUTION",1.0,1,1,3,5.08,5.08,100.0,HIGH,24.06,9.47,VERY_LOW
+UNKNOWN_UNMAPPED,291,5742.0,French for WASSCE,VERBES,1.0,5,5,40,37.888888888888886,37.888888888888886,100.0,HIGH,50.31,20.67,LOW
+UNKNOWN_UNMAPPED,291,5743.0,French for WASSCE,PRONOMS,1.0,5,5,24,41.0,41.0,100.0,HIGH,52.8,20.67,LOW
+UNKNOWN_UNMAPPED,291,5744.0,French for WASSCE,ADJECTIF,1.0,5,5,33,42.22222222222222,42.22222222222222,100.0,HIGH,53.78,20.67,LOW
+UNKNOWN_UNMAPPED,291,5745.0,French for WASSCE,DETERMINANTS,1.0,2,2,2,70.0,70.0,100.0,HIGH,76.0,12.27,VERY_LOW
+UNKNOWN_UNMAPPED,291,5746.0,French for WASSCE,ADVERBE,1.0,4,4,7,47.142857142857146,47.142857142857146,100.0,HIGH,57.71,17.87,VERY_LOW
+UNKNOWN_UNMAPPED,291,5751.0,French for WASSCE,DECRIRE LES MOYENS DE TRANSPORT ET DE COMMUNICATION,1.0,1,1,1,45.0,45.0,100.0,HIGH,56.0,9.47,VERY_LOW
+UNKNOWN_UNMAPPED,291,5759.0,French for WASSCE,LA VOIX PASSIVE ET ACTIVE,1.0,4,4,12,30.576923076923077,30.576923076923077,100.0,HIGH,44.46,17.87,VERY_LOW
+UNKNOWN_UNMAPPED,291,5766.0,French for WASSCE,LA NEGATION,1.0,3,3,5,61.666666666666664,61.666666666666664,100.0,HIGH,69.33,15.07,VERY_LOW
+UNKNOWN_UNMAPPED,291,5767.0,French for WASSCE,PREPOSITIONS,1.0,5,5,8,42.22222222222222,42.22222222222222,100.0,HIGH,53.78,20.67,LOW
+UNKNOWN_UNMAPPED,291,5768.0,French for WASSCE,CONJUNCTIONS,1.0,2,2,3,78.33333333333333,78.33333333333333,100.0,HIGH,82.67,12.27,VERY_LOW
+UNKNOWN_UNMAPPED,291,5769.0,French for WASSCE,NOMS,1.0,5,5,22,45.0,45.0,100.0,HIGH,56.0,20.67,LOW
+afb,70,416.0,Audit & Compliance,What is Money Laundering?,1.0,4,4,3,77.6,77.6,100.0,HIGH,82.08,17.87,VERY_LOW
+afb,70,418.0,Audit & Compliance,Letshego Ghana's Risk Based Approach,1.0,2,2,1,74.0,74.0,100.0,HIGH,79.2,12.27,VERY_LOW
+afb,70,422.0,Audit & Compliance,SUSPICIOUS TRANSACTION REPORTING,10.0,4,4,1,74.0,74.0,100.0,HIGH,79.2,17.87,VERY_LOW
+eCampus,597,6460.0,English Language for GES -  SHS,UNIT 5: GENRES OF LITERATURE,1.0,1,1,4,70.0,70.0,100.0,HIGH,76.0,9.47,VERY_LOW
+eCampus,597,6461.0,English Language for GES -  SHS,UNIT 6: RECOGNISE THE MAIN IDEAS IN LEVEL-APPROPRIATE ORAL TEXTS.,1.0,1,1,1,70.0,70.0,100.0,HIGH,76.0,9.47,VERY_LOW
+eCampus,597,6463.0,English Language for GES -  SHS,UNIT 8: CHARACTER/CHARACTERISATION,1.0,1,1,1,70.0,70.0,100.0,HIGH,76.0,9.47,VERY_LOW
+eCampus,597,6469.0,English Language for GES -  SHS,UNIT 14: CONSONANT SOUNDS,1.0,1,1,4,70.0,70.0,100.0,HIGH,76.0,9.47,VERY_LOW
+eCampus LLC,254,4345.0,Social Studies for JHS- BECE,REQUIRES UPDATE,1.0,1,1,1,11.11,11.11,100.0,HIGH,28.89,9.47,VERY_LOW
+eCampus LLC,254,4390.0,Social Studies for JHS- BECE,The Environment and Environmental Problems,1.0,1,1,2,11.11,11.11,100.0,HIGH,28.89,9.47,VERY_LOW
+eCampus LLC,254,4391.0,Social Studies for JHS- BECE,Adolescent Reproductive Health,1.0,1,1,2,11.11,11.11,100.0,HIGH,28.89,9.47,VERY_LOW
+eCampus LLC,254,4392.0,Social Studies for JHS- BECE,Our Culture,1.0,1,1,3,11.11,11.11,100.0,HIGH,28.89,9.47,VERY_LOW
+eCampus LLC,254,4393.0,Social Studies for JHS- BECE,Mapping our environment,1.0,1,2,4,8.3325,8.3325,100.0,HIGH,26.67,10.27,VERY_LOW
+eCampus LLC,254,4394.0,Social Studies for JHS- BECE,Our Country Ghana,1.0,1,1,3,11.11,11.11,100.0,HIGH,28.89,9.47,VERY_LOW
+eCampus LLC,254,4395.0,Social Studies for JHS- BECE,Significance of some natural features of the earth,1.0,1,1,2,11.11,11.11,100.0,HIGH,28.89,9.47,VERY_LOW
+eCampus LLC,254,4396.0,Social Studies for JHS- BECE,Population growth and development,1.0,1,1,2,11.11,11.11,100.0,HIGH,28.89,9.47,VERY_LOW
+eCampus LLC,254,4399.0,Social Studies for JHS- BECE,Colonisation and national development,1.0,1,1,2,11.11,11.11,100.0,HIGH,28.89,9.47,VERY_LOW
+eCampus LLC,254,4400.0,Social Studies for JHS- BECE,Independence and nationhood,1.0,1,1,2,11.11,11.11,100.0,HIGH,28.89,9.47,VERY_LOW
+eCampus LLC,254,4401.0,Social Studies for JHS- BECE,Citizenship and human right,1.0,1,1,4,11.11,11.11,100.0,HIGH,28.89,9.47,VERY_LOW
+eCampus LLC,254,4407.0,Social Studies for JHS- BECE,Promoting political stability in Ghana,1.0,1,1,1,11.11,11.11,100.0,HIGH,28.89,9.47,VERY_LOW
+eCampus LLC,262,2327.0,Integrated Science for WASSCE,Radioactivity,1.0,1,1,32,11.54,11.54,100.0,HIGH,29.23,9.47,VERY_LOW
+eCampus LLC,262,2376.0,Integrated Science for WASSCE,"Forces, Motion And Pressure",1.0,1,1,10,11.54,11.54,100.0,HIGH,29.23,9.47,VERY_LOW
+eCampus LLC,262,2386.0,Integrated Science for WASSCE,Pressure,1.0,1,1,5,11.54,11.54,100.0,HIGH,29.23,9.47,VERY_LOW
+eCampus LLC,262,4720.0,Integrated Science for WASSCE,Preparation of Gases,1.0,1,1,4,11.54,11.54,100.0,HIGH,29.23,9.47,VERY_LOW
+eCampus LLC,262,4723.0,Integrated Science for WASSCE,Rates of Reaction,1.0,1,1,1,11.54,11.54,100.0,HIGH,29.23,9.47,VERY_LOW
+eCampus LLC,263,2662.0,Biology for WASSCE,REPRODUCTION IN PLANTS,1.0,1,1,3,18.33,18.33,100.0,HIGH,34.66,9.47,VERY_LOW
+eCampus LLC,263,4780.0,Biology for WASSCE,THE CELL I,1.0,1,1,1,18.33,18.33,100.0,HIGH,34.66,9.47,VERY_LOW
+eCampus LLC,263,4781.0,Biology for WASSCE,THE DIVERSITY OF LIVING THINGS,1.0,1,1,1,18.33,18.33,100.0,HIGH,34.66,9.47,VERY_LOW
+eCampus LLC,263,4782.0,Biology for WASSCE,LIFE PROCESSES IN LIVING THINGS I,1.0,1,1,1,18.33,18.33,100.0,HIGH,34.66,9.47,VERY_LOW
+eCampus LLC,263,4784.0,Biology for WASSCE,INTERACTIONS IN NATURE I,1.0,1,1,1,18.33,18.33,100.0,HIGH,34.66,9.47,VERY_LOW
+eCampus LLC,263,4787.0,Biology for WASSCE,HUMAN ECOLOGY AND HEALTH,1.0,1,1,1,18.33,18.33,100.0,HIGH,34.66,9.47,VERY_LOW
+eCampus LLC,263,4788.0,Biology for WASSCE,INTERACTIONS IN NATURE II,1.0,1,1,4,18.33,18.33,100.0,HIGH,34.66,9.47,VERY_LOW
+eCampus LLC,263,4789.0,Biology for WASSCE,THE CELL II,1.0,1,1,1,18.33,18.33,100.0,HIGH,34.66,9.47,VERY_LOW
+eCampus LLC,263,4791.0,Biology for WASSCE,NUTRITION IN PLANTS,1.0,1,1,1,18.33,18.33,100.0,HIGH,34.66,9.47,VERY_LOW
+eCampus LLC,263,4796.0,Biology for WASSCE,GROWTH AND DEVELOPMENT IN PLANTS,1.0,1,1,1,18.33,18.33,100.0,HIGH,34.66,9.47,VERY_LOW
+eCampus LLC,263,4800.0,Biology for WASSCE,RESPIRATION IN MAMMALS,1.0,1,1,2,18.33,18.33,100.0,HIGH,34.66,9.47,VERY_LOW
+eCampus LLC,263,4801.0,Biology for WASSCE,EXCRETION AND HOMEOSTASIS IN MAMMALS,1.0,1,1,1,18.33,18.33,100.0,HIGH,34.66,9.47,VERY_LOW
+eCampus LLC,263,4802.0,Biology for WASSCE,MOVEMENT AND SUPPORT IN MAMMALS,1.0,1,1,2,18.33,18.33,100.0,HIGH,34.66,9.47,VERY_LOW
+eCampus LLC,263,4803.0,Biology for WASSCE,CONTROL AND COORDINATION IN MAMMALS,1.0,1,1,1,18.33,18.33,100.0,HIGH,34.66,9.47,VERY_LOW
+eCampus LLC,263,4804.0,Biology for WASSCE,REPRODUCTION IN MAMMALS,1.0,1,1,2,18.33,18.33,100.0,HIGH,34.66,9.47,VERY_LOW
+eCampus LLC,263,4805.0,Biology for WASSCE,"GENETICS, VARIATION AND EVOLUTION",1.0,1,1,1,18.33,18.33,100.0,HIGH,34.66,9.47,VERY_LOW
+gsts,262,2327.0,Integrated Science for WASSCE,Radioactivity,1.0,1,1,32,50.0,50.0,100.0,HIGH,60.0,9.47,VERY_LOW
+gsts,262,2376.0,Integrated Science for WASSCE,"Forces, Motion And Pressure",1.0,1,1,10,50.0,50.0,100.0,HIGH,60.0,9.47,VERY_LOW
+gsts,262,2386.0,Integrated Science for WASSCE,Pressure,1.0,1,1,5,50.0,50.0,100.0,HIGH,60.0,9.47,VERY_LOW
+gsts,262,4720.0,Integrated Science for WASSCE,Preparation of Gases,1.0,1,1,4,50.0,50.0,100.0,HIGH,60.0,9.47,VERY_LOW
+gsts,262,4723.0,Integrated Science for WASSCE,Rates of Reaction,1.0,1,1,1,50.0,50.0,100.0,HIGH,60.0,9.47,VERY_LOW
+jhs,253,776.0,Mathematics for BECE,MULTIPLICATION OF TWO BINOMIALS,26.0,1,1,2,17.5,17.5,100.0,HIGH,34.0,9.47,VERY_LOW
+letshego,70,416.0,Audit & Compliance,What is Money Laundering?,1.0,5,5,2,87.42857142857143,87.42857142857143,100.0,HIGH,89.94,20.67,LOW
+letshego,70,418.0,Audit & Compliance,Letshego Ghana's Risk Based Approach,1.0,3,3,1,88.0,88.0,100.0,HIGH,90.4,15.07,VERY_LOW
+letshego,70,422.0,Audit & Compliance,SUSPICIOUS TRANSACTION REPORTING,10.0,2,2,1,90.0,90.0,100.0,HIGH,92.0,12.27,VERY_LOW
+lotus educational centre,253,776.0,Mathematics for BECE,MULTIPLICATION OF TWO BINOMIALS,26.0,1,1,2,7.5,7.5,100.0,HIGH,26.0,9.47,VERY_LOW
+nagie's angels educational centre,254,4345.0,Social Studies for JHS- BECE,REQUIRES UPDATE,1.0,1,1,1,58.33,58.33,100.0,HIGH,66.66,9.47,VERY_LOW
+nagie's angels educational centre,254,4390.0,Social Studies for JHS- BECE,The Environment and Environmental Problems,1.0,1,1,2,58.33,58.33,100.0,HIGH,66.66,9.47,VERY_LOW
+nagie's angels educational centre,254,4391.0,Social Studies for JHS- BECE,Adolescent Reproductive Health,1.0,1,1,2,58.33,58.33,100.0,HIGH,66.66,9.47,VERY_LOW
+nagie's angels educational centre,254,4392.0,Social Studies for JHS- BECE,Our Culture,1.0,1,1,3,58.330000000000005,58.330000000000005,100.0,HIGH,66.66,9.47,VERY_LOW
+nagie's angels educational centre,254,4393.0,Social Studies for JHS- BECE,Mapping our environment,1.0,1,1,3,58.330000000000005,58.330000000000005,100.0,HIGH,66.66,9.47,VERY_LOW
+nagie's angels educational centre,254,4394.0,Social Studies for JHS- BECE,Our Country Ghana,1.0,1,1,3,58.330000000000005,58.330000000000005,100.0,HIGH,66.66,9.47,VERY_LOW
+nagie's angels educational centre,254,4395.0,Social Studies for JHS- BECE,Significance of some natural features of the earth,1.0,1,1,2,58.33,58.33,100.0,HIGH,66.66,9.47,VERY_LOW
+nagie's angels educational centre,254,4396.0,Social Studies for JHS- BECE,Population growth and development,1.0,1,1,2,58.33,58.33,100.0,HIGH,66.66,9.47,VERY_LOW
+nagie's angels educational centre,254,4399.0,Social Studies for JHS- BECE,Colonisation and national development,1.0,1,1,2,58.33,58.33,100.0,HIGH,66.66,9.47,VERY_LOW
+nagie's angels educational centre,254,4400.0,Social Studies for JHS- BECE,Independence and nationhood,1.0,1,1,2,58.33,58.33,100.0,HIGH,66.66,9.47,VERY_LOW
+nagie's angels educational centre,254,4401.0,Social Studies for JHS- BECE,Citizenship and human right,1.0,1,1,4,58.33,58.33,100.0,HIGH,66.66,9.47,VERY_LOW
+nagie's angels educational centre,254,4407.0,Social Studies for JHS- BECE,Promoting political stability in Ghana,1.0,1,1,1,58.33,58.33,100.0,HIGH,66.66,9.47,VERY_LOW
+odasco,262,2124.0,Integrated Science for WASSCE,"Transport-diffusion, Osmosis And Plasmolysis",1.0,1,1,18,7.139999999999999,7.139999999999999,100.0,HIGH,25.71,9.47,VERY_LOW
+odasco,262,2137.0,Integrated Science for WASSCE,Solar Energy,1.0,1,1,4,7.14,7.14,100.0,HIGH,25.71,9.47,VERY_LOW
+odasco,262,2150.0,Integrated Science for WASSCE,Ecosystem,1.0,1,1,27,7.14,7.14,100.0,HIGH,25.71,9.47,VERY_LOW
+odasco,262,2520.0,Integrated Science for WASSCE,Respiratory System,1.0,1,1,2,7.14,7.14,100.0,HIGH,25.71,9.47,VERY_LOW
+odasco,262,4725.0,Integrated Science for WASSCE,Water Movements,1.0,1,1,5,7.139999999999999,7.139999999999999,100.0,HIGH,25.71,9.47,VERY_LOW
+paris saclay,262,2327.0,Integrated Science for WASSCE,Radioactivity,1.0,1,1,32,7.69,7.69,100.0,HIGH,26.15,9.47,VERY_LOW
+paris saclay,262,2376.0,Integrated Science for WASSCE,"Forces, Motion And Pressure",1.0,1,1,10,7.69,7.69,100.0,HIGH,26.15,9.47,VERY_LOW
+paris saclay,262,2386.0,Integrated Science for WASSCE,Pressure,1.0,1,1,5,7.69,7.69,100.0,HIGH,26.15,9.47,VERY_LOW
+paris saclay,262,4720.0,Integrated Science for WASSCE,Preparation of Gases,1.0,1,1,4,7.69,7.69,100.0,HIGH,26.15,9.47,VERY_LOW
+paris saclay,262,4723.0,Integrated Science for WASSCE,Rates of Reaction,1.0,1,1,1,7.69,7.69,100.0,HIGH,26.15,9.47,VERY_LOW
+school,291,5742.0,French for WASSCE,VERBES,1.0,1,1,9,52.5,52.5,100.0,HIGH,62.0,9.47,VERY_LOW
+school,291,5743.0,French for WASSCE,PRONOMS,1.0,1,1,7,52.5,52.5,100.0,HIGH,62.0,9.47,VERY_LOW
+school,291,5744.0,French for WASSCE,ADJECTIF,1.0,1,1,7,52.5,52.5,100.0,HIGH,62.0,9.47,VERY_LOW
+school,291,5759.0,French for WASSCE,LA VOIX PASSIVE ET ACTIVE,1.0,1,1,2,52.5,52.5,100.0,HIGH,62.0,9.47,VERY_LOW
+school,291,5767.0,French for WASSCE,PREPOSITIONS,1.0,1,1,2,52.5,52.5,100.0,HIGH,62.0,9.47,VERY_LOW
+school,291,5769.0,French for WASSCE,NOMS,1.0,1,1,7,52.5,52.5,100.0,HIGH,62.0,9.47,VERY_LOW
+serwaa nyarko girls,263,4781.0,Biology for WASSCE,THE DIVERSITY OF LIVING THINGS,1.0,1,1,1,21.31,21.31,100.0,HIGH,37.05,9.47,VERY_LOW
+serwaa nyarko girls,263,4784.0,Biology for WASSCE,INTERACTIONS IN NATURE I,1.0,1,1,2,21.31,21.31,100.0,HIGH,37.05,9.47,VERY_LOW
+serwaa nyarko girls,263,4785.0,Biology for WASSCE,LIFE PROCESSES IN LIVING THINGS II,1.0,1,1,1,21.31,21.31,100.0,HIGH,37.05,9.47,VERY_LOW
+serwaa nyarko girls,263,4789.0,Biology for WASSCE,THE CELL II,1.0,1,1,1,21.31,21.31,100.0,HIGH,37.05,9.47,VERY_LOW
+serwaa nyarko girls,263,4791.0,Biology for WASSCE,NUTRITION IN PLANTS,1.0,1,1,3,21.31,21.31,100.0,HIGH,37.05,9.47,VERY_LOW
+serwaa nyarko girls,263,4800.0,Biology for WASSCE,RESPIRATION IN MAMMALS,1.0,1,1,2,21.31,21.31,100.0,HIGH,37.05,9.47,VERY_LOW
+serwaa nyarko girls,263,4802.0,Biology for WASSCE,MOVEMENT AND SUPPORT IN MAMMALS,1.0,1,1,1,21.31,21.31,100.0,HIGH,37.05,9.47,VERY_LOW
+shs,263,4781.0,Biology for WASSCE,THE DIVERSITY OF LIVING THINGS,1.0,1,1,1,34.43,34.43,100.0,HIGH,47.54,9.47,VERY_LOW
+shs,263,4784.0,Biology for WASSCE,INTERACTIONS IN NATURE I,1.0,1,1,2,34.43,34.43,100.0,HIGH,47.54,9.47,VERY_LOW
+shs,263,4785.0,Biology for WASSCE,LIFE PROCESSES IN LIVING THINGS II,1.0,1,1,1,34.43,34.43,100.0,HIGH,47.54,9.47,VERY_LOW
+shs,263,4789.0,Biology for WASSCE,THE CELL II,1.0,1,1,1,34.43,34.43,100.0,HIGH,47.54,9.47,VERY_LOW
+shs,263,4791.0,Biology for WASSCE,NUTRITION IN PLANTS,1.0,1,1,3,34.43,34.43,100.0,HIGH,47.54,9.47,VERY_LOW
+shs,263,4800.0,Biology for WASSCE,RESPIRATION IN MAMMALS,1.0,1,1,2,34.43,34.43,100.0,HIGH,47.54,9.47,VERY_LOW
+shs,263,4802.0,Biology for WASSCE,MOVEMENT AND SUPPORT IN MAMMALS,1.0,1,1,1,34.43,34.43,100.0,HIGH,47.54,9.47,VERY_LOW
+shs,291,5742.0,French for WASSCE,VERBES,1.0,1,1,10,52.5,52.5,100.0,HIGH,62.0,9.47,VERY_LOW
+shs,291,5743.0,French for WASSCE,PRONOMS,1.0,1,1,3,52.5,52.5,100.0,HIGH,62.0,9.47,VERY_LOW
+shs,291,5744.0,French for WASSCE,ADJECTIF,1.0,1,1,7,52.5,52.5,100.0,HIGH,62.0,9.47,VERY_LOW
+shs,291,5746.0,French for WASSCE,ADVERBE,1.0,1,1,3,52.5,52.5,100.0,HIGH,62.0,9.47,VERY_LOW
+shs,291,5759.0,French for WASSCE,LA VOIX PASSIVE ET ACTIVE,1.0,1,1,1,52.5,52.5,100.0,HIGH,62.0,9.47,VERY_LOW
+shs,291,5767.0,French for WASSCE,PREPOSITIONS,1.0,1,1,2,52.5,52.5,100.0,HIGH,62.0,9.47,VERY_LOW
+shs,291,5768.0,French for WASSCE,CONJUNCTIONS,1.0,1,1,2,52.5,52.5,100.0,HIGH,62.0,9.47,VERY_LOW
+shs,291,5769.0,French for WASSCE,NOMS,1.0,1,1,8,52.5,52.5,100.0,HIGH,62.0,9.47,VERY_LOW
+student,262,2327.0,Integrated Science for WASSCE,Radioactivity,1.0,1,1,32,25.0,25.0,100.0,HIGH,40.0,9.47,VERY_LOW
+student,262,2376.0,Integrated Science for WASSCE,"Forces, Motion And Pressure",1.0,1,1,10,25.0,25.0,100.0,HIGH,40.0,9.47,VERY_LOW
+student,262,2386.0,Integrated Science for WASSCE,Pressure,1.0,1,1,5,25.0,25.0,100.0,HIGH,40.0,9.47,VERY_LOW
+student,262,4720.0,Integrated Science for WASSCE,Preparation of Gases,1.0,1,1,4,25.0,25.0,100.0,HIGH,40.0,9.47,VERY_LOW
+student,262,4723.0,Integrated Science for WASSCE,Rates of Reaction,1.0,1,1,1,25.0,25.0,100.0,HIGH,40.0,9.47,VERY_LOW
+studying,262,2493.0,Integrated Science for WASSCE,Reproduction And Growth In Plants,1.0,1,1,45,23.33,23.33,100.0,HIGH,38.66,9.47,VERY_LOW
+studying,262,4723.0,Integrated Science for WASSCE,Rates of Reaction,1.0,1,1,15,23.33,23.33,100.0,HIGH,38.66,9.47,VERY_LOW
+tusk foundation,262,2327.0,Integrated Science for WASSCE,Radioactivity,1.0,1,1,32,61.54,61.54,100.0,HIGH,69.23,9.47,VERY_LOW
+tusk foundation,262,2376.0,Integrated Science for WASSCE,"Forces, Motion And Pressure",1.0,1,1,10,61.54,61.54,100.0,HIGH,69.23,9.47,VERY_LOW
+tusk foundation,262,2386.0,Integrated Science for WASSCE,Pressure,1.0,1,1,5,61.54,61.54,100.0,HIGH,69.23,9.47,VERY_LOW
+tusk foundation,262,4720.0,Integrated Science for WASSCE,Preparation of Gases,1.0,1,1,4,61.54,61.54,100.0,HIGH,69.23,9.47,VERY_LOW
+tusk foundation,262,4723.0,Integrated Science for WASSCE,Rates of Reaction,1.0,1,1,1,61.54,61.54,100.0,HIGH,69.23,9.47,VERY_LOW
+tusk foundation,263,2662.0,Biology for WASSCE,REPRODUCTION IN PLANTS,1.0,1,1,3,55.0,55.0,100.0,HIGH,64.0,9.47,VERY_LOW
+tusk foundation,263,4780.0,Biology for WASSCE,THE CELL I,1.0,1,1,1,55.0,55.0,100.0,HIGH,64.0,9.47,VERY_LOW
+tusk foundation,263,4781.0,Biology for WASSCE,THE DIVERSITY OF LIVING THINGS,1.0,1,1,1,55.0,55.0,100.0,HIGH,64.0,9.47,VERY_LOW
+tusk foundation,263,4782.0,Biology for WASSCE,LIFE PROCESSES IN LIVING THINGS I,1.0,1,1,1,55.0,55.0,100.0,HIGH,64.0,9.47,VERY_LOW
+tusk foundation,263,4784.0,Biology for WASSCE,INTERACTIONS IN NATURE I,1.0,1,1,1,55.0,55.0,100.0,HIGH,64.0,9.47,VERY_LOW
+tusk foundation,263,4787.0,Biology for WASSCE,HUMAN ECOLOGY AND HEALTH,1.0,1,1,1,55.0,55.0,100.0,HIGH,64.0,9.47,VERY_LOW
+tusk foundation,263,4788.0,Biology for WASSCE,INTERACTIONS IN NATURE II,1.0,1,1,4,55.0,55.0,100.0,HIGH,64.0,9.47,VERY_LOW
+tusk foundation,263,4789.0,Biology for WASSCE,THE CELL II,1.0,1,1,1,55.0,55.0,100.0,HIGH,64.0,9.47,VERY_LOW
+tusk foundation,263,4791.0,Biology for WASSCE,NUTRITION IN PLANTS,1.0,1,1,1,55.0,55.0,100.0,HIGH,64.0,9.47,VERY_LOW
+tusk foundation,263,4796.0,Biology for WASSCE,GROWTH AND DEVELOPMENT IN PLANTS,1.0,1,1,1,55.0,55.0,100.0,HIGH,64.0,9.47,VERY_LOW
+tusk foundation,263,4800.0,Biology for WASSCE,RESPIRATION IN MAMMALS,1.0,1,1,2,55.0,55.0,100.0,HIGH,64.0,9.47,VERY_LOW
+tusk foundation,263,4801.0,Biology for WASSCE,EXCRETION AND HOMEOSTASIS IN MAMMALS,1.0,1,1,1,55.0,55.0,100.0,HIGH,64.0,9.47,VERY_LOW
+tusk foundation,263,4802.0,Biology for WASSCE,MOVEMENT AND SUPPORT IN MAMMALS,1.0,1,1,2,55.0,55.0,100.0,HIGH,64.0,9.47,VERY_LOW
+tusk foundation,263,4803.0,Biology for WASSCE,CONTROL AND COORDINATION IN MAMMALS,1.0,1,1,1,55.0,55.0,100.0,HIGH,64.0,9.47,VERY_LOW
+tusk foundation,263,4804.0,Biology for WASSCE,REPRODUCTION IN MAMMALS,1.0,1,1,2,55.0,55.0,100.0,HIGH,64.0,9.47,VERY_LOW
+tusk foundation,263,4805.0,Biology for WASSCE,"GENETICS, VARIATION AND EVOLUTION",1.0,1,1,1,55.0,55.0,100.0,HIGH,64.0,9.47,VERY_LOW
+university of Djibouti,262,2327.0,Integrated Science for WASSCE,Radioactivity,1.0,1,1,32,25.0,25.0,100.0,HIGH,40.0,9.47,VERY_LOW
+university of Djibouti,262,2376.0,Integrated Science for WASSCE,"Forces, Motion And Pressure",1.0,1,1,10,25.0,25.0,100.0,HIGH,40.0,9.47,VERY_LOW
+university of Djibouti,262,2386.0,Integrated Science for WASSCE,Pressure,1.0,1,1,5,25.0,25.0,100.0,HIGH,40.0,9.47,VERY_LOW
+university of Djibouti,262,4720.0,Integrated Science for WASSCE,Preparation of Gases,1.0,1,1,4,25.0,25.0,100.0,HIGH,40.0,9.47,VERY_LOW
+university of Djibouti,262,4723.0,Integrated Science for WASSCE,Rates of Reaction,1.0,1,1,1,25.0,25.0,100.0,HIGH,40.0,9.47,VERY_LOW
+university of phoenix,263,2662.0,Biology for WASSCE,REPRODUCTION IN PLANTS,1.0,1,1,1,28.57,28.57,100.0,HIGH,42.86,9.47,VERY_LOW
+university of phoenix,263,4781.0,Biology for WASSCE,THE DIVERSITY OF LIVING THINGS,1.0,1,1,6,28.570000000000004,28.570000000000004,100.0,HIGH,42.86,9.47,VERY_LOW
+university of phoenix,263,4782.0,Biology for WASSCE,LIFE PROCESSES IN LIVING THINGS I,1.0,1,1,1,28.57,28.57,100.0,HIGH,42.86,9.47,VERY_LOW
+university of phoenix,263,4783.0,Biology for WASSCE,"STRUCTURE, MODE OF LIFE AND ECONOMIC IMPORTANCE OF SOME INSECTS",1.0,1,1,1,28.57,28.57,100.0,HIGH,42.86,9.47,VERY_LOW
+university of phoenix,263,4784.0,Biology for WASSCE,INTERACTIONS IN NATURE I,1.0,1,1,4,28.57,28.57,100.0,HIGH,42.86,9.47,VERY_LOW
+university of phoenix,263,4785.0,Biology for WASSCE,LIFE PROCESSES IN LIVING THINGS II,1.0,1,1,1,28.57,28.57,100.0,HIGH,42.86,9.47,VERY_LOW
+university of phoenix,263,4787.0,Biology for WASSCE,HUMAN ECOLOGY AND HEALTH,1.0,1,1,6,28.570000000000004,28.570000000000004,100.0,HIGH,42.86,9.47,VERY_LOW
+university of phoenix,263,4788.0,Biology for WASSCE,INTERACTIONS IN NATURE II,1.0,1,1,4,28.57,28.57,100.0,HIGH,42.86,9.47,VERY_LOW
+university of phoenix,263,4789.0,Biology for WASSCE,THE CELL II,1.0,1,1,1,28.57,28.57,100.0,HIGH,42.86,9.47,VERY_LOW
+university of phoenix,263,4790.0,Biology for WASSCE,PLANT ANATOMY,1.0,1,1,2,28.57,28.57,100.0,HIGH,42.86,9.47,VERY_LOW
+university of phoenix,263,4798.0,Biology for WASSCE,NUTRITION IN MAMMALS,1.0,1,1,1,28.57,28.57,100.0,HIGH,42.86,9.47,VERY_LOW
+university of phoenix,263,4800.0,Biology for WASSCE,RESPIRATION IN MAMMALS,1.0,1,1,1,28.57,28.57,100.0,HIGH,42.86,9.47,VERY_LOW
+university of phoenix,263,4801.0,Biology for WASSCE,EXCRETION AND HOMEOSTASIS IN MAMMALS,1.0,1,1,2,28.57,28.57,100.0,HIGH,42.86,9.47,VERY_LOW
+university of phoenix,263,4803.0,Biology for WASSCE,CONTROL AND COORDINATION IN MAMMALS,1.0,1,1,4,28.57,28.57,100.0,HIGH,42.86,9.47,VERY_LOW
+university of phoenix,263,4804.0,Biology for WASSCE,REPRODUCTION IN MAMMALS,1.0,1,1,3,28.570000000000004,28.570000000000004,100.0,HIGH,42.86,9.47,VERY_LOW
+university of phoenix,263,4805.0,Biology for WASSCE,"GENETICS, VARIATION AND EVOLUTION",1.0,1,1,3,28.570000000000004,28.570000000000004,100.0,HIGH,42.86,9.47,VERY_LOW

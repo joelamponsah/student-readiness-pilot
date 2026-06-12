@@ -20,7 +20,7 @@ ARTIFACTS = {
         "description": "Attempt-level dashboard input after extraction and DQ annotation.",
         "required": [
             "test_taker_id", "user_id", "raw_institute", "institute_key", "institute_std",
-            "institute_mapping_status", "missing_institute_flag", "generic_institute_flag",
+            "mapping_status", "missing_institute_flag", "generic_institute_flag",
             "reverse_mapping_candidate_flag", "test_id", "class_id", "class_name",
             "content_provider_name", "subscription_status", "subscription_start",
             "subscription_end", "subscription_start_month", "marks", "no_of_questions",

@@ -4,9 +4,18 @@ from utils.artifact_loader import load_required_artifact
 from utils.ui_helpers import min_numeric_filter, optional_filter
 
 
-st.set_page_config(page_title="School / Subject Summary", layout="wide")
-st.title("School / Subject Summary")
-st.caption("School-Subject CAS Proxy. CAS Proxy is not true final CAS.")
+st.set_page_config(page_title="Legacy School / Subject CAS Proxy", layout="wide")
+st.title("Legacy School / Subject CAS Proxy")
+st.caption(
+    "Legacy/reference view based on v13_school_subject_cas_proxy.csv. "
+    "This is not the v1.3-ext2 cALS/pALS CAS definition. "
+    "Use the CAS Definition Comparison page for primary CAS based on cas_cals_threshold_pct."
+)
+
+st.info(
+    "This page is retained for continuity with the earlier School-Subject CAS Proxy artifact. "
+    "Treat cas_proxy_score_pct as legacy/reference only, not as the primary ext2 CAS signal."
+)
 
 df = load_required_artifact("school_subject_cas_proxy")
 
@@ -26,7 +35,7 @@ cols = st.columns(4)
 cols[0].metric("Rows", len(df))
 cols[1].metric("Learners", int(df["learner_count"].sum()) if "learner_count" in df.columns else "N/A")
 cols[2].metric("Attempts", int(df["attempt_count"].sum()) if "attempt_count" in df.columns else "N/A")
-cols[3].metric("Avg CAS Proxy", f"{df['cas_proxy_score_pct'].mean():.1f}%" if "cas_proxy_score_pct" in df.columns and not df.empty else "N/A")
+cols[3].metric("Avg Legacy CAS Proxy", f"{df['cas_proxy_score_pct'].mean():.1f}%" if "cas_proxy_score_pct" in df.columns and not df.empty else "N/A")
 
 show_cols = [
     "institute_std", "class_id", "class_name", "content_provider_name",
@@ -37,4 +46,3 @@ show_cols = [
     "dq_warning_count",
 ]
 st.dataframe(df[[c for c in show_cols if c in df.columns]], use_container_width=True)
-

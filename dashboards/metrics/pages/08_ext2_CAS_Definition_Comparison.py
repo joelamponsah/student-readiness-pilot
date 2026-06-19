@@ -35,11 +35,41 @@ REQUIRED_COLUMNS = [
     "primary_evidence_level",
 ]
 
+NUMERIC_COLUMNS = [
+    "learner_count",
+    "attempt_count",
+    "bls_available_learner_count",
+    "cals_available_learner_count",
+    "pals_available_learner_count",
+    "bls_coverage_pct",
+    "cals_coverage_pct",
+    "pals_coverage_pct",
+    "avg_bls_score_pct",
+    "avg_cals_score_pct",
+    "median_cals_score_pct",
+    "avg_pals_score_pct",
+    "median_pals_score_pct",
+    "avg_cals_learning_gain_pct",
+    "avg_pals_learning_gain_pct",
+    "cas_cals_threshold_pct",
+    "cas_pals_threshold_pct",
+    "cas_cals_pass_mark_pct",
+    "cas_pals_pass_mark_pct",
+    "cals_pals_gap_pct",
+]
+
 missing = [col for col in REQUIRED_COLUMNS if col not in cas_df.columns]
 if missing:
     st.warning(f"CAS comparison artifact is missing expected dashboard columns: {missing}")
 
+raw_row_count = len(cas_df)
 df = cas_df.copy()
+
+# CSV artifacts can arrive with numeric columns typed as object/strings. Coerce the
+# dashboard metrics to numeric so KPI cards and charts do not silently become N/A.
+for col in NUMERIC_COLUMNS:
+    if col in df.columns:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
 
 with st.sidebar:
     st.header("Filters")
@@ -52,9 +82,23 @@ with st.sidebar:
     df = optional_filter(df, "cals_pals_gap_status", "cALS / pALS gap status")
     df = min_numeric_filter(df, "learner_count", "Minimum learners")
 
-    hide_insufficient = st.toggle("Hide insufficient primary evidence", value=True)
+    hide_insufficient = st.toggle(
+        "Hide insufficient primary evidence",
+        value=False,
+        help=(
+            "Off by default so the page does not appear empty when the current "
+            "artifact mostly contains INSUFFICIENT evidence groups."
+        ),
+    )
     if hide_insufficient and "primary_evidence_level" in df.columns:
-        df = df[df["primary_evidence_level"].astype(str) != "INSUFFICIENT"].copy()
+        filtered = df[df["primary_evidence_level"].astype(str) != "INSUFFICIENT"].copy()
+        if filtered.empty and not df.empty:
+            st.warning(
+                "All currently selected CAS groups have INSUFFICIENT evidence. "
+                "Showing them instead of returning an empty page."
+            )
+        else:
+            df = filtered
 
     show_legacy_warning = st.toggle("Show CAS caveat", value=True)
 
@@ -65,6 +109,13 @@ if show_legacy_warning:
         "Primary CAS = cas_cals_threshold_pct. "
         "Potential CAS = cas_pals_threshold_pct and should not be used as a proceed signal. "
         "BLS, cALS, and pALS are v1.3 proxy values derived from attempt sequencing."
+    )
+
+st.caption(f"Loaded {fmt_count(raw_row_count)} CAS groups. Showing {fmt_count(len(df))} after filters.")
+if df.empty:
+    st.warning(
+        "No CAS groups remain after the selected filters. Clear filters or turn off "
+        "'Hide insufficient primary evidence' to inspect the artifact."
     )
 
 # -----------------------------
@@ -122,14 +173,20 @@ if "cals_pals_gap_status" in df.columns:
 # -----------------------------
 st.subheader("Class/topic CAS comparison")
 
-default_sort = [
-    col
-    for col in ["primary_evidence_level", "cas_cals_threshold_pct", "learner_count"]
-    if col in df.columns
-]
-if default_sort:
-    ascending = [True if col != "learner_count" else False for col in default_sort]
-    df = df.sort_values(default_sort, ascending=ascending, na_position="last").copy()
+def _sort_evidence_value(value) -> int:
+    order = {"HIGH": 0, "MEDIUM": 1, "LOW": 2, "INSUFFICIENT": 3}
+    return order.get(str(value).strip().upper(), 4)
+
+if "primary_evidence_level" in df.columns:
+    df = df.assign(_evidence_sort=df["primary_evidence_level"].map(_sort_evidence_value))
+    default_sort = ["_evidence_sort"] + [col for col in ["cas_cals_threshold_pct", "learner_count"] if col in df.columns]
+    ascending = [True] + [True if col != "learner_count" else False for col in default_sort[1:]]
+    df = df.sort_values(default_sort, ascending=ascending, na_position="last").drop(columns=["_evidence_sort"]).copy()
+else:
+    default_sort = [col for col in ["cas_cals_threshold_pct", "learner_count"] if col in df.columns]
+    if default_sort:
+        ascending = [True if col != "learner_count" else False for col in default_sort]
+        df = df.sort_values(default_sort, ascending=ascending, na_position="last").copy()
 
 show_cols = [
     "institute_std",

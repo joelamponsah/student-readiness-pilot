@@ -37,7 +37,10 @@ ARTIFACTS = {
             "is_dashboard_default_attempt", "default_score_eligibility", "dq_status",
             "dq_notes",
         ],
-        "optional": [],
+        "optional": [
+            "institute_group", "include_in_historical_dashboard_flag",
+            "pass_mark", "test_name",
+        ],
     },
     "user_subscription_base": {
         "filename": "v13_user_subscription_base.csv",
@@ -53,7 +56,7 @@ ARTIFACTS = {
     },
     "school_subject_cas_proxy": {
         "filename": "v13_school_subject_cas_proxy.csv",
-        "description": "School-Subject CAS Proxy by school/class/provider.",
+        "description": "Legacy School-Subject CAS Proxy by school/class/provider. Kept as reference; not the v1.3-ext2 cALS/pALS CAS definition.",
         "required": [
             "institute_std", "class_id", "class_name", "content_provider_name",
             "learner_count", "attempt_count", "test_count", "avg_score_pct",
@@ -130,11 +133,54 @@ ARTIFACTS = {
         "required": [],
         "optional": ["institute_std", "class_id", "cas_proxy_score_pct"],
     },
+    "user_bls_cals_pals_sequence": {
+        "filename": "v13_user_bls_cals_pals_sequence.csv",
+        "description": "Learner-level v1.3-ext2 BLS/cALS/pALS proxy sequence by user, institute, class/topic, and test.",
+        "required": [
+            "user_id", "institute_std", "institute_group", "class_id", "class_name",
+            "test_id", "test_name", "learner_attempt_count", "bls_attempt_id",
+            "bls_attempt_at", "bls_score_raw", "bls_total_marks", "bls_score_display",
+            "bls_score_pct", "cals_attempt_id", "cals_attempt_at", "cals_score_raw",
+            "cals_total_marks", "cals_score_display", "cals_score_pct",
+            "pals_attempt_id", "pals_attempt_at", "pals_score_raw", "pals_total_marks",
+            "pals_score_display", "pals_score_pct", "cals_learning_gain_pct",
+            "pals_learning_gain_pct", "has_bls", "has_cals", "has_pals",
+            "bls_proxy_method", "cals_proxy_method", "pals_proxy_method",
+            "bls_als_source_type", "proxy_warning_flag", "sequence_caveat_note",
+        ],
+        "optional": [],
+    },
+    "cas_definition_comparison": {
+        "filename": "v13_cas_definition_comparison.csv",
+        "description": "Class/topic/test CAS comparison using cALS as primary teacher progression signal and pALS as diagnostic potential signal.",
+        "required": [
+            "institute_std", "institute_group", "class_id", "class_name", "test_id",
+            "test_name", "learner_count", "attempt_count", "bls_available_learner_count",
+            "cals_available_learner_count", "pals_available_learner_count",
+            "bls_coverage_pct", "cals_coverage_pct", "pals_coverage_pct",
+            "avg_bls_score_raw", "avg_cals_score_raw", "avg_pals_score_raw",
+            "avg_total_marks", "min_total_marks", "max_total_marks",
+            "score_scale_consistency_flag", "avg_bls_score_pct", "avg_cals_score_pct",
+            "median_cals_score_pct", "avg_pals_score_pct", "median_pals_score_pct",
+            "avg_cals_learning_gain_pct", "median_cals_learning_gain_pct",
+            "avg_pals_learning_gain_pct", "median_pals_learning_gain_pct",
+            "cas_cals_threshold_pct", "cas_cals_pass_mark_pct",
+            "cas_pals_threshold_pct", "cas_pals_pass_mark_pct",
+            "fixed_als_threshold_used", "pass_mark_used", "pass_mark_pct_used",
+            "pass_mark_valid_flag", "pass_mark_caveat_note", "cals_evidence_level",
+            "pals_evidence_level", "primary_evidence_level", "cals_cas_signal",
+            "pals_potential_signal", "cals_pals_gap_pct", "cals_pals_gap_status",
+            "cals_threshold_passmark_gap_pct", "pals_threshold_passmark_gap_pct",
+            "threshold_vs_passmark_status", "low_evidence_flag", "proxy_warning_flag",
+            "bls_als_source_type", "caveat_note",
+        ],
+        "optional": [],
+    },
     "dq_summary": {
         "filename": "v13_dq_summary.csv",
         "description": "Flexible data-quality diagnostic report.",
         "required": [],
-        "optional": [],
+        "optional": ["check_name", "check_category", "value", "severity", "notes"],
     },
     "metric_definitions": {
         "filename": "v13_metric_definitions.csv",
@@ -145,9 +191,27 @@ ARTIFACTS = {
         ],
         "optional": [],
     },
+    "metric_summary": {
+        "filename": "v13_metric_summary.csv",
+        "description": "Generated metric inventory across artifacts.",
+        "required": [
+            "metric_name", "artifact", "column_name", "metric_type",
+            "definition", "status", "last_updated",
+        ],
+        "optional": [],
+    },
+    "data_definitions": {
+        "filename": "v13_data_definitions.csv",
+        "description": "Generated column-level definitions for v1.3-ext2 artifacts.",
+        "required": [
+            "artifact", "column_name", "required_flag", "grain_flag",
+            "definition", "source", "status", "last_updated",
+        ],
+        "optional": [],
+    },
     "data_dictionary": {
         "filename": "v13_data_dictionary.csv",
-        "description": "Data dictionary for generated artifacts.",
+        "description": "Legacy data dictionary for generated artifacts. Prefer data_definitions for Build 99 outputs.",
         "required": [],
         "optional": ["artifact", "column_name", "definition"],
     },
@@ -155,16 +219,28 @@ ARTIFACTS = {
         "filename": "v13_build_summary.csv",
         "description": "Build summary and artifact-generation diagnostics.",
         "required": [],
-        "optional": ["artifact", "rows", "status"],
+        "optional": ["artifact", "row_count", "column_count", "status", "notes", "built_at"],
+    },
+    "export_manifest": {
+        "filename": "v13_export_manifest.csv",
+        "description": "Build 99 export manifest with artifact existence, schema, grain, and status checks.",
+        "required": [
+            "artifact", "file_path", "file_exists", "row_count", "column_count",
+            "size_bytes", "modified_at", "required_columns_ok",
+            "missing_required_columns", "duplicate_grain_count", "status",
+            "notes", "built_at",
+        ],
+        "optional": [],
     },
 }
 
 
 PAGE_ARTIFACTS = {
-    "home": ["build_summary", "dq_summary", "school_readiness_summary", "raw_attempts"],
-    "definitions": ["metric_definitions", "data_dictionary"],
-    "data_quality": ["dq_summary", "build_summary"],
+    "home": ["build_summary", "dq_summary", "export_manifest", "school_readiness_summary", "raw_attempts"],
+    "definitions": ["metric_definitions", "metric_summary", "data_definitions", "data_dictionary"],
+    "data_quality": ["dq_summary", "build_summary", "export_manifest"],
     "school_subject": ["school_subject_cas_proxy"],
+    "cas_comparison": ["cas_definition_comparison", "user_bls_cals_pals_sequence"],
     "test_topic": ["test_readiness_summary", "content_topic_tas_proxy", "content_question_map"],
     "learner": ["learner_readiness_summary", "readiness_signals", "learning_gain_signals", "work_habits_signals"],
     "cohort": ["cohort_context", "user_subscription_base"],
@@ -177,4 +253,3 @@ def artifact_name_for_file(filename: str) -> str | None:
         if spec["filename"] == filename:
             return name
     return None
-
